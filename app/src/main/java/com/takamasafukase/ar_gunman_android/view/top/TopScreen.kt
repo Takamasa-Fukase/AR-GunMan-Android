@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.takamasafukase.ar_gunman_android.R
 import com.takamasafukase.ar_gunman_android.manager.AudioManager
+import com.takamasafukase.ar_gunman_android.ui.theme.copperplate
 import com.takamasafukase.ar_gunman_android.view.tutorial.TutorialScreen
 import com.takamasafukase.ar_gunman_android.view.ranking.RankingScreen
 import com.takamasafukase.ar_gunman_android.view.result.ResultScreen
@@ -134,13 +135,15 @@ fun TitleText(screenHeight: Int) {
     ) {
         Text(
             text = "AR",
-            fontSize = (screenHeight * 0.25).sp, // iOSだと固定で100
+            fontSize = (screenHeight * 0.1875).sp, // iOSだと固定で100
             fontWeight = FontWeight.Bold,
+            fontFamily = copperplate,
         )
         Text(
             text = "-GunMan",
-            fontSize = (screenHeight * 0.20).sp,  // iOSだと固定で80
+            fontSize = (screenHeight * 0.15).sp,  // iOSだと固定で80
             fontWeight = FontWeight.Bold,
+            fontFamily = copperplate,
         )
     }
 }
@@ -155,8 +158,9 @@ fun SettingButton(
     }) {
         Text(
             text = "Settings",
-            fontSize = (screenHeight * 0.08).sp, // iOSだと固定で28
+            fontSize = (screenHeight * 0.06).sp, // iOSだと固定で28
             fontWeight = FontWeight.Bold,
+            fontFamily = copperplate,
             style = TextStyle(textDecoration = TextDecoration.Underline),
             color = colorResource(id = R.color.blackSteel)
         )
@@ -182,8 +186,9 @@ fun CustomIconButton(
         }) {
             Text(
                 text = title,
-                fontSize = (screenHeight * 0.10).sp, // iOSだと固定で50
+                fontSize = (screenHeight * 0.1).sp, // iOSだと固定で50
                 fontWeight = FontWeight.Bold,
+                fontFamily = copperplate,
                 style = TextStyle(textDecoration = TextDecoration.Underline),
                 color = colorResource(id = R.color.blackSteel)
             )
