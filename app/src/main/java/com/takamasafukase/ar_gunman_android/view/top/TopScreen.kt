@@ -186,7 +186,7 @@ fun CustomIconButton(
         }) {
             Text(
                 text = title,
-                fontSize = (screenHeight * 0.1).sp, // iOSだと固定で50
+                fontSize = (screenHeight * 0.09375).sp, // iOSだと固定で50
                 fontWeight = FontWeight.Bold,
                 fontFamily = copperplate,
                 style = TextStyle(textDecoration = TextDecoration.Underline),
