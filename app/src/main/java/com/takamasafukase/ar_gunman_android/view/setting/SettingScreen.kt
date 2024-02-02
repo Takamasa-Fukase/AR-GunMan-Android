@@ -22,6 +22,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.takamasafukase.ar_gunman_android.R
+import com.takamasafukase.ar_gunman_android.ui.theme.copperplate
 import com.takamasafukase.ar_gunman_android.viewModel.SettingViewModel
 
 @Composable
@@ -54,12 +55,14 @@ fun SettingScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(start = 32.dp, top = 48.dp, end = 32.dp, bottom = 40.dp)
+//                .padding(start = 32.dp, top = 0.dp, end = 32.dp, bottom = 0.dp)
         ) {
             Text(
-                text = "Settings",
+                text = "SETTINGS",
                 color = colorResource(id = R.color.blackSteel),
-                fontSize = (screenHeight * 0.12).sp,
+                fontSize = (screenHeight * 0.08).sp,
                 fontWeight = FontWeight.Bold,
+                fontFamily = copperplate,
             )
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -72,8 +75,9 @@ fun SettingScreen(
                     Text(
                         text = "Contact Developer",
                         color = colorResource(id = R.color.blackSteel),
-                        fontSize = (screenHeight * 0.1).sp,
+                        fontSize = (screenHeight * 0.07875).sp,
                         fontWeight = FontWeight.Bold,
+                        fontFamily = copperplate,
                         style = TextStyle(textDecoration = TextDecoration.Underline)
                     )
                 }
@@ -83,8 +87,9 @@ fun SettingScreen(
                     Text(
                         text = "Privacy Policy",
                         color = colorResource(id = R.color.blackSteel),
-                        fontSize = (screenHeight * 0.1).sp,
+                        fontSize = (screenHeight * 0.075).sp,
                         fontWeight = FontWeight.Bold,
+                        fontFamily = copperplate,
                         style = TextStyle(textDecoration = TextDecoration.Underline)
                     )
                 }
@@ -93,10 +98,11 @@ fun SettingScreen(
                 viewModel.onTapBackButton()
             }) {
                 Text(
-                    text = "Back",
+                    text = "BACK",
                     color = colorResource(id = R.color.blackSteel),
-                    fontSize = (screenHeight * 0.09).sp,
+                    fontSize = (screenHeight * 0.0675).sp,
                     fontWeight = FontWeight.Bold,
+                    fontFamily = copperplate,
                 )
             }
         }

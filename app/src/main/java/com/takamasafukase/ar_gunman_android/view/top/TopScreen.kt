@@ -158,7 +158,7 @@ fun SettingButton(
     }) {
         Text(
             text = "Settings",
-            fontSize = (screenHeight * 0.06).sp, // iOSだと固定で28
+            fontSize = (screenHeight * 0.05).sp, // iOSだと固定で28
             fontWeight = FontWeight.Bold,
             fontFamily = copperplate,
             style = TextStyle(textDecoration = TextDecoration.Underline),

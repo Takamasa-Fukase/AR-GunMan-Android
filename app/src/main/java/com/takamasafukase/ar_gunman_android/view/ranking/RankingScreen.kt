@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.sp
 import com.takamasafukase.ar_gunman_android.utility.CustomDialog
 import com.takamasafukase.ar_gunman_android.R
 import com.takamasafukase.ar_gunman_android.entity.Ranking
+import com.takamasafukase.ar_gunman_android.ui.theme.copperplate
 import com.takamasafukase.ar_gunman_android.viewModel.RankingViewModel
 
 @Composable
@@ -39,7 +40,7 @@ fun RankingScreen(viewModel: RankingViewModel, onClose: () -> Unit) {
     CustomDialog(
         onDismissRequest = onClose,
         size = DpSize(
-            width = Dp((screenWidth * 0.5).toFloat()),
+            width = Dp((screenWidth * 0.56).toFloat()),
             height = Dp((screenHeight * 0.8).toFloat())
         ),
         content = {
@@ -107,8 +108,9 @@ fun TitleView(onClose: () -> Unit) {
         Text(
             "WORLD RANKING",
             color = colorResource(id = R.color.blackSteel),
-            fontSize = 30.sp,
+            fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
+            fontFamily = copperplate,
             modifier = Modifier
                 .fillMaxWidth()
                 .wrapContentSize(align = Alignment.Center, unbounded = true)

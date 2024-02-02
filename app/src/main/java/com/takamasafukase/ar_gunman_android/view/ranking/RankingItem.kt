@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.takamasafukase.ar_gunman_android.R
 import com.takamasafukase.ar_gunman_android.entity.Ranking
+import com.takamasafukase.ar_gunman_android.ui.theme.copperplate
 import kotlinx.coroutines.delay
 
 @Composable
@@ -37,7 +38,7 @@ fun RankingItem(
         // ベースとなる領域を確保
         modifier = Modifier
             .fillMaxSize()
-            .height(height = 60.dp)
+            .height(height = 56.dp)
             .background(Color.Transparent)
     ) {
         // 背景1
@@ -74,8 +75,9 @@ fun RankingItem(
             Text(
                 rankIndex.toString(),
                 color = colorResource(id = R.color.paper),
-                fontSize = 22.sp,
+                fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
+                fontFamily = copperplate,
                 modifier = Modifier
                     .padding(start = 24.dp, bottom = 6.dp)
                     .size(width = 32.dp, height = 22.dp)
@@ -86,8 +88,8 @@ fun RankingItem(
             Text(
                 text = "%.3f".format(ranking.score),
                 color = colorResource(id = R.color.paper),
-                fontSize = 22.sp,
-                fontWeight = FontWeight.Normal,
+                fontSize = 16.sp,
+                fontFamily = copperplate,
                 modifier = Modifier
                     .padding(start = 8.dp, bottom = 10.dp)
             )
@@ -95,8 +97,9 @@ fun RankingItem(
             Text(
                 text = ranking.user_name,
                 color = colorResource(id = R.color.paper),
-                fontSize = 38.sp,
+                fontSize = 36.sp,
                 fontWeight = FontWeight.Bold,
+                fontFamily = copperplate,
                 modifier = Modifier
                     .padding(start = 10.dp, bottom = 10.dp)
             )

@@ -48,6 +48,7 @@ import com.takamasafukase.ar_gunman_android.R
 import com.takamasafukase.ar_gunman_android.manager.AudioManager
 import com.takamasafukase.ar_gunman_android.model.WeaponType
 import com.takamasafukase.ar_gunman_android.repository.RankingRepository
+import com.takamasafukase.ar_gunman_android.ui.theme.copperplate
 import com.takamasafukase.ar_gunman_android.utility.RankingUtil
 import com.takamasafukase.ar_gunman_android.view.nameRegister.NameRegisterScreen
 import com.takamasafukase.ar_gunman_android.view.ranking.RankingListView
@@ -139,7 +140,8 @@ fun ResultScreen(
                             Text(
                                 text = "score",
                                 color = colorResource(id = R.color.paper),
-                                fontSize = 22.sp,
+                                fontSize = 16.sp,
+                                fontFamily = copperplate,
                                 modifier = Modifier
                                     .align(Alignment.TopStart)
                             )
@@ -151,8 +153,9 @@ fun ResultScreen(
                                 Text(
                                     text = "%.3f".format(totalScore),
                                     color = colorResource(id = R.color.paper),
-                                    fontSize = (screenHeight * 0.16).sp,
+                                    fontSize = (screenHeight * 0.12).sp,
                                     fontWeight = FontWeight.Black,
+                                    fontFamily = copperplate,
                                     textAlign = TextAlign.Center,
                                     modifier = Modifier
                                         .fillMaxWidth()
@@ -253,8 +256,9 @@ fun TitleView() {
             Text(
                 "WORLD RANKING",
                 color = colorResource(id = R.color.blackSteel),
-                fontSize = 30.sp,
+                fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
+                fontFamily = copperplate,
                 modifier = Modifier
                     .wrapContentSize(align = Alignment.Center, unbounded = true)
                     .align(Alignment.Center)
@@ -319,8 +323,9 @@ fun AnimatedButtonsAndIcon(
                     Text(
                         text = "REPLAY",
                         color = colorResource(id = R.color.paper),
-                        fontSize = 25.sp,
+                        fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
+                        fontFamily = copperplate,
                     )
                 }
                 TextButton(onClick = {
@@ -329,8 +334,9 @@ fun AnimatedButtonsAndIcon(
                     Text(
                         text = "HOME",
                         color = colorResource(id = R.color.paper),
-                        fontSize = 25.sp,
+                        fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
+                        fontFamily = copperplate,
                     )
                 }
             }

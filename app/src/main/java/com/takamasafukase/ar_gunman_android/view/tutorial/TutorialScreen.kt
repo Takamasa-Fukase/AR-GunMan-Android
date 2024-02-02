@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.takamasafukase.ar_gunman_android.R
 import com.takamasafukase.ar_gunman_android.const.TutorialConst
+import com.takamasafukase.ar_gunman_android.ui.theme.copperplate
 import com.takamasafukase.ar_gunman_android.utility.CustomDialog
 import com.takamasafukase.ar_gunman_android.utility.ImageSwitcherAnimation
 import kotlinx.coroutines.launch
@@ -98,17 +99,18 @@ fun TutorialScreen(
                         Text(
                             text = content.titleText,
                             color = colorResource(id = R.color.blackSteel),
-                            fontSize = (screenHeight * 0.076).sp,
+                            fontSize = (screenHeight * 0.05).sp,
                             fontWeight = FontWeight.Bold,
+                            fontFamily = copperplate,
                             modifier = Modifier
                                 .padding(bottom = 8.dp)
                         )
                         Text(
                             text = content.descriptionText,
                             color = colorResource(id = R.color.blackSteel),
-                            fontSize = (screenHeight * 0.04).sp,
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier
+                            fontSize = (screenHeight * 0.03).sp,
+                            fontWeight = FontWeight.Normal,
+                            fontFamily = copperplate,
                         )
                     }
                 }
@@ -173,8 +175,9 @@ fun TutorialScreen(
                         Text(
                             text = buttonText,
                             color = colorResource(id = R.color.blackSteel),
-                            fontSize = (screenHeight * 0.06).sp,
+                            fontSize = (screenHeight * 0.042).sp,
                             fontWeight = FontWeight.Bold,
+                            fontFamily = copperplate,
                             modifier = Modifier
                                 .align(Alignment.Center)
                         )

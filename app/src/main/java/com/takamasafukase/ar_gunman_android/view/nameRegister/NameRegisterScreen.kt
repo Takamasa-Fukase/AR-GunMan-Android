@@ -45,6 +45,7 @@ import com.takamasafukase.ar_gunman_android.utility.CustomDialog
 import com.takamasafukase.ar_gunman_android.R
 import com.takamasafukase.ar_gunman_android.entity.Ranking
 import com.takamasafukase.ar_gunman_android.repository.RankingRepository
+import com.takamasafukase.ar_gunman_android.ui.theme.copperplate
 import com.takamasafukase.ar_gunman_android.utility.CustomTextField
 import com.takamasafukase.ar_gunman_android.utility.RankingUtil
 import com.takamasafukase.ar_gunman_android.viewModel.NameRegisterViewModel
@@ -103,50 +104,57 @@ fun NameRegisterScreen(
                             .padding(top = 12.dp,)
                     ) {
                         Text(
-                            text = "CONGRATULATIONS!",
+                            text = "Congratulations!",
                             color = colorResource(id = R.color.paper),
-                            fontSize = (screenHeight * 0.058).sp,
+                            fontSize = (screenHeight * 0.048).sp,
                             fontWeight = FontWeight.Bold,
+                            fontFamily = copperplate,
                         )
                         Row(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
-                                text = "YOU'RE RANKED AT",
+                                text = "You're ranked at",
                                 color = colorResource(id = R.color.paper),
-                                fontSize = (screenHeight * 0.046).sp,
+                                fontSize = (screenHeight * 0.036).sp,
+                                fontFamily = copperplate,
                             )
                             Text(
                                 text = " ${state.value.rankText} ",
                                 color = colorResource(id = R.color.customBrown1),
-                                fontSize = (screenHeight * 0.058).sp,
+                                fontSize = (screenHeight * 0.046).sp,
+                                fontFamily = copperplate,
                             )
                             Text(
-                                text = "IN",
+                                text = "in",
                                 color = colorResource(id = R.color.paper),
-                                fontSize = (screenHeight * 0.046).sp,
+                                fontSize = (screenHeight * 0.036).sp,
+                                fontFamily = copperplate,
                             )
                         }
                         Text(
-                            text = "THE WORLD!",
+                            text = "the world!",
                             color = colorResource(id = R.color.paper),
-                            fontSize = (screenHeight * 0.046).sp,
+                            fontSize = (screenHeight * 0.036).sp,
+                            fontFamily = copperplate,
                         )
                         Text(
-                            text = "SCORE: ${"%.3f".format(state.value.totalScore)}",
+                            text = "Score: ${"%.3f".format(state.value.totalScore)}",
                             color = colorResource(id = R.color.paper),
-                            fontSize = (screenHeight * 0.074).sp,
+                            fontSize = (screenHeight * 0.06).sp,
                             fontWeight = FontWeight.Black,
+                            fontFamily = copperplate,
                         )
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier
-                                .padding(start = 24.dp, end = 24.dp, bottom = 12.dp)
+                                .padding(start = 24.dp, end = 24.dp, bottom = 16.dp)
                         ) {
                             Text(
-                                text = "NAME:",
+                                text = "Name:",
                                 color = colorResource(id = R.color.paper),
-                                fontSize = (screenHeight * 0.046).sp,
+                                fontSize = (screenHeight * 0.036).sp,
+                                fontFamily = copperplate,
                             )
                             CustomTextField(
                                 value = state.value.nameInputText,
@@ -163,7 +171,8 @@ fun NameRegisterScreen(
                                 ),
                                 cursorBrush = SolidColor(colorResource(id = R.color.paper)),
                                 textStyle = TextStyle(
-                                    color = colorResource(id = R.color.paper)
+                                    color = colorResource(id = R.color.paper),
+                                    fontFamily = copperplate,
                                 ),
                                 shape = RoundedCornerShape(12),
                                 singleLine = true,
@@ -207,10 +216,11 @@ fun NameRegisterScreen(
                                     .weight(1f)
                             ) {
                                 Text(
-                                    text = "NO, THANKS",
+                                    text = "No, thanks",
                                     color = Color.DarkGray,
-                                    fontSize = (screenHeight * 0.048).sp,
+                                    fontSize = (screenHeight * 0.040).sp,
                                     fontWeight = FontWeight.Bold,
+                                    fontFamily = copperplate,
                                     modifier = Modifier
                                         .wrapContentSize(align = Alignment.Center, unbounded = true)
                                         .padding(bottom = 4.dp)
@@ -244,10 +254,11 @@ fun NameRegisterScreen(
                                     )
                                 }else {
                                     Text(
-                                        text = "REGISTER!",
+                                        text = "Register!",
                                         color = buttonColor,
-                                        fontSize = (screenHeight * 0.064).sp,
+                                        fontSize = (screenHeight * 0.050).sp,
                                         fontWeight = FontWeight.Bold,
+                                        fontFamily = copperplate,
                                         textAlign = TextAlign.Center,
                                         modifier = Modifier
                                             .wrapContentSize(
