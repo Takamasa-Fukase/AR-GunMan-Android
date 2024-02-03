@@ -11,9 +11,8 @@ import kotlinx.coroutines.launch
 
 data class TopViewState(
     val startButtonImageResourceId: Int,
-    val rankingButtonImageResourceId: Int,
+    val settingsButtonImageResourceId: Int,
     val howToPlayButtonImageResourceId: Int,
-    val isShowRankingDialog: Boolean,
     val isShowTutorialDialog: Boolean,
 )
 
@@ -23,16 +22,15 @@ class TopViewModel(
 
     sealed class IconButtonType {
         object Start : IconButtonType()
-        object Ranking : IconButtonType()
+        object Settings : IconButtonType()
         object HowToPlay : IconButtonType()
     }
 
     private val _state = MutableStateFlow(
         TopViewState(
             startButtonImageResourceId = R.drawable.target_icon,
-            rankingButtonImageResourceId = R.drawable.target_icon,
+            settingsButtonImageResourceId = R.drawable.target_icon,
             howToPlayButtonImageResourceId = R.drawable.target_icon,
-            isShowRankingDialog = false,
             isShowTutorialDialog = false,
         )
     )
@@ -47,22 +45,12 @@ class TopViewModel(
         switchButtonIconAndRevert(type = IconButtonType.Start)
     }
 
-    fun onTapRankingButton() {
-        switchButtonIconAndRevert(type = IconButtonType.Ranking)
+    fun onTapSettingsButton() {
+        switchButtonIconAndRevert(type = IconButtonType.Settings)
     }
 
     fun onTapHowToPlayButton() {
         switchButtonIconAndRevert(type = IconButtonType.HowToPlay)
-    }
-
-    fun onTapSettingButton() {
-        viewModelScope.launch {
-            _showSetting.emit(Unit)
-        }
-    }
-
-    fun onCloseRankingDialog() {
-        _state.value = _state.value.copy(isShowRankingDialog = false)
     }
 
     fun onCloseTutorialDialog() {
@@ -79,9 +67,9 @@ class TopViewModel(
                     startButtonImageResourceId = R.drawable.bullets_hole
                 )
             }
-            IconButtonType.Ranking -> {
+            IconButtonType.Settings -> {
                 _state.value = _state.value.copy(
-                    rankingButtonImageResourceId = R.drawable.bullets_hole
+                    settingsButtonImageResourceId = R.drawable.bullets_hole
                 )
             }
             IconButtonType.HowToPlay -> {
@@ -95,7 +83,7 @@ class TopViewModel(
             // 画像を元の的に戻す
             _state.value = _state.value.copy(
                 startButtonImageResourceId = R.drawable.target_icon,
-                rankingButtonImageResourceId = R.drawable.target_icon,
+                settingsButtonImageResourceId = R.drawable.target_icon,
                 howToPlayButtonImageResourceId = R.drawable.target_icon,
             )
             // 対象のボタンごとの遷移指示を流す
@@ -104,8 +92,8 @@ class TopViewModel(
                     IconButtonType.Start -> {
                         _showGame.emit(Unit)
                     }
-                    IconButtonType.Ranking -> {
-                        _state.value = _state.value.copy(isShowRankingDialog = true)
+                    IconButtonType.Settings -> {
+                        _showSetting.emit(Unit)
                     }
                     IconButtonType.HowToPlay -> {
                         _state.value = _state.value.copy(isShowTutorialDialog = true)

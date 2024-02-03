@@ -23,10 +23,6 @@ import com.takamasafukase.ar_gunman_android.R
 import com.takamasafukase.ar_gunman_android.manager.AudioManager
 import com.takamasafukase.ar_gunman_android.ui.theme.copperplate
 import com.takamasafukase.ar_gunman_android.view.tutorial.TutorialScreen
-import com.takamasafukase.ar_gunman_android.view.ranking.RankingScreen
-import com.takamasafukase.ar_gunman_android.view.result.ResultScreen
-import com.takamasafukase.ar_gunman_android.viewModel.RankingViewModel
-import com.takamasafukase.ar_gunman_android.viewModel.ResultViewModel
 import com.takamasafukase.ar_gunman_android.viewModel.TopViewModel
 
 @Composable
@@ -61,17 +57,7 @@ fun TopScreen(
             modifier = Modifier
                 .padding(horizontal = 60.dp)
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                SettingButton(
-                    screenHeight = screenHeight,
-                    onTap = {
-                        viewModel.onTapSettingButton()
-                    })
-                Spacer(modifier = Modifier.weight(1f))
-                TitleImage()
-            }
+            TitleImage()
             Row {
                 Column(
                     modifier = Modifier
@@ -86,10 +72,10 @@ fun TopScreen(
                     )
                     CustomIconButton(
                         screenHeight = screenHeight,
-                        title = "Ranking",
-                        iconResourceId = state.value.rankingButtonImageResourceId,
+                        title = "Settings",
+                        iconResourceId = state.value.settingsButtonImageResourceId,
                         onTap = {
-                            viewModel.onTapRankingButton()
+                            viewModel.onTapSettingsButton()
                         }
                     )
                     CustomIconButton(
@@ -104,17 +90,6 @@ fun TopScreen(
                 Spacer(modifier = Modifier.weight(1f))
                 PistolImage()
             }
-        }
-
-        // ランキングダイアログ
-        if (state.value.isShowRankingDialog) {
-            val rankingViewModel = RankingViewModel(app = Application())
-            RankingScreen(
-                viewModel = rankingViewModel,
-                onClose = {
-                    viewModel.onCloseRankingDialog()
-                }
-            )
         }
 
         // チュートリアルダイアログ
