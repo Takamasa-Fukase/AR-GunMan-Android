@@ -31,6 +31,7 @@ fun TopScreen(
     toGame: () -> Unit,
     toSetting: () -> Unit,
 ) {
+    val screenWidth = LocalConfiguration.current.screenWidthDp
     val screenHeight = LocalConfiguration.current.screenHeightDp
     val state = viewModel.state.collectAsState()
     val showGameEvent = viewModel.showGame.collectAsState(initial = null)
@@ -55,12 +56,20 @@ fun TopScreen(
     ) {
         Column(
             horizontalAlignment = Alignment.End,
+            verticalArrangement = Arrangement.SpaceEvenly,
             modifier = Modifier
-                .padding(horizontal = 60.dp, vertical = 40.dp)
+                .padding(
+                    horizontal = (screenWidth * 0.06).dp,
+                    vertical = (screenHeight * 0.06).dp
+                )
         ) {
-            TitleImage()
-            Row {
-                Column {
+            TitleImage(screenWidth, screenHeight)
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(
+                    verticalArrangement = Arrangement.SpaceEvenly
+                ) {
                     CustomIconButton(
                         screenHeight = screenHeight,
                         title = "Start",
@@ -87,7 +96,7 @@ fun TopScreen(
                     )
                 }
                 Spacer(modifier = Modifier.weight(1f))
-                PistolImage()
+                PistolImage(screenWidth, screenHeight)
             }
         }
 
@@ -151,22 +160,28 @@ fun CustomIconButton(
 }
 
 @Composable
-fun TitleImage() {
+fun TitleImage(screenWidth: Int, screenHeight: Int) {
     Image(
         painter = painterResource(id = R.drawable.ar_gunman_title_image),
         contentDescription = "AR-GunMan. This is title of this app.",
         modifier = Modifier
-            .size(width = 560.dp, height = 80.dp)
+            .size(
+                width = (screenWidth * 0.7).dp,
+                height = (screenHeight * 0.24).dp
+            )
     )
 }
 
 @Composable
-fun PistolImage() {
+fun PistolImage(screenWidth: Int, screenHeight: Int) {
     Image(
         painter = painterResource(id = R.drawable.top_page_gun_icon),
         contentDescription = "Automatic Pistol Icon",
         modifier = Modifier
-            .size(width = 300.dp, height = 200.dp)
+            .size(
+                width = (screenWidth * 0.36).dp,
+                height = (screenHeight * 0.6).dp
+            )
     )
 }
 
@@ -181,7 +196,10 @@ fun TargetImage(resourceId: Int, screenHeight: Int) {
     )
 }
 
-@Preview(device = Devices.AUTOMOTIVE_1024p, widthDp = 720, heightDp = 360)
+@Preview(device = Devices.AUTOMOTIVE_1024p, widthDp = 640, heightDp = 360)
+@Preview(device = Devices.AUTOMOTIVE_1024p, widthDp = 730, heightDp = 410)
+@Preview(device = Devices.AUTOMOTIVE_1024p, widthDp = 864, heightDp = 359)
+@Preview(device = Devices.AUTOMOTIVE_1024p, widthDp = 869, heightDp = 411)
 @Composable
 fun TopScreenPreview() {
     TopScreen(
