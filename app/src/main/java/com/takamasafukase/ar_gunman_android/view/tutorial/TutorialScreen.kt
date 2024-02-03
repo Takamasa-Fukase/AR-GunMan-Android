@@ -43,23 +43,22 @@ fun TutorialScreen(
     onClose: () -> Unit,
 ) {
     val screenHeight = LocalConfiguration.current.screenHeightDp
-    val pagerViewHeight = screenHeight * 0.65
+    val pagerViewHeight = screenHeight * 0.68
     val pageIndicatorHeight = screenHeight * 0.072
-    val buttonHeight = screenHeight * 0.15
-    val dialogHeight = pagerViewHeight + pageIndicatorHeight + buttonHeight
-    val dialogWidth = pagerViewHeight * 1.33
+    val buttonHeight = screenHeight * 0.18
     val pagerState = rememberPagerState()
     val rememberCoroutineScope = rememberCoroutineScope()
 
     CustomDialog(
         onDismissRequest = onClose,
         size = DpSize(
-            width = dialogWidth.dp,
-            height = dialogHeight.dp,
+            width = (pagerViewHeight * 1.33).dp,
+            height = screenHeight.dp,
         ),
         content = {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier
                     .background(Color.Transparent)
             ) {
@@ -69,7 +68,7 @@ fun TutorialScreen(
                     pageCount = TutorialConst.pageContents.size,
                     state = pagerState,
                     modifier = Modifier
-                        .height((screenHeight * 0.6).dp)
+                        .height(pagerViewHeight.dp)
                         .border(
                             width = 5.dp,
                             color = colorResource(id = R.color.goldLeaf),
@@ -130,7 +129,7 @@ fun TutorialScreen(
 
                         Box(
                             modifier = Modifier
-                                .padding(2.dp)
+                                .padding(4.dp)
                                 .clip(CircleShape)
                                 .background(color = color)
                                 .size(8.dp)
@@ -175,7 +174,7 @@ fun TutorialScreen(
                         Text(
                             text = buttonText,
                             color = colorResource(id = R.color.blackSteel),
-                            fontSize = (screenHeight * 0.042).sp,
+                            fontSize = (screenHeight * 0.044).sp,
                             fontWeight = FontWeight.Bold,
                             fontFamily = copperplate,
                             modifier = Modifier
@@ -188,7 +187,10 @@ fun TutorialScreen(
     )
 }
 
-@Preview(device = Devices.AUTOMOTIVE_1024p, widthDp = 720, heightDp = 360)
+@Preview(device = Devices.AUTOMOTIVE_1024p, widthDp = 640, heightDp = 360)
+@Preview(device = Devices.AUTOMOTIVE_1024p, widthDp = 730, heightDp = 410)
+@Preview(device = Devices.AUTOMOTIVE_1024p, widthDp = 864, heightDp = 359)
+@Preview(device = Devices.AUTOMOTIVE_1024p, widthDp = 869, heightDp = 411)
 @Composable
 fun TutorialScreenPreview() {
     TutorialScreen(
