@@ -1,5 +1,6 @@
 package com.takamasafukase.ar_gunman_android.view.ranking
 
+import android.app.Application
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -40,8 +41,8 @@ fun RankingScreen(viewModel: RankingViewModel, onClose: () -> Unit) {
     CustomDialog(
         onDismissRequest = onClose,
         size = DpSize(
-            width = Dp((screenWidth * 0.56).toFloat()),
-            height = Dp((screenHeight * 0.8).toFloat())
+            width = (screenWidth * 0.54).dp,
+            height = (screenHeight).dp,
         ),
         content = {
             Surface(
@@ -55,8 +56,8 @@ fun RankingScreen(viewModel: RankingViewModel, onClose: () -> Unit) {
                     Box(
                         modifier = Modifier
                             .size(
-                                width = Dp((screenWidth * 0.6).toFloat()),
-                                height = Dp((screenHeight * 0.8).toFloat())
+                                width = (screenWidth * 0.54).dp,
+                                height = (screenHeight * 0.92).dp,
                             )
                     ) {
                         BackgroundBorderView()
