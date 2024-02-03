@@ -70,7 +70,7 @@ fun TopScreen(
                         viewModel.onTapSettingButton()
                     })
                 Spacer(modifier = Modifier.weight(1f))
-                TitleText(screenHeight = screenHeight)
+                TitleImage()
             }
             Row {
                 Column(
@@ -129,26 +129,6 @@ fun TopScreen(
 }
 
 @Composable
-fun TitleText(screenHeight: Int) {
-    Row(
-        verticalAlignment = Alignment.Bottom
-    ) {
-        Text(
-            text = "AR",
-            fontSize = (screenHeight * 0.1875).sp, // iOSだと固定で100
-            fontWeight = FontWeight.Bold,
-            fontFamily = copperplate,
-        )
-        Text(
-            text = "-GunMan",
-            fontSize = (screenHeight * 0.15).sp,  // iOSだと固定で80
-            fontWeight = FontWeight.Bold,
-            fontFamily = copperplate,
-        )
-    }
-}
-
-@Composable
 fun SettingButton(
     screenHeight: Int,
     onTap: () -> Unit,
@@ -194,6 +174,16 @@ fun CustomIconButton(
             )
         }
     }
+}
+
+@Composable
+fun TitleImage() {
+    Image(
+        painter = painterResource(id = R.drawable.ar_gunman_title_image),
+        contentDescription = "AR-GunMan. This is title of this app.",
+        modifier = Modifier
+            .size(width = 560.dp, height = 80.dp)
+    )
 }
 
 @Composable
