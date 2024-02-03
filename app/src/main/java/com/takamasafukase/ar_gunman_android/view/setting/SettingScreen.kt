@@ -1,6 +1,7 @@
 package com.takamasafukase.ar_gunman_android.view.setting
 
 import android.app.Application
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -34,6 +35,7 @@ fun SettingScreen(
     viewModel: SettingViewModel,
     onClose: () -> Unit,
 ) {
+    val screenWidth = LocalConfiguration.current.screenWidthDp
     val screenHeight = LocalConfiguration.current.screenHeightDp
     val uriHandler = LocalUriHandler.current
     val isShowRankingDialog = viewModel.isShowRankingDialog.collectAsState()
@@ -57,9 +59,15 @@ fun SettingScreen(
     ) {
         Column(
             horizontalAlignment = Alignment.Start,
+            verticalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier
                 .fillMaxSize()
-                .padding(start = 32.dp, top = 48.dp, end = 32.dp, bottom = 40.dp)
+                .padding(
+                    start = 32.dp,
+                    top = (screenHeight * 0.1).dp,
+                    end = 32.dp,
+                    bottom = (screenHeight * 0.08).dp
+                )
         ) {
             Text(
                 text = "Settings",
@@ -137,7 +145,10 @@ fun SettingScreen(
     }
 }
 
-@Preview(device = Devices.AUTOMOTIVE_1024p, widthDp = 720, heightDp = 360)
+@Preview(device = Devices.AUTOMOTIVE_1024p, widthDp = 640, heightDp = 360)
+@Preview(device = Devices.AUTOMOTIVE_1024p, widthDp = 730, heightDp = 410)
+@Preview(device = Devices.AUTOMOTIVE_1024p, widthDp = 864, heightDp = 359)
+@Preview(device = Devices.AUTOMOTIVE_1024p, widthDp = 869, heightDp = 411)
 @Composable
 fun ResultScreenPreview() {
     SettingScreen(
