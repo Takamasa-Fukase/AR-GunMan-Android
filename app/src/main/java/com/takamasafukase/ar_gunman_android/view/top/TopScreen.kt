@@ -60,7 +60,6 @@ fun TopScreen(
             modifier = Modifier
                 .padding(
                     horizontal = (screenWidth * 0.06).dp,
-                    vertical = (screenHeight * 0.06).dp
                 )
         ) {
             TitleImage(screenWidth, screenHeight)
