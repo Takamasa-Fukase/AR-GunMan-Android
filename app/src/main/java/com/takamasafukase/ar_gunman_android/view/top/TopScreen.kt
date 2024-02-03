@@ -208,7 +208,7 @@ fun PistolImage() {
 
 @Composable
 fun TargetImage(resourceId: Int, screenHeight: Int) {
-    val size = (screenHeight * 0.09).dp
+    val size = (screenHeight * 0.12).dp
     Image(
         painter = painterResource(id = resourceId),
         contentDescription = "Target icon",
