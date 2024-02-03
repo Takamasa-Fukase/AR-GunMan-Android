@@ -54,14 +54,13 @@ fun TopScreen(
         color = colorResource(id = R.color.goldLeaf)
     ) {
         Column(
+            horizontalAlignment = Alignment.End,
             modifier = Modifier
-                .padding(horizontal = 60.dp)
+                .padding(horizontal = 60.dp, vertical = 40.dp)
         ) {
             TitleImage()
             Row {
-                Column(
-                    modifier = Modifier
-                ) {
+                Column {
                     CustomIconButton(
                         screenHeight = screenHeight,
                         title = "Start",
