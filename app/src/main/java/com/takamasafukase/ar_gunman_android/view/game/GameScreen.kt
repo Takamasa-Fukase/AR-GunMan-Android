@@ -28,7 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.takamasafukase.ar_gunman_android.R
 import com.takamasafukase.ar_gunman_android.view.tutorial.TutorialScreen
-import com.takamasafukase.ar_gunman_android.view.tutorial.WeaponChangeScreen
+import com.takamasafukase.ar_gunman_android.view.weaponChange.WeaponChangeScreen
 import com.takamasafukase.ar_gunman_android.viewModel.GameViewModel
 
 @Composable

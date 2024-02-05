@@ -27,7 +27,7 @@ data class NameRegisterViewState(
 
 class NameRegisterViewModel(
     app: Application,
-    private val rankingRepository: RankingRepository,
+    private val rankingRepository: RankingRepository? = null,
     private val rankingUtil: RankingUtil,
     private val params: Params,
 ) : AndroidViewModel(app) {
@@ -84,7 +84,7 @@ class NameRegisterViewModel(
         )
 
         // 登録POST
-        rankingRepository.registerRanking(
+        rankingRepository?.registerRanking(
             ranking = newRanking,
             onCompleted = {
                 // 今回登録したランキングデータと一緒にダイアログを閉じる指示を流す

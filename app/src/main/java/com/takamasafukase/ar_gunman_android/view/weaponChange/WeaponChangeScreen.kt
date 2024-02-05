@@ -1,4 +1,4 @@
-package com.takamasafukase.ar_gunman_android.view.tutorial
+package com.takamasafukase.ar_gunman_android.view.weaponChange
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -30,7 +30,6 @@ import androidx.compose.ui.unit.sp
 import com.takamasafukase.ar_gunman_android.model.WeaponType
 import com.takamasafukase.ar_gunman_android.R
 import com.takamasafukase.ar_gunman_android.utility.CustomDialog
-import com.takamasafukase.ar_gunman_android.view.weaponChange.WeaponListItem
 
 @Composable
 fun WeaponChangeScreen(
@@ -106,7 +105,10 @@ fun WeaponListView(
     }
 }
 
-@Preview(device = Devices.AUTOMOTIVE_1024p, widthDp = 720, heightDp = 360)
+@Preview(device = Devices.AUTOMOTIVE_1024p, widthDp = 640, heightDp = 360)
+@Preview(device = Devices.AUTOMOTIVE_1024p, widthDp = 730, heightDp = 410)
+@Preview(device = Devices.AUTOMOTIVE_1024p, widthDp = 864, heightDp = 359)
+@Preview(device = Devices.AUTOMOTIVE_1024p, widthDp = 869, heightDp = 411)
 @Composable
 fun WeaponChangeScreenPreview() {
     WeaponChangeScreen(

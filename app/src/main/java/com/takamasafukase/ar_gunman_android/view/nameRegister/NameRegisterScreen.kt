@@ -71,202 +71,209 @@ fun NameRegisterScreen(
             onClose(null)
         },
         size = DpSize(
-            width = (screenWidth * 0.54).dp,
-            height = (screenHeight * 0.64).dp,
-        ),
+            width = (screenWidth * 0.5).dp,
+            height = (screenHeight).dp,
+            ),
         content = {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .border(
-                        width = 2.dp,
-                        color = colorResource(id = R.color.paper),
-                        shape = RoundedCornerShape(2)
-                    )
+            Column(
+                verticalArrangement = Arrangement.Center,
             ) {
                 Box(
                     modifier = Modifier
-                        .fillMaxSize()
-                        .padding(all = 5.2.dp)
-                        .background(
-                            color = colorResource(id = R.color.goldLeaf),
-                            shape = RoundedCornerShape(2)
-                        )
+                        .background(Color.Transparent)
                         .border(
-                            width = 1.dp,
+                            width = 2.dp,
                             color = colorResource(id = R.color.paper),
                             shape = RoundedCornerShape(2)
                         )
                 ) {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
+                    Box(
                         modifier = Modifier
-                            .padding(top = 12.dp,)
+                            .padding(all = 5.2.dp)
+                            .background(
+                                color = colorResource(id = R.color.goldLeaf),
+                                shape = RoundedCornerShape(2)
+                            )
+                            .border(
+                                width = 1.dp,
+                                color = colorResource(id = R.color.paper),
+                                shape = RoundedCornerShape(2)
+                            )
                     ) {
-                        Text(
-                            text = "Congratulations!",
-                            color = colorResource(id = R.color.paper),
-                            fontSize = (screenHeight * 0.048).sp,
-                            fontWeight = FontWeight.Bold,
-                            fontFamily = copperplate,
-                        )
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.SpaceEvenly,
+                            modifier = Modifier
+                                .padding(top = 12.dp,)
                         ) {
                             Text(
-                                text = "You're ranked at",
+                                text = "Congratulations!",
                                 color = colorResource(id = R.color.paper),
-                                fontSize = (screenHeight * 0.036).sp,
+                                fontSize = (screenHeight * 0.048).sp,
+                                fontWeight = FontWeight.Bold,
                                 fontFamily = copperplate,
                             )
-                            Text(
-                                text = " ${state.value.rankText} ",
-                                color = colorResource(id = R.color.customBrown1),
-                                fontSize = (screenHeight * 0.046).sp,
-                                fontFamily = copperplate,
-                            )
-                            Text(
-                                text = "in",
-                                color = colorResource(id = R.color.paper),
-                                fontSize = (screenHeight * 0.036).sp,
-                                fontFamily = copperplate,
-                            )
-                        }
-                        Text(
-                            text = "the world!",
-                            color = colorResource(id = R.color.paper),
-                            fontSize = (screenHeight * 0.036).sp,
-                            fontFamily = copperplate,
-                        )
-                        Text(
-                            text = "Score: ${"%.3f".format(state.value.totalScore)}",
-                            color = colorResource(id = R.color.paper),
-                            fontSize = (screenHeight * 0.06).sp,
-                            fontWeight = FontWeight.Black,
-                            fontFamily = copperplate,
-                        )
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier
-                                .padding(start = 24.dp, end = 24.dp, bottom = 16.dp)
-                        ) {
-                            Text(
-                                text = "Name:",
-                                color = colorResource(id = R.color.paper),
-                                fontSize = (screenHeight * 0.036).sp,
-                                fontFamily = copperplate,
-                            )
-                            CustomTextField(
-                                value = state.value.nameInputText,
-                                onValueChange = {
-                                    viewModel.onChangeNameText(it)
-                                },
-                                colors = TextFieldDefaults.textFieldColors(
-                                    textColor = colorResource(id = R.color.paper),
-                                    backgroundColor = colorResource(id = R.color.customBrown1),
-                                    cursorColor = colorResource(id = R.color.paper),
-                                    focusedIndicatorColor = Color.Transparent,
-                                    unfocusedIndicatorColor = Color.Transparent,
-                                    disabledIndicatorColor = Color.Transparent,
-                                ),
-                                cursorBrush = SolidColor(colorResource(id = R.color.paper)),
-                                textStyle = TextStyle(
-                                    color = colorResource(id = R.color.paper),
-                                    fontFamily = copperplate,
-                                ),
-                                shape = RoundedCornerShape(12),
-                                singleLine = true,
-                                trailingIcon = {
-                                    if (state.value.nameInputText.isNotEmpty()) {
-                                        IconButton(
-                                            onClick = {
-                                                viewModel.onChangeNameText("")
-                                            }
-                                        ) {
-                                            Icon(
-                                                imageVector = Icons.Outlined.Close,
-                                                contentDescription = null,
-                                            )
-                                        }
-                                    }
-                                },
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(40.dp)
-                                    .padding(start = 8.dp),
-                            )
-                        }
-                        Spacer(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(1.dp)
-                                .background(color = colorResource(id = R.color.blackSteel))
-                        )
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceEvenly,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                        ) {
-                            TextButton(
-                                onClick = {
-                                    viewModel.onTapNoThanksButton()
-                                },
-                                modifier = Modifier
-                                    .weight(1f)
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Text(
-                                    text = "No, thanks",
-                                    color = Color.DarkGray,
-                                    fontSize = (screenHeight * 0.040).sp,
-                                    fontWeight = FontWeight.Bold,
+                                    text = "You're ranked at",
+                                    color = colorResource(id = R.color.paper),
+                                    fontSize = (screenHeight * 0.036).sp,
                                     fontFamily = copperplate,
+                                )
+                                Text(
+                                    text = " ${state.value.rankText} ",
+                                    color = colorResource(id = R.color.customBrown1),
+                                    fontSize = (screenHeight * 0.046).sp,
+                                    fontFamily = copperplate,
+                                )
+                                Text(
+                                    text = "in",
+                                    color = colorResource(id = R.color.paper),
+                                    fontSize = (screenHeight * 0.036).sp,
+                                    fontFamily = copperplate,
+                                )
+                            }
+                            Text(
+                                text = "the world!",
+                                color = colorResource(id = R.color.paper),
+                                fontSize = (screenHeight * 0.036).sp,
+                                fontFamily = copperplate,
+                            )
+                            Text(
+                                text = "Score: ${"%.3f".format(state.value.totalScore)}",
+                                color = colorResource(id = R.color.paper),
+                                fontSize = (screenHeight * 0.066).sp,
+                                fontWeight = FontWeight.Black,
+                                fontFamily = copperplate,
+                            )
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier
+                                    .padding(start = 24.dp, end = 24.dp, bottom = 16.dp)
+                            ) {
+                                Text(
+                                    text = "Name:",
+                                    color = colorResource(id = R.color.paper),
+                                    fontSize = (screenHeight * 0.036).sp,
+                                    fontFamily = copperplate,
+                                )
+                                CustomTextField(
+                                    value = state.value.nameInputText,
+                                    onValueChange = {
+                                        viewModel.onChangeNameText(it)
+                                    },
+                                    colors = TextFieldDefaults.textFieldColors(
+                                        textColor = colorResource(id = R.color.paper),
+                                        backgroundColor = colorResource(id = R.color.customBrown1),
+                                        cursorColor = colorResource(id = R.color.paper),
+                                        focusedIndicatorColor = Color.Transparent,
+                                        unfocusedIndicatorColor = Color.Transparent,
+                                        disabledIndicatorColor = Color.Transparent,
+                                    ),
+                                    cursorBrush = SolidColor(colorResource(id = R.color.paper)),
+                                    textStyle = TextStyle(
+                                        color = colorResource(id = R.color.paper),
+                                        fontFamily = copperplate,
+                                    ),
+                                    shape = RoundedCornerShape(12),
+                                    singleLine = true,
+                                    trailingIcon = {
+                                        if (state.value.nameInputText.isNotEmpty()) {
+                                            IconButton(
+                                                onClick = {
+                                                    viewModel.onChangeNameText("")
+                                                }
+                                            ) {
+                                                Icon(
+                                                    imageVector = Icons.Outlined.Close,
+                                                    contentDescription = null,
+                                                )
+                                            }
+                                        }
+                                    },
                                     modifier = Modifier
-                                        .wrapContentSize(align = Alignment.Center, unbounded = true)
-                                        .padding(bottom = 4.dp)
+                                        .fillMaxWidth()
+                                        .height(40.dp)
+                                        .padding(start = 8.dp),
                                 )
                             }
                             Spacer(
                                 modifier = Modifier
-                                    .fillMaxHeight()
-                                    .width(1.dp)
+                                    .fillMaxWidth()
+                                    .height(1.dp)
                                     .background(color = colorResource(id = R.color.blackSteel))
                             )
-                            TextButton(
-                                onClick = {
-                                    viewModel.onTapRegisterButton()
-                                },
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceEvenly,
                                 modifier = Modifier
-                                    .fillMaxHeight()
-                                    .weight(1f)
-                            ) {
-                                val buttonColor = if (state.value.nameInputText.isEmpty())
-                                    Color.LightGray
-                                else
-                                    colorResource(id = R.color.blackSteel)
-
-                                if (state.value.isShowLoadingOnRegisterButton) {
-                                    CircularProgressIndicator(
-                                        color = colorResource(id = R.color.paper),
-                                        modifier = Modifier
-                                            .padding(bottom = 4.dp)
-                                            .size(28.dp)
+                                    .fillMaxWidth()
+                                    .height(
+                                        height = (screenHeight * 0.156).dp,
                                     )
-                                }else {
+                            ) {
+                                TextButton(
+                                    onClick = {
+                                        viewModel.onTapNoThanksButton()
+                                    },
+                                    modifier = Modifier
+                                        .weight(1f)
+                                ) {
                                     Text(
-                                        text = "Register!",
-                                        color = buttonColor,
-                                        fontSize = (screenHeight * 0.050).sp,
+                                        text = "No, thanks",
+                                        color = Color.DarkGray,
+                                        fontSize = (screenHeight * 0.040).sp,
                                         fontWeight = FontWeight.Bold,
                                         fontFamily = copperplate,
-                                        textAlign = TextAlign.Center,
                                         modifier = Modifier
-                                            .wrapContentSize(
-                                                align = Alignment.Center,
-                                                unbounded = true
-                                            )
+                                            .wrapContentSize(align = Alignment.Center, unbounded = true)
                                             .padding(bottom = 4.dp)
                                     )
+                                }
+                                Spacer(
+                                    modifier = Modifier
+                                        .fillMaxHeight()
+                                        .width(1.dp)
+                                        .background(color = colorResource(id = R.color.blackSteel))
+                                )
+                                TextButton(
+                                    onClick = {
+                                        viewModel.onTapRegisterButton()
+                                    },
+                                    modifier = Modifier
+                                        .fillMaxHeight()
+                                        .weight(1f)
+                                ) {
+                                    val buttonColor = if (state.value.nameInputText.isEmpty())
+                                        Color.LightGray
+                                    else
+                                        colorResource(id = R.color.blackSteel)
+
+                                    if (state.value.isShowLoadingOnRegisterButton) {
+                                        CircularProgressIndicator(
+                                            color = colorResource(id = R.color.paper),
+                                            modifier = Modifier
+                                                .padding(bottom = 4.dp)
+                                                .size(28.dp)
+                                        )
+                                    }else {
+                                        Text(
+                                            text = "Register!",
+                                            color = buttonColor,
+                                            fontSize = (screenHeight * 0.05).sp,
+                                            fontWeight = FontWeight.Bold,
+                                            fontFamily = copperplate,
+                                            textAlign = TextAlign.Center,
+                                            modifier = Modifier
+                                                .wrapContentSize(
+                                                    align = Alignment.Center,
+                                                    unbounded = true
+                                                )
+                                                .padding(bottom = 4.dp)
+                                        )
+                                    }
                                 }
                             }
                         }
@@ -277,13 +284,16 @@ fun NameRegisterScreen(
     )
 }
 
-@Preview(device = Devices.AUTOMOTIVE_1024p, widthDp = 720, heightDp = 360)
+@Preview(device = Devices.AUTOMOTIVE_1024p, widthDp = 640, heightDp = 360)
+@Preview(device = Devices.AUTOMOTIVE_1024p, widthDp = 730, heightDp = 410)
+@Preview(device = Devices.AUTOMOTIVE_1024p, widthDp = 864, heightDp = 359)
+@Preview(device = Devices.AUTOMOTIVE_1024p, widthDp = 869, heightDp = 411)
 @Composable
 fun NameRegisterScreenPreview() {
     NameRegisterScreen(
         viewModel = NameRegisterViewModel(
             app = Application(),
-            rankingRepository = RankingRepository(),
+//            rankingRepository = RankingRepository(),
             rankingUtil = RankingUtil(),
             params = NameRegisterViewModel.Params(
                 totalScore = 98.765,
