@@ -69,6 +69,7 @@ fun TutorialScreen(
                     state = pagerState,
                     modifier = Modifier
                         .height(pagerViewHeight.dp)
+                        .padding(top = 8.dp)
                         .border(
                             width = 5.dp,
                             color = colorResource(id = R.color.goldLeaf),
