@@ -77,7 +77,6 @@ fun ResultScreen(
     ) {
         Column(
             modifier = Modifier
-                .fillMaxSize()
                 .padding(all = 4.dp)
         ) {
             // 上部のタイトル部分
@@ -92,7 +91,7 @@ fun ResultScreen(
                         color = colorResource(id = R.color.customBrown1),
                         shape = RoundedCornerShape(size = 2.dp)
                     )
-                    .padding(start = 8.dp, top = 8.dp, end = 8.dp, bottom = 8.dp)
+                    .padding(all = 10.dp)
             ) {
                 Box(
                     modifier = Modifier
@@ -149,7 +148,10 @@ fun ResultScreen(
                                 modifier = Modifier
                                     .align(Alignment.BottomCenter)
                             ) {
-                                Spacer(modifier = Modifier.height(8.dp))
+                                Spacer(
+                                    modifier = Modifier
+                                        .height((screenHeight * 0.028).dp)
+                                )
                                 Text(
                                     text = "%.3f".format(totalScore),
                                     color = colorResource(id = R.color.paper),
@@ -202,7 +204,7 @@ fun TitleView() {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(50.dp)
+            .height(44.dp)
     ) {
         Box(
             modifier = Modifier
@@ -344,13 +346,17 @@ fun AnimatedButtonsAndIcon(
     }
 }
 
-@Preview(device = Devices.AUTOMOTIVE_1024p, widthDp = 720, heightDp = 360)
+@Preview(device = Devices.AUTOMOTIVE_1024p, widthDp = 640, heightDp = 360)
+@Preview(device = Devices.AUTOMOTIVE_1024p, widthDp = 730, heightDp = 410)
+@Preview(device = Devices.AUTOMOTIVE_1024p, widthDp = 864, heightDp = 359)
+@Preview(device = Devices.AUTOMOTIVE_1024p, widthDp = 869, heightDp = 411)
 @Composable
 fun ResultScreenPreview() {
     ResultScreen(
         viewModel = ResultViewModel(
             app = Application(),
             audioManager = AudioManager(Application()),
+            rankingRepository = null,
             rankingUtil = RankingUtil(),
         ),
         totalScore = 87.654,

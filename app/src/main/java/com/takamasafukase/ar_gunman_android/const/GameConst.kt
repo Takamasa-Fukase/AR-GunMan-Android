@@ -5,7 +5,7 @@ class GameConst {
     companion object {
         // TODO: 余裕があればUnity側に的の生成指示をAndroid側から送る様にして、引数でこのcountを渡し仕組みに変える。Android側から色々設定を変更できる様にする。
         const val targetCount = 50
-        const val timeCount = 30.00
+        const val timeCount = 01.00
         const val timerUpdateInterval: Long = 10
     }
 }

@@ -25,6 +25,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.takamasafukase.ar_gunman_android.manager.AudioManager
+import com.takamasafukase.ar_gunman_android.repository.RankingRepository
 import com.takamasafukase.ar_gunman_android.view.game.GameActivity
 import com.takamasafukase.ar_gunman_android.viewModel.TopViewModel
 import com.takamasafukase.ar_gunman_android.ui.theme.ARGunManAndroidTheme
@@ -47,6 +48,7 @@ class MainActivity : ComponentActivity() {
         val resultViewModel = ResultViewModel(
             app = application,
             audioManager = audioManager,
+            rankingRepository = RankingRepository(),
             rankingUtil = RankingUtil(),
         )
         val settingViewModel = SettingViewModel()

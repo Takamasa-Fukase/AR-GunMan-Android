@@ -27,7 +27,7 @@ data class NameRegisterViewState(
 
 class NameRegisterViewModel(
     app: Application,
-    private val rankingRepository: RankingRepository? = null,
+    private val rankingRepository: RankingRepository?,
     private val rankingUtil: RankingUtil,
     private val params: Params,
 ) : AndroidViewModel(app) {

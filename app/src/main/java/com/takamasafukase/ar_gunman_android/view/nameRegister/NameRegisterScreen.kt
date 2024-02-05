@@ -293,7 +293,7 @@ fun NameRegisterScreenPreview() {
     NameRegisterScreen(
         viewModel = NameRegisterViewModel(
             app = Application(),
-//            rankingRepository = RankingRepository(),
+            rankingRepository = null,
             rankingUtil = RankingUtil(),
             params = NameRegisterViewModel.Params(
                 totalScore = 98.765,

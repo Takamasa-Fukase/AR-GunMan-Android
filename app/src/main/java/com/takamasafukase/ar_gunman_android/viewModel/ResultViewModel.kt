@@ -28,6 +28,7 @@ data class ResultViewState(
 class ResultViewModel(
     app: Application,
     private val audioManager: AudioManager,
+    private val rankingRepository: RankingRepository?,
     private val rankingUtil: RankingUtil,
 ) : AndroidViewModel(app) {
     private val _state = MutableStateFlow(
@@ -39,7 +40,6 @@ class ResultViewModel(
         )
     )
     val state = _state.asStateFlow()
-    private val rankingRepository = RankingRepository()
     private val rankingListFlow = MutableStateFlow<List<Ranking>>(value = listOf())
     val rankingListEvent = rankingListFlow.asStateFlow()
     val lazyListState = LazyListState()
@@ -100,7 +100,7 @@ class ResultViewModel(
     }
 
     private fun getRankings() {
-        rankingRepository.getRankings(
+        rankingRepository?.getRankings(
             onData = {
                 _state.value = _state.value.copy(rankings = it)
             },
