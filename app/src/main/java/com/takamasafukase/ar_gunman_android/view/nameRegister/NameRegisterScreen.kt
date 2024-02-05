@@ -211,7 +211,7 @@ fun NameRegisterScreen(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .height(
-                                        height = (screenHeight * 0.156).dp,
+                                        height = (screenHeight * 0.15).dp,
                                     )
                             ) {
                                 TextButton(
