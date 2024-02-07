@@ -3,7 +3,6 @@ package com.takamasafukase.ar_gunman_android.view.game
 import android.content.Intent
 import android.hardware.SensorManager
 import android.os.Bundle
-import android.util.Log
 import android.widget.FrameLayout
 import androidx.activity.ComponentActivity
 import androidx.compose.ui.platform.ComposeView
@@ -84,5 +83,10 @@ class GameActivity : ComponentActivity() {
     override fun onResume() {
         super.onResume()
         unityPlayer?.resume()
+    }
+
+    override fun onDestroy() {
+        unityPlayer?.destroy()
+        super.onDestroy()
     }
 }

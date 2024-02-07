@@ -25,6 +25,7 @@
         </activity>
         <activity
             android:name=".view.game.GameActivity"
+            android:process=":UnityKillsMe"
             android:parentActivityName=".MainActivity"
             android:screenOrientation="landscape" />
     </application>
