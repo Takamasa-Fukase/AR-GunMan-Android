@@ -17,6 +17,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
+import androidx.lifecycle.Lifecycle
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.navigation.NavType
 import androidx.navigation.activity
@@ -30,6 +31,7 @@ import com.takamasafukase.ar_gunman_android.view.game.GameActivity
 import com.takamasafukase.ar_gunman_android.viewModel.TopViewModel
 import com.takamasafukase.ar_gunman_android.ui.theme.ARGunManAndroidTheme
 import com.takamasafukase.ar_gunman_android.utility.ErrorAlertDialog
+import com.takamasafukase.ar_gunman_android.utility.ObserveLifecycleEvent
 import com.takamasafukase.ar_gunman_android.utility.RankingUtil
 import com.takamasafukase.ar_gunman_android.view.result.ResultScreen
 import com.takamasafukase.ar_gunman_android.view.setting.SettingScreen
@@ -79,6 +81,28 @@ fun RootCompose(
     val navController = rememberNavController()
     val context = LocalContext.current
     var receivedErrorMessage by remember { mutableStateOf<String?>(null) }
+    var isBackFromGame by remember { mutableStateOf<Boolean>(false) }
+
+    ObserveLifecycleEvent { event ->
+        // 検出したイベントに応じた処理を実装する。
+        when (event) {
+            Lifecycle.Event.ON_RESUME -> {
+                if (isBackFromGame) {
+                    Log.d("Android", "ログAndroid: MainActivity isBackFromGame=true")
+                    isBackFromGame = false
+                    navController.navigate("result/98.765")
+
+                }else {
+                    Log.d("Android", "ログAndroid: MainActivity isBackFromGame=false")
+
+                }
+            }
+            Lifecycle.Event.ON_PAUSE -> {
+
+            }
+            else -> {}
+        }
+    }
 
     NavHost(
         navController = navController,
@@ -92,6 +116,7 @@ fun RootCompose(
                 },
                 toGame = {
                     navController.navigate("game")
+                    isBackFromGame = true
                 },
             )
         }
