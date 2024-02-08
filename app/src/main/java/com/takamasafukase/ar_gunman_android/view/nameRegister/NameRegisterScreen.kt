@@ -247,7 +247,7 @@ fun NameRegisterScreen(
                                         .weight(1f)
                                 ) {
                                     val buttonColor = if (state.value.nameInputText.isEmpty())
-                                        Color.LightGray
+                                        colorResource(id = R.color.blackSteel).copy(alpha = 0.1f)
                                     else
                                         colorResource(id = R.color.blackSteel)
 

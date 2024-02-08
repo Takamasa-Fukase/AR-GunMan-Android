@@ -72,6 +72,9 @@ class NameRegisterViewModel(
     }
 
     fun onTapRegisterButton() {
+        // 名前未入力の場合は弾く
+        if (_state.value.nameInputText.isEmpty()) { return }
+
         // ボタン上にインジケータ表示
         _state.value = _state.value.copy(
             isShowLoadingOnRegisterButton = true
