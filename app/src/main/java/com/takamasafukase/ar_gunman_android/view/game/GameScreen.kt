@@ -73,7 +73,7 @@ fun GameScreen(
                     .size(width = (screenWidth / 7.5).dp, height = (screenHeight / 8).dp)
                     .offset(x = (screenWidth / 20).dp, y = (screenHeight / 13.3).dp)
                     .background(
-                        color = colorResource(id = R.color.goldLeaf),
+                        color = colorResource(id = R.color.goldLeaf).copy(alpha = 0.6f),
                         shape = RoundedCornerShape(6.dp)
                     )
                     .border(
