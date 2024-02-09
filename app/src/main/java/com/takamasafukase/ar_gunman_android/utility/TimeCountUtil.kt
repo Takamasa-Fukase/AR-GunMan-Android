@@ -20,7 +20,7 @@ class TimeCountUtil {
         while (currentCoroutineContext().isActive) {
             val elapsedMillis = java.util.concurrent.TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startTime)
             // 0よりは下回らない様にする
-            val remainingTime = max((timerDuration.toDouble()) - (elapsedMillis.toDouble()), 0.00) / 1000.0
+            val remainingTime = max((timerDuration) - (elapsedMillis.toDouble()), 0.00) / 1000.0
             emit(remainingTime)
             delay(interval)
         }
