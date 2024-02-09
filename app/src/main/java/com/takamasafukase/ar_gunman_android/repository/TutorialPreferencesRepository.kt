@@ -16,6 +16,12 @@ class TutorialPreferencesRepository(
         }
     }
 
+    suspend fun clearTutorialSeenStatus() {
+        context.dataStore.edit {
+            it.remove(PrefDataStoreKey.isTutorialAlreadySeen)
+        }
+    }
+
     suspend fun getTutorialSeenStatus(onData: (Boolean) -> Unit) {
         context.dataStore.data
             .map { it[PrefDataStoreKey.isTutorialAlreadySeen] ?: false }

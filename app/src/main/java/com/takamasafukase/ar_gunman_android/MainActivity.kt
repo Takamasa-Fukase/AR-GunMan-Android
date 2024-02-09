@@ -18,9 +18,11 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.core.app.AppLaunchChecker
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
+import androidx.lifecycle.coroutineScope
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.navigation.NavType
 import androidx.navigation.activity
@@ -30,6 +32,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.takamasafukase.ar_gunman_android.manager.AudioManager
 import com.takamasafukase.ar_gunman_android.repository.RankingRepository
+import com.takamasafukase.ar_gunman_android.repository.TutorialPreferencesRepository
 import com.takamasafukase.ar_gunman_android.view.game.GameActivity
 import com.takamasafukase.ar_gunman_android.viewModel.TopViewModel
 import com.takamasafukase.ar_gunman_android.ui.theme.ARGunManAndroidTheme
@@ -40,6 +43,7 @@ import com.takamasafukase.ar_gunman_android.view.setting.SettingScreen
 import com.takamasafukase.ar_gunman_android.view.top.TopScreen
 import com.takamasafukase.ar_gunman_android.viewModel.ResultViewModel
 import com.takamasafukase.ar_gunman_android.viewModel.SettingViewModel
+import kotlinx.coroutines.launch
 
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "app_setting_preferences")
 
@@ -81,6 +85,14 @@ class MainActivity : ComponentActivity() {
         }
 
         requestPermissionLauncher.launch(Manifest.permission.CAMERA)
+
+        // 初回起動の場合はチュートリアル通過フラグをクリアする
+        if (!AppLaunchChecker.hasStartedFromLauncher(application)) {
+            lifecycle.coroutineScope.launch {
+                TutorialPreferencesRepository(application).clearTutorialSeenStatus()
+            }
+        }
+        AppLaunchChecker.onActivityCreate(this)
     }
 
     private fun showDeviceSetting() {
