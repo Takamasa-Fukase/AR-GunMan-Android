@@ -1,8 +1,12 @@
 package com.takamasafukase.ar_gunman_android.viewModel
 
+import android.Manifest
+import android.app.Application
+import android.content.pm.PackageManager
 import android.os.Handler
 import android.os.Looper
-import androidx.lifecycle.ViewModel
+import androidx.core.content.ContextCompat
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.takamasafukase.ar_gunman_android.manager.AudioManager
 import com.takamasafukase.ar_gunman_android.R
@@ -14,11 +18,13 @@ data class TopViewState(
     val settingsButtonImageResourceId: Int,
     val howToPlayButtonImageResourceId: Int,
     val isShowTutorialDialog: Boolean,
+    val isShowPermissionDescriptionDialog: Boolean,
 )
 
 class TopViewModel(
+    app: Application,
     private val audioManager: AudioManager
-) : ViewModel() {
+) : AndroidViewModel(app) {
 
     sealed class IconButtonType {
         object Start : IconButtonType()
@@ -32,6 +38,7 @@ class TopViewModel(
             settingsButtonImageResourceId = R.drawable.target_icon,
             howToPlayButtonImageResourceId = R.drawable.target_icon,
             isShowTutorialDialog = false,
+            isShowPermissionDescriptionDialog = false,
         )
     )
     val state = _state.asStateFlow()
@@ -40,6 +47,8 @@ class TopViewModel(
     val showGame = _showGame.asSharedFlow()
     private val _showSetting = MutableSharedFlow<Unit>()
     val showSetting = _showSetting.asSharedFlow()
+    private val _showDeviceSetting = MutableSharedFlow<Unit>()
+    val showDeviceSetting = _showDeviceSetting.asSharedFlow()
 
     fun onTapStartButton() {
         switchButtonIconAndRevert(type = IconButtonType.Start)
@@ -55,6 +64,17 @@ class TopViewModel(
 
     fun onCloseTutorialDialog() {
         _state.value = _state.value.copy(isShowTutorialDialog = false)
+    }
+
+    fun onTapConfirmButtonOfPermissionDescriptionDialog() {
+        viewModelScope.launch {
+            _showDeviceSetting.emit(Unit)
+            _state.value = _state.value.copy(isShowPermissionDescriptionDialog = false)
+        }
+    }
+
+    fun onClosePermissionDescriptionDialog() {
+        _state.value = _state.value.copy(isShowPermissionDescriptionDialog = false)
     }
 
     private fun switchButtonIconAndRevert(type: IconButtonType) {
@@ -90,7 +110,7 @@ class TopViewModel(
             viewModelScope.launch {
                 when (type) {
                     IconButtonType.Start -> {
-                        _showGame.emit(Unit)
+                        checkCameraUsagePermission()
                     }
                     IconButtonType.Settings -> {
                         _showSetting.emit(Unit)
@@ -101,5 +121,15 @@ class TopViewModel(
                 }
             }
         }, 500)
+    }
+
+    private fun checkCameraUsagePermission() {
+        if (ContextCompat.checkSelfPermission(getApplication(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+            viewModelScope.launch {
+                _showGame.emit(Unit)
+            }
+        }else {
+            _state.value = _state.value.copy(isShowPermissionDescriptionDialog = true)
+        }
     }
 }

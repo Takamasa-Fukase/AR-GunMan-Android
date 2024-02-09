@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.sp
 import com.takamasafukase.ar_gunman_android.R
 import com.takamasafukase.ar_gunman_android.manager.AudioManager
 import com.takamasafukase.ar_gunman_android.ui.theme.copperplate
+import com.takamasafukase.ar_gunman_android.utility.CameraPermissionDescriptionDialog
 import com.takamasafukase.ar_gunman_android.view.tutorial.TutorialScreen
 import com.takamasafukase.ar_gunman_android.viewModel.TopViewModel
 
@@ -30,12 +31,14 @@ fun TopScreen(
     viewModel: TopViewModel,
     toGame: () -> Unit,
     toSetting: () -> Unit,
+    showDeviceSetting: () -> Unit,
 ) {
     val screenWidth = LocalConfiguration.current.screenWidthDp
     val screenHeight = LocalConfiguration.current.screenHeightDp
     val state = viewModel.state.collectAsState()
     val showGameEvent = viewModel.showGame.collectAsState(initial = null)
     val showSettingEvent = viewModel.showSetting.collectAsState(initial = null)
+    val showDeviceSettingEvent = viewModel.showDeviceSetting.collectAsState(initial = null)
 
     LaunchedEffect(showGameEvent.value) {
         showGameEvent.value?.let {
@@ -46,6 +49,12 @@ fun TopScreen(
     LaunchedEffect(showSettingEvent.value) {
         showSettingEvent.value?.let {
             toSetting()
+        }
+    }
+
+    LaunchedEffect(showDeviceSettingEvent.value) {
+        showDeviceSettingEvent.value?.let {
+            showDeviceSetting()
         }
     }
 
@@ -104,6 +113,18 @@ fun TopScreen(
             TutorialScreen(
                 onClose = {
                     viewModel.onCloseTutorialDialog()
+                }
+            )
+        }
+
+        // カメラ権限の再設定を促すダイアログ
+        if (state.value.isShowPermissionDescriptionDialog) {
+            CameraPermissionDescriptionDialog(
+                onTapConfirmButton = {
+                    viewModel.onTapConfirmButtonOfPermissionDescriptionDialog()
+                },
+                onDismissRequest = {
+                    viewModel.onClosePermissionDescriptionDialog()
                 }
             )
         }
@@ -202,8 +223,12 @@ fun TargetImage(resourceId: Int, screenHeight: Int) {
 @Composable
 fun TopScreenPreview() {
     TopScreen(
-        viewModel = TopViewModel(AudioManager(Application())),
+        viewModel = TopViewModel(
+            app = Application(),
+            audioManager = AudioManager(Application()),
+        ),
         toGame = {},
-        toSetting = {}
+        toSetting = {},
+        showDeviceSetting = {},
     )
 }

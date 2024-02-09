@@ -6,8 +6,12 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
 import android.util.Log
+import android.Manifest
+import android.net.Uri
+import android.provider.Settings
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
@@ -40,11 +44,16 @@ import com.takamasafukase.ar_gunman_android.viewModel.SettingViewModel
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "app_setting_preferences")
 
 class MainActivity : ComponentActivity() {
+    private val requestPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) {}
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         val audioManager = AudioManager(context = application)
-        val topViewModel = TopViewModel(audioManager = audioManager)
+        val topViewModel = TopViewModel(
+            app = application,
+            audioManager = audioManager,
+        )
         val resultViewModel = ResultViewModel(
             app = application,
             audioManager = audioManager,
@@ -63,10 +72,21 @@ class MainActivity : ComponentActivity() {
                         topViewModel = topViewModel,
                         resultViewModel = resultViewModel,
                         settingViewModel = settingViewModel,
+                        showDeviceSetting = {
+                            showDeviceSetting()
+                        }
                     )
                 }
             }
         }
+
+        requestPermissionLauncher.launch(Manifest.permission.CAMERA)
+    }
+
+    private fun showDeviceSetting() {
+        val uriString = "package:$packageName"
+        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse(uriString))
+        startActivity(intent)
     }
 }
 
@@ -75,6 +95,7 @@ fun RootCompose(
     topViewModel: TopViewModel,
     resultViewModel: ResultViewModel,
     settingViewModel: SettingViewModel,
+    showDeviceSetting: () -> Unit,
 ) {
     val navController = rememberNavController()
     val context = LocalContext.current
@@ -87,11 +108,14 @@ fun RootCompose(
         composable("top") {
             TopScreen(
                 viewModel = topViewModel,
+                toGame = {
+                    navController.navigate("game")
+                },
                 toSetting = {
                     navController.navigate("setting")
                 },
-                toGame = {
-                    navController.navigate("game")
+                showDeviceSetting = {
+                    showDeviceSetting()
                 },
             )
         }
