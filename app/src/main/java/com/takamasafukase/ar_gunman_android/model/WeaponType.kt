@@ -27,7 +27,8 @@ enum class WeaponType(
         firingSoundResourceId = R.raw.bazooka_shoot,
         reloadSoundResourceId = R.raw.bazooka_reload,
         weaponIconResourceId = R.drawable.rocket_launcher,
-        ),
+    ),
+
     // TODO: 武器追加時に値を入れる
     RIFLE(
         bulletsCapacity = 0,
@@ -36,7 +37,7 @@ enum class WeaponType(
         firingSoundResourceId = 0,
         reloadSoundResourceId = 0,
         weaponIconResourceId = R.drawable.rifle,
-        ),
+    ),
     SHOT_GUN(
         bulletsCapacity = 0,
         hitPoint = 0.0,
@@ -44,7 +45,7 @@ enum class WeaponType(
         firingSoundResourceId = 0,
         reloadSoundResourceId = 0,
         weaponIconResourceId = R.drawable.shot_gun,
-        ),
+    ),
     SNIPER_RIFLE(
         bulletsCapacity = 0,
         hitPoint = 0.0,
@@ -52,7 +53,7 @@ enum class WeaponType(
         firingSoundResourceId = 0,
         reloadSoundResourceId = 0,
         weaponIconResourceId = R.drawable.sniper_rifle,
-        ),
+    ),
     MINI_GUN(
         bulletsCapacity = 0,
         hitPoint = 0.0,
@@ -60,9 +61,9 @@ enum class WeaponType(
         firingSoundResourceId = 0,
         reloadSoundResourceId = 0,
         weaponIconResourceId = R.drawable.mini_gun,
-        );
+    );
 
-    fun getBulletsCountImageResourceId(count: Int) : Int {
+    fun getBulletsCountImageResourceId(count: Int): Int {
         return when (this) {
             PISTOL -> {
                 when (count) {
@@ -77,6 +78,7 @@ enum class WeaponType(
                     else -> 0
                 }
             }
+
             BAZOOKA -> {
                 when (count) {
                     0 -> R.drawable.bazooka_rocket_0
@@ -84,6 +86,7 @@ enum class WeaponType(
                     else -> 0
                 }
             }
+
             else -> 0
         }
     }

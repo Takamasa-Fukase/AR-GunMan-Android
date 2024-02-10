@@ -50,7 +50,7 @@ class CurrentWeapon(
         }
         if (weaponTypeFlow.value != WeaponType.BAZOOKA) {
             // バズーカじゃない場合はリロード音声を再生
-            audioManager.playSound(R.raw.pistol_reload)
+            audioManager.playSound(weaponTypeFlow.value.reloadSoundResourceId)
         }
         // 弾数を補充
         bulletsHolder.refillBulletsCount()
