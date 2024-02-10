@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.datastore.preferences.core.edit
 import com.takamasafukase.ar_gunman_android.const.PrefDataStoreKey
 import com.takamasafukase.ar_gunman_android.dataStore
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.first
 
 
 class TutorialPreferencesRepository(
@@ -23,10 +23,8 @@ class TutorialPreferencesRepository(
     }
 
     suspend fun getTutorialSeenStatus(onData: (Boolean) -> Unit) {
-        context.dataStore.data
-            .map { it[PrefDataStoreKey.isTutorialAlreadySeen] ?: false }
-            .collect {
-                onData(it)
-            }
+        val pref = context.dataStore.data.first()
+        val result = pref[PrefDataStoreKey.isTutorialAlreadySeen] ?: false
+        onData(result)
     }
 }
