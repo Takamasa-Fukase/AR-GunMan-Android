@@ -3,12 +3,10 @@ package com.takamasafukase.ar_gunman_android.viewModel
 import android.app.Application
 import android.content.Intent
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.takamasafukase.ar_gunman_android.entity.Ranking
 import com.takamasafukase.ar_gunman_android.repository.RankingRepository
-import com.takamasafukase.ar_gunman_android.utility.DebugLogUtil
 import com.takamasafukase.ar_gunman_android.utility.RankingUtil
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow

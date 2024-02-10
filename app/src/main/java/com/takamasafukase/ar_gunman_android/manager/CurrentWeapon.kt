@@ -1,6 +1,5 @@
 package com.takamasafukase.ar_gunman_android.manager
 
-import android.util.Log
 import com.takamasafukase.ar_gunman_android.R
 import com.takamasafukase.ar_gunman_android.model.WeaponType
 import kotlinx.coroutines.CoroutineScope
@@ -35,7 +34,6 @@ class CurrentWeapon(
         // 現在の武器の発砲音声を再生
         audioManager.playSound(weaponTypeFlow.value.firingSoundResourceId)
         // 弾数を1つ減らす
-        Log.d("Android", "ログAndroid: fire() decrease呼びます")
         bulletsHolder.decreaseBulletsCount()
         CoroutineScope(Dispatchers.Default).launch {
             // 発射されたことを通知
