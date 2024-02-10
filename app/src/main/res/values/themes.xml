@@ -4,5 +4,6 @@
     <style name="Theme.ARGunManAndroid" parent="android:Theme.Material.Light.NoActionBar">
         <item name="android:statusBarColor">@color/goldLeaf</item>
         <item name="android:windowFullscreen">true</item>
+        <item name="android:windowBackground">@color/goldLeaf</item>
     </style>
 </resources>
