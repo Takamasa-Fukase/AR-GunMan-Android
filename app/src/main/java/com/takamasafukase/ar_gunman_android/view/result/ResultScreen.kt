@@ -278,7 +278,6 @@ fun AnimatedButtonsAndIcon(
     val screenWidth = LocalConfiguration.current.screenWidthDp
     val buttonAlpha = animateFloatAsState(
         targetValue = if (isShowButtons) 1f else 0f,
-        label = "",
         animationSpec = tween(
             durationMillis = 600,
         )

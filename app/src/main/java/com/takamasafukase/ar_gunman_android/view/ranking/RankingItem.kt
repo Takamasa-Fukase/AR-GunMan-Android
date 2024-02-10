@@ -155,7 +155,6 @@ fun AnimatedAlphaView() {
     val animatedAlpha by animateFloatAsState(
         targetValue = if (startAnimation) 0.7f else 0f,
         animationSpec = tween(durationMillis = 800),
-        label = "",
     )
 
     LaunchedEffect(Unit) {
