@@ -57,10 +57,12 @@ class GameActivity : ComponentActivity() {
                     ),
                     toResult = { totalScore: Double ->
                         // 通知を送信して、MainActivity内のNavHostでresult画面に切り替える
-                        val intent = Intent("NAVIGATION_EVENT")
+                        val intent = Intent("com.takamasafukase.ar_gunman_android.NAVIGATION_EVENT")
                         intent.putExtra("destination", "result")
                         intent.putExtra("totalScore", totalScore.toString())
-                        LocalBroadcastManager.getInstance(context).sendBroadcast(intent)
+                        // MEMO: UnityPlayerのバグの対策でこのGameActivityは別プロセスで起動している為、
+                        // LocalBroadcastが使えないのでBroadcastを使用している
+                        sendBroadcast(intent)
 
                         // 上記だけだとこのActivityがMainActivity上に被さったままでresult画面が見えないので終了させる
                         finish()

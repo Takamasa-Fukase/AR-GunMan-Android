@@ -207,8 +207,8 @@ fun RootCompose(
         LocalBroadcastManager.getInstance(context).registerReceiver(
             errorNotificationHandler, IntentFilter("ERROR_EVENT")
         )
-        LocalBroadcastManager.getInstance(context).registerReceiver(
-            navigationNotificationHandler, IntentFilter("NAVIGATION_EVENT")
+        context.registerReceiver(
+            navigationNotificationHandler, IntentFilter("com.takamasafukase.ar_gunman_android.NAVIGATION_EVENT")
         )
 
         // onDisposeで通知受信時の処理を解除
@@ -216,7 +216,7 @@ fun RootCompose(
             LocalBroadcastManager.getInstance(context).unregisterReceiver(
                 errorNotificationHandler
             )
-            LocalBroadcastManager.getInstance(context).unregisterReceiver(
+            context.unregisterReceiver(
                 navigationNotificationHandler
             )
         }
