@@ -168,9 +168,15 @@ fun ResultScreen(
                         AnimatedButtonsAndIcon(
                             isShowButtons = state.isShowButtons,
                             onTapReplay = {
+                                // TODO: 暫定対応
+                                viewModel.resetParams()
+
                                 onReplay()
                             },
                             onTapHome = {
+                                // TODO: 暫定対応
+                                viewModel.resetParams()
+
                                 toHome()
                             }
                         )

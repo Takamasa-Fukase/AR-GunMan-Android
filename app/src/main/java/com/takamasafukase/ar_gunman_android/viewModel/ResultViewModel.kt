@@ -99,6 +99,21 @@ class ResultViewModel(
         }
     }
 
+    // TODO: 暫定対応
+    fun resetParams() {
+        Handler(Looper.getMainLooper()).postDelayed({
+            _state.value = _state.value.copy(
+                isShowButtons = false,
+                rankingListHighlightedIndex = null,
+            )
+            viewModelScope.launch {
+                lazyListState.scrollToItem(
+                    index = 0,
+                )
+            }
+        }, 1000)
+    }
+
     private fun getRankings() {
         rankingRepository?.getRankings(
             onData = {
