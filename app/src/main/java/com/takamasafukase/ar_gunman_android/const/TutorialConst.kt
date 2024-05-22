@@ -8,7 +8,7 @@ class TutorialConst {
         val pageContents: List<TutorialPageContent> = listOf(
             TutorialPageContent(
                 titleText = "SHOOT",
-                descriptionText = "PUSH DEVICE AGAINST TARGETS",
+                descriptionText = "PUSH DEVICE TOWARDS TARGETS",
                 imageResourceIds = listOf(
                     R.drawable.how_to_shoot_0,
                     R.drawable.how_to_shoot_1,
