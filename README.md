@@ -2,7 +2,7 @@
 
 [AR-GunMan（iOS）](https://github.com/Takamasa-Fukase/AR-GunMan/tree/main)のAndroid版です。
 
-AR部分のみUnity（C#）で実装し、Unity as a Libraryという仕組みを利用してAndroidネイティブアプリ用のプラグインとして書き出しています。
+AR部分のみUnity（C#）で実装し、Unity as a Libraryという仕組みを利用してAndroidネイティブアプリ用のプラグインとして書き出しています。[（AR-GunMan-Unity）](https://github.com/Takamasa-Fukase/AR-GunMan-Unity)
 
 アプリの土台はKotlinでネイティブ実装し、UI構築にはJetpack composeを利用して一部のゲーム画面にUnityで作成したARコンテンツを組み込んで連携させています。
 
