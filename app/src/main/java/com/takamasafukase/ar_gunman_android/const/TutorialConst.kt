@@ -23,7 +23,7 @@ class TutorialConst {
                 ),
             ),
             TutorialPageContent(
-                titleText = "SWITCH WEAPON",
+                titleText = "CHANGE WEAPON",
                 descriptionText = "TAP THIS ICON",
                 imageResourceIds = listOf(
                     R.drawable.how_to_switch_weapon,
