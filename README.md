@@ -31,4 +31,5 @@ StateFlow + MVVM
 # Author
 
 * Takamasa Fukase (Ultra-Fukase)
-* ultrafukase@gmail.com
+* https://www.instagram.com/takamasa_fukase/
+* https://www.youtube.com/@UltraFukaseGekishibu
