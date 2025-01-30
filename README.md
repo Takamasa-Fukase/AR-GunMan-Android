@@ -1,4 +1,4 @@
-# AR-GunMan
+# AR-GunMan-Android
 
 [AR-GunMan（iOS）](https://github.com/Takamasa-Fukase/AR-GunMan/tree/main)のAndroid版です。
 
