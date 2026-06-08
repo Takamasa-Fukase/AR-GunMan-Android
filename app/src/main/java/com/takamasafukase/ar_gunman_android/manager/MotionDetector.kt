@@ -13,21 +13,25 @@ class MotionDetector(
     ) : SensorEventListener {
     // 発射動作の判定では加速度＋ジャイロも使うので、最新の値としてここに格納して使う
     private var gyroCompositeValue = 0f
-    // センサーがアップデートされた回数を記録（加速度とジャイロで共通）
-    private var sensorUpdatedCount = 0
-    // 前回発射動作を検知して時点でのアップデートカウントがいくつだったかを保持しておく
-    private var previousDetectFiringMotionCount = 0
-    // 前回リロード動作を検知して時点でのアップデートカウントがいくつだったかを保持しておく
-    private var previousDetectReloadingMotionCount = 0
+    private var lastAccelerationProcessedTimeMs = 0L
+    private var lastGyroProcessedTimeMs = 0L
 
     init {
         registerListeners()
     }
 
     override fun onSensorChanged(event: SensorEvent) {
-        // センサーのアップデート回数をインクリメント
-        sensorUpdatedCount++
+
         if (event.sensor.type == Sensor.TYPE_ACCELEROMETER) {
+            val currentTimeMs = System.currentTimeMillis()
+
+            // 前回の処理から「200ms」経つまでは無視
+            if (currentTimeMs - lastAccelerationProcessedTimeMs < 200L) {
+                return
+            }
+            Log.d("Android", "ログAndroid: 🟢🟥200ms経ったので通過")
+            lastAccelerationProcessedTimeMs = currentTimeMs
+
             handleUpdatedAccelerationData(
                 compositeValue = getCompositeValue(
                     x = 0f,
@@ -36,7 +40,17 @@ class MotionDetector(
                 ),
                 gyroZSquaredValue = gyroCompositeValue,
             )
-        } else if (event.sensor.type == Sensor.TYPE_GYROSCOPE) {
+        }
+        if (event.sensor.type == Sensor.TYPE_GYROSCOPE) {
+            val currentTimeMs = System.currentTimeMillis()
+
+            // 前回の処理から「200ms」経つまでは無視
+            if (currentTimeMs - lastGyroProcessedTimeMs < 200L) {
+                return
+            }
+            Log.d("Android", "ログAndroid: 🟢🟦200ms経ったので通過")
+            lastGyroProcessedTimeMs = currentTimeMs
+
             // 加速度の方の判定でジャイロも使うので格納する
             gyroCompositeValue = getCompositeValue(
                 x = 0f,
@@ -58,14 +72,14 @@ class MotionDetector(
         // 加速度Listenerの登録
         val acceleration = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
         if (acceleration != null) {
-            sensorManager.registerListener(this, acceleration, SensorManager.SENSOR_DELAY_UI)
+            sensorManager.registerListener(this, acceleration, SensorManager.SENSOR_DELAY_NORMAL)
         }else {
             Log.d("debug", "TYPE_ACCELEROMETER not supported")
         }
         // ジャイロListenerの登録
         val gyro = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE)
         if (gyro != null) {
-            sensorManager.registerListener(this, gyro, SensorManager.SENSOR_DELAY_UI)
+            sensorManager.registerListener(this, gyro, SensorManager.SENSOR_DELAY_NORMAL)
         } else {
             Log.d("debug", "TYPE_GYROSCOPE not supported")
         }
@@ -75,10 +89,9 @@ class MotionDetector(
         compositeValue: Float,
         gyroZSquaredValue: Float,
     ) {
-        if ((compositeValue >= 300 && gyroZSquaredValue < 10) &&
-            // 前回の発射動作検知から50回のアップデートが経過しているかチェック
-            (sensorUpdatedCount - previousDetectFiringMotionCount >= 50)) {
-            previousDetectFiringMotionCount = sensorUpdatedCount
+        Log.d("Android", "ログAndroid: 🟥onDetectWeaponFiringMotion")
+        if (compositeValue >= 144.25 && gyroZSquaredValue < 10) {
+            Log.d("Android", "ログAndroid: 🟥⭐️onDetectWeaponFiringMotion")
             onDetectWeaponFiringMotion()
         }
     }
@@ -86,10 +99,9 @@ class MotionDetector(
     private fun handleUpdatedGyroData(
         compositeValue: Float,
     ) {
-        if ((compositeValue >= 30) &&
-            // 前回のリロード動作検知から50回のアップデートが経過しているかチェック
-            (sensorUpdatedCount - previousDetectReloadingMotionCount >= 50)) {
-            previousDetectReloadingMotionCount = sensorUpdatedCount
+        Log.d("Android", "ログAndroid: 🟦handleUpdatedGyroData")
+        if (compositeValue >= 10) {
+            Log.d("Android", "ログAndroid: 🟦⭐️onDetectWeaponReloadingMotion")
             onDetectWeaponReloadingMotion()
         }
     }
