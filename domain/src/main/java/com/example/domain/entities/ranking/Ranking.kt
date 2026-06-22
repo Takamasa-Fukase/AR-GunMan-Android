@@ -1,8 +1,6 @@
-package com.takamasafukase.ar_gunman_android.entity
+package com.example.domain.entities.ranking
 
 data class Ranking(
     val user_name: String = "",
     val score: Double = 0.0,
 )
-
-

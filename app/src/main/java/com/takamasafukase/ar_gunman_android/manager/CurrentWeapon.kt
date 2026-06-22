@@ -27,7 +27,7 @@ class CurrentWeapon(
         if (!bulletsHolder.getCanFire()) {
             // 弾切れ状態でバズーカ以外なら弾切れ音声を再生してreturn
             if (weaponTypeFlow.value != WeaponType.BAZOOKA) {
-                audioManager.playSound(R.raw.pistol_out_bullets)
+                audioManager.playSound(R.raw.pistol_out_of_bullets)
             }
             return
         }

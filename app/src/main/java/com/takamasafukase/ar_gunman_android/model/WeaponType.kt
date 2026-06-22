@@ -15,7 +15,7 @@ enum class WeaponType(
     PISTOL(
         bulletsCapacity = 7,
         hitPoint = 5.0,
-        setSoundResourceId = R.raw.pistol_slide,
+        setSoundResourceId = R.raw.pistol_appear,
         firingSoundResourceId = R.raw.pistol_fire,
         reloadSoundResourceId = R.raw.pistol_reload,
         weaponIconResourceId = R.drawable.pistol,
@@ -23,8 +23,8 @@ enum class WeaponType(
     BAZOOKA(
         bulletsCapacity = 1,
         hitPoint = 12.0,
-        setSoundResourceId = R.raw.bazooka_set,
-        firingSoundResourceId = R.raw.bazooka_shoot,
+        setSoundResourceId = R.raw.bazooka_appear,
+        firingSoundResourceId = R.raw.bazooka_fire,
         reloadSoundResourceId = R.raw.bazooka_reload,
         weaponIconResourceId = R.drawable.rocket_launcher,
     ),

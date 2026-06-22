@@ -2,9 +2,7 @@ package com.takamasafukase.ar_gunman_android.viewModel
 
 import android.app.Application
 import android.content.Intent
-import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.ViewModel
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.takamasafukase.ar_gunman_android.entity.Ranking
 import com.takamasafukase.ar_gunman_android.repository.RankingRepository

@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -44,7 +43,6 @@ import androidx.compose.ui.unit.sp
 import com.takamasafukase.ar_gunman_android.utility.CustomDialog
 import com.takamasafukase.ar_gunman_android.R
 import com.takamasafukase.ar_gunman_android.entity.Ranking
-import com.takamasafukase.ar_gunman_android.repository.RankingRepository
 import com.takamasafukase.ar_gunman_android.ui.theme.copperplate
 import com.takamasafukase.ar_gunman_android.utility.CustomTextField
 import com.takamasafukase.ar_gunman_android.utility.RankingUtil

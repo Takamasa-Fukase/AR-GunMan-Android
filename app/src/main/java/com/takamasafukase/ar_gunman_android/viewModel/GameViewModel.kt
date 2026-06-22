@@ -294,7 +294,7 @@ class GameViewModel(
 
     private fun handleTargetHit() {
         // ターゲットヒット時の音声を再生
-        audioManager.playSound(R.raw.head_shot)
+        audioManager.playSound(R.raw.target_hit)
         // 現在の武器に応じた得点の加算処理を行わせる
         scoreCounter.addScore(weaponType = currentWeapon.weaponTypeChanged.value)
     }

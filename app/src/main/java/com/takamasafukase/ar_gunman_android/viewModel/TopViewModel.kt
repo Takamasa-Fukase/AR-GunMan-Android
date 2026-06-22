@@ -79,7 +79,7 @@ class TopViewModel(
 
     private fun switchButtonIconAndRevert(type: IconButtonType) {
         // ウエスタン風な銃声の再生
-        audioManager.playSound(R.raw.western_pistol_shoot)
+        audioManager.playSound(R.raw.western_pistol_fire)
         // 対象のボタンに弾痕の画像を表示
         when (type) {
             IconButtonType.Start -> {
