@@ -1,5 +1,7 @@
 package com.example.domain.entities.weapon
 
+import com.example.domain.entities.soundType.SoundType
+
 enum class ColorType {
     RED,
     GREEN,

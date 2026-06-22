@@ -1,4 +1,4 @@
-package com.example.domain.entities.weapon
+package com.example.domain.entities.soundType
 
 enum class SoundType(
     val rawValue: String
