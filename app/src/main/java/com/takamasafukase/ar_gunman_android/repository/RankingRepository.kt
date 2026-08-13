@@ -6,7 +6,7 @@ import android.util.Log
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import com.takamasafukase.ar_gunman_android.entity.Ranking
+import com.example.domain.entities.ranking.Ranking
 
 class RankingRepository {
     private val db = Firebase.firestore

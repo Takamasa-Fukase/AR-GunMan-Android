@@ -5,7 +5,7 @@ import android.content.Intent
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
-import com.takamasafukase.ar_gunman_android.entity.Ranking
+import com.example.domain.entities.ranking.Ranking
 import com.takamasafukase.ar_gunman_android.repository.RankingRepository
 import com.takamasafukase.ar_gunman_android.utility.RankingUtil
 import kotlinx.coroutines.flow.MutableSharedFlow
