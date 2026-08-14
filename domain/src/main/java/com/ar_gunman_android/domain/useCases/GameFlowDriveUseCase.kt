@@ -25,6 +25,7 @@ interface GameFlowDriveUseCaseInterface {
 class GameFlowDriveUseCase(
     private val tutorialRepository: TutorialRepositoryInterface,
     private val gameStore: GameStoreInterface,
+    private val scope: CoroutineScope,
 ) : GameFlowDriveUseCaseInterface {
     override val statusStream: SharedFlow<GameFlowStatus> get() = _statusStream.asSharedFlow()
 
@@ -75,13 +76,15 @@ class GameFlowDriveUseCase(
             }
 
             GameFlowStatus.WaitingForTimerStart -> {
-                // 1.5秒待機
-                delay(timeMillis = 1500)
-                updateAndHandleNextStatus(nextStatus = GameFlowStatus.TimerStartedAndWaitingForTimerEnd)
+                scope.launch {
+                    // 1.5秒待機
+                    delay(timeMillis = 1500)
+                    updateAndHandleNextStatus(nextStatus = GameFlowStatus.TimerStartedAndWaitingForTimerEnd)
+                }
             }
 
             GameFlowStatus.TimerStartedAndWaitingForTimerEnd, GameFlowStatus.TimerResumedAndWaitingForTimerEnd -> {
-                timerJob = CoroutineScope(context = Dispatchers.Default).launch {
+                timerJob = scope.launch {
                     while (currentCoroutineContext().isActive) {
                         if (gameStore.timeCount.isTimeUp) {
                             updateAndHandleNextStatus(nextStatus = GameFlowStatus.TimerEndedAndWaitingForFlowEnd)
@@ -97,9 +100,11 @@ class GameFlowDriveUseCase(
             }
 
             GameFlowStatus.TimerEndedAndWaitingForFlowEnd -> {
-                // 1.5秒待機
-                delay(timeMillis = 1500)
-                updateAndHandleNextStatus(nextStatus = GameFlowStatus.FlowEnded)
+                scope.launch {
+                    // 1.5秒待機
+                    delay(timeMillis = 1500)
+                    updateAndHandleNextStatus(nextStatus = GameFlowStatus.FlowEnded)
+                }
             }
 
             GameFlowStatus.FlowNotStarted, GameFlowStatus.FlowEnded, is GameFlowStatus.Blocked -> Unit
