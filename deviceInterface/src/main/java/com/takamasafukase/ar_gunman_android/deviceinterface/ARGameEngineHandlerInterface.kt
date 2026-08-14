@@ -1,10 +1,10 @@
-package com.example.domain.serviceInterfaces
+package com.takamasafukase.ar_gunman_android.deviceinterface
 
 interface ARShootingLibHandlerDelegate {
     fun targetHit()
 }
 
-interface ARShootingLibHandlerInterface {
+interface ARGameEngineHandlerInterface {
     fun inject(delegate: ARShootingLibHandlerDelegate)
     fun runSession()
     fun pauseSession()

@@ -1,4 +1,4 @@
-package com.example.domain.serviceInterfaces
+package com.takamasafukase.ar_gunman_android.deviceinterface
 
 interface CameraPermissionHandlerInterface {
     fun getCameraUsagePermissionGrantedFlag(): Boolean

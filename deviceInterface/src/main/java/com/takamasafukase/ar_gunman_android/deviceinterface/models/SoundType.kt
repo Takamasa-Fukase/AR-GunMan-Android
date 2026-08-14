@@ -1,4 +1,4 @@
-package com.example.domain.entities.soundType
+package com.takamasafukase.ar_gunman_android.deviceinterface.models
 
 enum class SoundType(
     val rawValue: String
