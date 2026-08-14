@@ -20,7 +20,7 @@ sealed interface GameFlowStatus {
 
     enum class BlockedReason {
         TUTORIAL_NOT_COMPLETED,
-        TIMER_PAUSED
+        TIMER_PAUSED;
     }
 
     val isTimerRunning: Boolean
