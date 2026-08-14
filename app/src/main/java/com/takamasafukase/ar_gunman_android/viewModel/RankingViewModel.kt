@@ -4,7 +4,7 @@ import android.app.Application
 import android.content.Intent
 import androidx.lifecycle.AndroidViewModel
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
-import com.example.domain.entities.ranking.Ranking
+import com.ar_gunman_android.domain.entities.ranking.Ranking
 import com.takamasafukase.ar_gunman_android.repository.RankingRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

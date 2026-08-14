@@ -26,7 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.takamasafukase.ar_gunman_android.utility.CustomDialog
 import com.takamasafukase.ar_gunman_android.R
-import com.example.domain.entities.ranking.Ranking
+import com.ar_gunman_android.domain.entities.ranking.Ranking
 import com.takamasafukase.ar_gunman_android.ui.theme.copperplate
 import com.takamasafukase.ar_gunman_android.viewModel.RankingViewModel
 

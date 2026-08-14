@@ -1,6 +1,6 @@
 package com.takamasafukase.ar_gunman_android.utility
 
-import com.example.domain.entities.ranking.Ranking
+import com.ar_gunman_android.domain.entities.ranking.Ranking
 
 class RankingUtil {
     // 何位中/何位の表示テキストを作成
