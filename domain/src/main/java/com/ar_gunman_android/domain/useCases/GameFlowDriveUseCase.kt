@@ -31,18 +31,18 @@ class GameFlowDriveUseCase(
     private var timerJob: Job? = null
 
     override suspend fun start() {
-        if (gameStore.gameFlow.status != GameFlowStatus.FlowNotStarted) return
+        if (gameStore.gameFlow.value.status != GameFlowStatus.FlowNotStarted) return
         updateAndHandleNextStatus(nextStatus = GameFlowStatus.CheckingTutorialCompletedStatus)
     }
 
     override suspend fun pauseTimer() {
-        if (!gameStore.gameFlow.status.isTimerRunning) return
+        if (!gameStore.gameFlow.value.status.isTimerRunning) return
         disposeTimer()
         updateAndHandleNextStatus(nextStatus = GameFlowStatus.Blocked(GameFlowStatus.BlockedReason.TIMER_PAUSED))
     }
 
     override suspend fun resolveBlocked() {
-        val currentStatus = gameStore.gameFlow.status as? GameFlowStatus.Blocked ?: return
+        val currentStatus = gameStore.gameFlow.value.status as? GameFlowStatus.Blocked ?: return
         when (currentStatus.reason) {
             GameFlowStatus.BlockedReason.TUTORIAL_NOT_COMPLETED -> {
                 tutorialRepository.updateTutorialCompletedFlag(isCompleted = true)
@@ -56,7 +56,9 @@ class GameFlowDriveUseCase(
     }
 
     private suspend fun updateAndHandleNextStatus(nextStatus: GameFlowStatus) {
-        gameStore.gameFlow = gameStore.gameFlow.drive(nextStatus = nextStatus)
+        gameStore.updateGameFlow { gameFlow ->
+            gameFlow.drive(nextStatus = nextStatus)
+        }
         handleUpdatedStatus(status = nextStatus)
         _statusStream.emit(nextStatus)
     }
@@ -84,7 +86,7 @@ class GameFlowDriveUseCase(
             GameFlowStatus.TimerStartedAndWaitingForTimerEnd, GameFlowStatus.TimerResumedAndWaitingForTimerEnd -> {
                 timerJob = scope.launch {
                     while (coroutineContext.isActive) {
-                        if (gameStore.timeCount.isTimeUp) {
+                        if (gameStore.timeCount.value.isTimeUp) {
                             updateAndHandleNextStatus(nextStatus = GameFlowStatus.TimerEndedAndWaitingForFlowEnd)
                             disposeTimer()
                             break
@@ -92,7 +94,9 @@ class GameFlowDriveUseCase(
 
                         // タイマー更新間隔の秒数分待機
                         delay(timeMillis = GameTimeCount.updateIntervalMillisec.toLong())
-                        gameStore.timeCount = gameStore.timeCount.decrement()
+                        gameStore.updateTimeCount { timeCount ->
+                            timeCount.decrement()
+                        }
                     }
                 }
             }
