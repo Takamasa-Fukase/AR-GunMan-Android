@@ -5,9 +5,7 @@ import com.ar_gunman_android.domain.entities.game.GameTimeCount
 import com.ar_gunman_android.domain.repositoryInterfaces.TutorialRepositoryInterface
 import com.ar_gunman_android.domain.storeInterfaces.GameStoreInterface
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -85,7 +83,7 @@ class GameFlowDriveUseCase(
 
             GameFlowStatus.TimerStartedAndWaitingForTimerEnd, GameFlowStatus.TimerResumedAndWaitingForTimerEnd -> {
                 timerJob = scope.launch {
-                    while (currentCoroutineContext().isActive) {
+                    while (coroutineContext.isActive) {
                         if (gameStore.timeCount.isTimeUp) {
                             updateAndHandleNextStatus(nextStatus = GameFlowStatus.TimerEndedAndWaitingForFlowEnd)
                             disposeTimer()
