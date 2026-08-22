@@ -26,15 +26,9 @@ interface UnityMessageCenterInterface {
 }
 
 object UnityMessageCenter : UnityMessageCenterInterface {
-    override val targetHitEvent: SharedFlow<Unit> get() = receivedMessageFlow
-        .filter { it.eventType == UnityToAndroidMessageEventType.TARGET_HIT }
-        .map {}
-        .shareIn(
-            scope = CoroutineScope(Dispatchers.Default),
-            started = SharingStarted.WhileSubscribed(5000),
-            replay = 0
-        )
-    private val receivedMessageFlow = MutableSharedFlow<UnityToAndroidMessage>()
+    override val targetHitEvent: SharedFlow<Unit> get() = _targetHitEvent.asSharedFlow()
+    private val _targetHitEvent = MutableSharedFlow<Unit>()
+    private val scope = CoroutineScope(Dispatchers.Default)
 
     override fun sendMessageToUnity(message: AndroidToUnityMessage) {
         // JSON文字列に変換
@@ -50,8 +44,12 @@ object UnityMessageCenter : UnityMessageCenterInterface {
         val fromUnityMessage = Json.decodeFromString<UnityToAndroidMessage>(message)
         Log.d("Android", "ログAndroid: UnityMessageCenter fromUnityMessage: $fromUnityMessage, eventType: ${fromUnityMessage.eventType}")
 
-        CoroutineScope(Dispatchers.Default).launch {
-            receivedMessageFlow.emit(fromUnityMessage)
+        scope.launch {
+            when (fromUnityMessage.eventType) {
+                UnityToAndroidMessageEventType.TARGET_HIT -> {
+                    _targetHitEvent.emit(Unit)
+                }
+            }
         }
     }
 }
