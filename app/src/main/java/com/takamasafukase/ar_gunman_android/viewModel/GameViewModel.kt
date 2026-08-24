@@ -8,19 +8,16 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.takamasafukase.ar_gunman_android.model.AndroidToUnityMessage
 import com.takamasafukase.ar_gunman_android.model.AndroidToUnityMessageEventType
-import com.takamasafukase.ar_gunman_android.model.UnityToAndroidMessage
-import com.takamasafukase.ar_gunman_android.model.UnityToAndroidMessageEventType
 import com.takamasafukase.ar_gunman_android.model.WeaponType
 import com.takamasafukase.ar_gunman_android.manager.AudioManager
 import com.takamasafukase.ar_gunman_android.manager.MotionDetector
 import com.takamasafukase.ar_gunman_android.R
-import com.takamasafukase.ar_gunman_android.UnityToAndroidMessenger
+import com.takamasafukase.ar_gunman_android.UnityMessageCenter
 import com.takamasafukase.ar_gunman_android.manager.CurrentWeapon
 import com.takamasafukase.ar_gunman_android.manager.ScoreCounter
 import com.takamasafukase.ar_gunman_android.manager.TimeCounter
 import com.takamasafukase.ar_gunman_android.repository.TutorialPreferencesRepository
 import com.takamasafukase.ar_gunman_android.utility.TimeCountUtil
-import com.unity3d.player.UnityPlayer
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -30,10 +27,6 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
-import java.lang.ref.WeakReference
 
 data class GameViewState(
     val isLoading: Boolean,
@@ -51,7 +44,7 @@ class GameViewModel(
     private val timeCountUtil: TimeCountUtil,
     private val currentWeapon: CurrentWeapon,
     private val scoreCounter: ScoreCounter,
-) : ViewModel(), UnityToAndroidMessenger.MessageReceiverFromUnity {
+) : ViewModel() {
 
     private lateinit var motionDetector: MotionDetector
     private val _state = MutableStateFlow(
@@ -75,8 +68,14 @@ class GameViewModel(
     init {
         showLoadingToHideUnityLogoSplash()
         handleMotionDetector(sensorManager = sensorManager)
-        // Unityからのメッセージの受け口になるオブジェクトの受け手として自身を弱参照で登録
-        UnityToAndroidMessenger.receiver = WeakReference(this)
+
+        viewModelScope.launch {
+            UnityMessageCenter.targetHitEvent
+                .debounce(50)
+                .collect {
+                    handleTargetHit()
+                }
+        }
 
         viewModelScope.launch {
             _state
@@ -89,14 +88,6 @@ class GameViewModel(
                 .collect {
                     // 初回のロードが終わった最初の1回だけを検知し、チュートリアル状態のチェックをする
                     checkTutorialSeenStatus()
-                }
-        }
-
-        viewModelScope.launch {
-            onReceivedTargetHitEvent
-                .debounce(50)
-                .collect {
-                    handleTargetHit()
                 }
         }
 
@@ -149,10 +140,7 @@ class GameViewModel(
                         eventType = AndroidToUnityMessageEventType.FIRE_WEAPON,
                         weaponType = currentWeapon.weaponTypeChanged.value,
                     )
-                    // JSON文字列に変換
-                    val jsonString = Json.encodeToString(toUnityMessage)
-                    // Unityへ通知を送る
-                    UnityPlayer.UnitySendMessage("XR Origin", "OnReceiveMessageFromAndroid", jsonString)
+                    UnityMessageCenter.sendMessageToUnity(toUnityMessage)
                 }
         }
 
@@ -212,21 +200,6 @@ class GameViewModel(
 
         // ダイアログを閉じる
         onCloseWeaponChangeDialog()
-    }
-
-    override fun onMessageReceivedFromUnity(message: String) {
-        Log.d("Android", "ログAndroid: GameVM onMessageReceivedFromUnity message: $message")
-
-        val fromUnityMessage = Json.decodeFromString<UnityToAndroidMessage>(message)
-        Log.d("Android", "ログAndroid: GameVM fromUnityMessage: $fromUnityMessage, eventType: ${fromUnityMessage.eventType}")
-
-        when (fromUnityMessage.eventType) {
-            UnityToAndroidMessageEventType.TARGET_HIT -> {
-                viewModelScope.launch {
-                    onReceivedTargetHitEvent.emit(Unit)
-                }
-            }
-        }
     }
 
     // Unityビューを起動後にUnityロゴのスプラッシュが出るので、その間は黒背景とインジケータで隠す
