@@ -34,7 +34,11 @@ object UnityMessageCenter : UnityMessageCenterInterface {
         // JSON文字列に変換
         val jsonString = Json.encodeToString(message)
         // Unityへ通知を送る
-        UnityPlayer.UnitySendMessage("XR Origin", "OnReceiveMessageFromAndroid", jsonString)
+        UnityPlayer.UnitySendMessage(
+            "AndroidMessageCenterObject",
+            "OnReceivedMessageFromAndroid",
+            jsonString
+        )
     }
 
     // Unity側から呼び出される
