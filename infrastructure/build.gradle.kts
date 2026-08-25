@@ -21,4 +21,5 @@ dependencies {
     implementation(project(":domain"))
     implementation(project(":deviceInterface"))
     implementation(project(":data"))
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
 }

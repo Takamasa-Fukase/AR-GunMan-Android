@@ -19,4 +19,5 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach 
 
 dependencies {
     implementation(project(":domain"))
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
 }
