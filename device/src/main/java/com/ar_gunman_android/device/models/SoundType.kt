@@ -1,4 +1,4 @@
-package com.ar_gunman_android.deviceinterface.models
+package com.ar_gunman_android.device.models
 
 enum class SoundType(
     val rawValue: String

@@ -1,4 +1,4 @@
-package com.ar_gunman_android.deviceinterface
+package com.ar_gunman_android.device
 
 interface ARShootingLibHandlerDelegate {
     fun targetHit()

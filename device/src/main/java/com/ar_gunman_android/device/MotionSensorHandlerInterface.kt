@@ -1,6 +1,6 @@
-package com.ar_gunman_android.deviceinterface
+package com.ar_gunman_android.device
 
-import com.example.domain.entities.vectorMotionData.VectorMotionData
+import com.ar_gunman_android.domain.entities.vectorMotionData.VectorMotionData
 
 interface MotionSensorHandlerInterface {
     var accelerationUpdated: ((VectorMotionData) -> Unit)?
