@@ -22,9 +22,6 @@ android {
         // 1. Kotlinのバージョン不一致エラーを無視するフラグ
         freeCompilerArgs += listOf("-Xskip-metadata-version-check")
     }
-    buildFeatures {
-        compose = true
-    }
 }
 
 // 2. 推移的依存ライブラリをcompileSdk 33 / Kotlin 1.7互換のバージョンに強制固定
