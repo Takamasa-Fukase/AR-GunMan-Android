@@ -13,9 +13,7 @@
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/data" />
             <option value="$PROJECT_DIR$/device" />
-            <option value="$PROJECT_DIR$/deviceInterface" />
             <option value="$PROJECT_DIR$/domain" />
-            <option value="$PROJECT_DIR$/infrastructure" />
             <option value="$PROJECT_DIR$/unityLibrary" />
             <option value="$PROJECT_DIR$/unityLibrary/xrmanifest.androidlib" />
           </set>
