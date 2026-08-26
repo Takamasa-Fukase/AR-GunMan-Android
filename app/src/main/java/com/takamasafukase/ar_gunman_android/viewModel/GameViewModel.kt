@@ -10,7 +10,6 @@ import com.takamasafukase.ar_gunman_android.model.AndroidToUnityMessage
 import com.takamasafukase.ar_gunman_android.model.AndroidToUnityMessageEventType
 import com.takamasafukase.ar_gunman_android.model.WeaponType
 import com.takamasafukase.ar_gunman_android.manager.AudioManager
-import com.takamasafukase.ar_gunman_android.manager.MotionDetector
 import com.takamasafukase.ar_gunman_android.R
 import com.takamasafukase.ar_gunman_android.UnityMessageCenter
 import com.takamasafukase.ar_gunman_android.manager.CurrentWeapon
