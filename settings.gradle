@@ -15,5 +15,4 @@ dependencyResolutionManagement {
 rootProject.name = "AR-GunMan-Android"
 include ':app', ':unityLibrary', 'unityLibrary:xrmanifest.androidlib'
 include ':domain'
-include ':data'
 include ':device'
