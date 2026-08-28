@@ -1,4 +1,4 @@
-package com.ar_gunman_android.data.stores
+package com.takamasafukase.ar_gunman_android.stores
 
 import com.ar_gunman_android.domain.entities.weapon.Weapon
 import com.ar_gunman_android.domain.storeInterfaces.WeaponStoreInterface
