@@ -1,6 +1,5 @@
 package com.takamasafukase.ar_gunman_android.utility
 
-import com.takamasafukase.ar_gunman_android.const.GameConst
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow

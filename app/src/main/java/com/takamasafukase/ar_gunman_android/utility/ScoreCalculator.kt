@@ -1,6 +1,5 @@
 package com.takamasafukase.ar_gunman_android.utility
 
-import com.takamasafukase.ar_gunman_android.model.WeaponType
 import kotlin.math.min
 import kotlin.random.Random
 

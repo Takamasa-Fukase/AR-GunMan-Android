@@ -31,18 +31,17 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.takamasafukase.ar_gunman_android.manager.AudioManager
-import com.takamasafukase.ar_gunman_android.repository.RankingRepository
-import com.takamasafukase.ar_gunman_android.repository.TutorialPreferencesRepository
-import com.takamasafukase.ar_gunman_android.view.game.GameActivity
-import com.takamasafukase.ar_gunman_android.viewModel.TopViewModel
+import com.takamasafukase.ar_gunman_android.repositoryMock.RankingRepository
+import com.takamasafukase.ar_gunman_android.features.game.GameActivity
+import com.takamasafukase.ar_gunman_android.features.top.TopViewModel
 import com.takamasafukase.ar_gunman_android.ui.theme.ARGunManAndroidTheme
 import com.takamasafukase.ar_gunman_android.utility.ErrorAlertDialog
 import com.takamasafukase.ar_gunman_android.utility.RankingUtil
-import com.takamasafukase.ar_gunman_android.view.result.ResultScreen
-import com.takamasafukase.ar_gunman_android.view.setting.SettingScreen
-import com.takamasafukase.ar_gunman_android.view.top.TopScreen
-import com.takamasafukase.ar_gunman_android.viewModel.ResultViewModel
-import com.takamasafukase.ar_gunman_android.viewModel.SettingViewModel
+import com.takamasafukase.ar_gunman_android.features.result.ResultScreen
+import com.takamasafukase.ar_gunman_android.features.settings.SettingScreen
+import com.takamasafukase.ar_gunman_android.features.top.TopScreen
+import com.takamasafukase.ar_gunman_android.features.result.ResultViewModel
+import com.takamasafukase.ar_gunman_android.features.settings.SettingViewModel
 import kotlinx.coroutines.launch
 
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "app_setting_preferences")

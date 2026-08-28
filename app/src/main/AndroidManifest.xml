@@ -29,7 +29,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".view.game.GameActivity"
+            android:name=".features.game.GameActivity"
             android:process=":UnityKillsMe"
             android:parentActivityName=".MainActivity"
             android:screenOrientation="landscape" />
