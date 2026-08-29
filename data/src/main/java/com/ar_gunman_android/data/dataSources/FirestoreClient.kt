@@ -6,22 +6,18 @@ import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.tasks.await
 
 interface FirestoreClientInterface {
-    suspend fun <R : Any> getItems(collectionPath: String, cls: Class<R>): List<R>
+    suspend fun <R : Any> getItems(collectionPath: String, responseType: Class<R>): List<R>
     suspend fun <R : Any> addItem(collectionPath: String, request: R)
-}
-
-suspend inline fun <reified R : Any> FirestoreClientInterface.getItems(collectionPath: String): List<R> {
-    return getItems(collectionPath, R::class.java)
 }
 
 class FirestoreClient : FirestoreClientInterface {
     private val db = Firebase.firestore
-    override suspend fun <R : Any> getItems(collectionPath: String, cls: Class<R>): List<R> {
+    override suspend fun <R : Any> getItems(collectionPath: String, responseType: Class<R>): List<R> {
         return try {
              db.collection(collectionPath)
                 .get()
                 .await()
-                .toObjects(cls)
+                .toObjects(responseType)
         } catch (error: Exception) {
             Log.d("Android", "ログAndroid: FirestoreClient getItems error: $error")
             throw error

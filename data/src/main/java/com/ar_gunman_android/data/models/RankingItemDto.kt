@@ -17,3 +17,10 @@ data class RankingItemDto(
         )
     }
 }
+
+fun RankingItem.toDto(): RankingItemDto {
+    return RankingItemDto(
+        userName = userName,
+        score = score,
+    )
+}
