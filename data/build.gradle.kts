@@ -19,7 +19,6 @@ android {
     }
     kotlinOptions {
         jvmTarget = "1.8"
-        // 1. Kotlinのバージョン不一致エラーを無視するフラグ
         freeCompilerArgs += listOf("-Xskip-metadata-version-check")
     }
 }
@@ -49,4 +48,6 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:3.7.0")
     androidTestImplementation("androidx.test.ext:junit:1.3.0")
     implementation(project(":domain"))
+    implementation(platform("com.google.firebase:firebase-bom:32.3.1"))
+    implementation("com.google.firebase:firebase-firestore-ktx")
 }
