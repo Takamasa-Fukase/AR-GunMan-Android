@@ -1,4 +1,4 @@
-package com.takamasafukase.ar_gunman_android.model
+package com.takamasafukase.ar_gunman_android.features.tutorial
 
 data class TutorialPageContent(
     val titleText: String,

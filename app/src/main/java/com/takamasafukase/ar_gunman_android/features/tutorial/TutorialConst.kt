@@ -1,7 +1,7 @@
-package com.takamasafukase.ar_gunman_android.constants
+package com.takamasafukase.ar_gunman_android.features.tutorial
 
 import com.takamasafukase.ar_gunman_android.R
-import com.takamasafukase.ar_gunman_android.model.TutorialPageContent
+import com.takamasafukase.ar_gunman_android.features.tutorial.TutorialPageContent
 
 class TutorialConst {
     companion object {

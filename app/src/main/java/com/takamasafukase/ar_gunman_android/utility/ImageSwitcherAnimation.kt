@@ -6,7 +6,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
-import com.takamasafukase.ar_gunman_android.constants.TutorialConst
+import com.takamasafukase.ar_gunman_android.features.tutorial.TutorialConst
 import kotlinx.coroutines.delay
 
 @Composable
