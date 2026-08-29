@@ -3,6 +3,12 @@ package com.takamasafukase.ar_gunman_android.features.tutorial
 import com.takamasafukase.ar_gunman_android.R
 import com.takamasafukase.ar_gunman_android.features.tutorial.TutorialPageContent
 
+data class TutorialPageContent(
+    val titleText: String,
+    val descriptionText: String,
+    val imageResourceIds: List<Int>,
+)
+
 class TutorialConst {
     companion object {
         val pageContents: List<TutorialPageContent> = listOf(
