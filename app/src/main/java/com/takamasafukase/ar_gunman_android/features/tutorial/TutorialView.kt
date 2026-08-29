@@ -39,7 +39,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun TutorialScreen(
+fun TutorialView(
     onClose: () -> Unit,
 ) {
     val screenHeight = LocalConfiguration.current.screenHeightDp
@@ -193,8 +193,8 @@ fun TutorialScreen(
 @Preview(device = Devices.AUTOMOTIVE_1024p, widthDp = 864, heightDp = 359)
 @Preview(device = Devices.AUTOMOTIVE_1024p, widthDp = 869, heightDp = 411)
 @Composable
-fun TutorialScreenPreview() {
-    TutorialScreen(
+fun TutorialViewPreview() {
+    TutorialView(
         onClose = {},
     )
 }

@@ -31,17 +31,17 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.takamasafukase.ar_gunman_android.manager.AudioManager
-import com.takamasafukase.ar_gunman_android.repositoryMock.RankingRepository
+import com.takamasafukase.ar_gunman_android.repositoryMock.RankingRepositoryOld
 import com.takamasafukase.ar_gunman_android.features.game.GameActivity
 import com.takamasafukase.ar_gunman_android.features.top.TopViewModel
 import com.takamasafukase.ar_gunman_android.ui.theme.ARGunManAndroidTheme
 import com.takamasafukase.ar_gunman_android.utility.ErrorAlertDialog
 import com.takamasafukase.ar_gunman_android.utility.RankingUtil
-import com.takamasafukase.ar_gunman_android.features.result.ResultScreen
-import com.takamasafukase.ar_gunman_android.features.settings.SettingScreen
-import com.takamasafukase.ar_gunman_android.features.top.TopScreen
+import com.takamasafukase.ar_gunman_android.features.result.ResultView
 import com.takamasafukase.ar_gunman_android.features.result.ResultViewModel
 import com.takamasafukase.ar_gunman_android.features.settings.SettingViewModel
+import com.takamasafukase.ar_gunman_android.features.settings.SettingsView
+import com.takamasafukase.ar_gunman_android.features.top.TopView
 import kotlinx.coroutines.launch
 
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "app_setting_preferences")
@@ -60,7 +60,7 @@ class MainActivity : ComponentActivity() {
         val resultViewModel = ResultViewModel(
             app = application,
             audioManager = audioManager,
-            rankingRepository = RankingRepository(),
+            rankingRepository = RankingRepositoryOld(),
             rankingUtil = RankingUtil(),
         )
         val settingViewModel = SettingViewModel()
@@ -117,7 +117,7 @@ fun RootCompose(
         startDestination = "top",
     ) {
         composable("top") {
-            TopScreen(
+            TopView(
                 viewModel = topViewModel,
                 toGame = {
                     navController.navigate("game")
@@ -131,7 +131,7 @@ fun RootCompose(
             )
         }
         composable("setting") {
-            SettingScreen(
+            SettingsView(
                 viewModel = settingViewModel,
                 onClose = {
                     navController.navigate("top")
@@ -150,7 +150,7 @@ fun RootCompose(
             )
         ) {
             val totalScore = it.arguments?.getString("totalScore") ?: "0.0"
-            ResultScreen(
+            ResultView(
                 viewModel = resultViewModel,
                 totalScore = totalScore.toDouble(),
                 onReplay = {

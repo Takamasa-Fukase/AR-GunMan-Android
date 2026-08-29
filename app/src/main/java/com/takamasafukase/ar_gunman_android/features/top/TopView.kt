@@ -26,7 +26,7 @@ import com.takamasafukase.ar_gunman_android.utility.CameraPermissionDescriptionD
 import com.takamasafukase.ar_gunman_android.features.tutorial.TutorialScreen
 
 @Composable
-fun TopScreen(
+fun TopView(
     viewModel: TopViewModel,
     toGame: () -> Unit,
     toSetting: () -> Unit,
@@ -201,8 +201,8 @@ fun TargetImage(resourceId: Int, screenHeight: Int) {
 @Preview(device = Devices.AUTOMOTIVE_1024p, widthDp = 864, heightDp = 359)
 @Preview(device = Devices.AUTOMOTIVE_1024p, widthDp = 869, heightDp = 411)
 @Composable
-fun TopScreenPreview() {
-    TopScreen(
+fun TopViewPreview() {
+    TopView(
         viewModel = TopViewModel(
             app = Application(),
             audioManager = AudioManager(Application()),

@@ -30,7 +30,7 @@ import com.ar_gunman_android.domain.entities.ranking.Ranking
 import com.takamasafukase.ar_gunman_android.ui.theme.copperplate
 
 @Composable
-fun RankingScreen(viewModel: RankingViewModel, onClose: () -> Unit) {
+fun RankingView(viewModel: RankingViewModel, onClose: () -> Unit) {
     val state by viewModel.state.collectAsState()
     val screenWidth = LocalConfiguration.current.screenWidthDp
     val screenHeight = LocalConfiguration.current.screenHeightDp

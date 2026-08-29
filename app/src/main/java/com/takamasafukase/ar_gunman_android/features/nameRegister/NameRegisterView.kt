@@ -49,7 +49,7 @@ import com.takamasafukase.ar_gunman_android.utility.RankingUtil
 import kotlinx.coroutines.flow.MutableStateFlow
 
 @Composable
-fun NameRegisterScreen(
+fun NameRegisterView(
     viewModel: NameRegisterViewModel,
     onClose: (registeredRanking: Ranking?) -> Unit,
 ) {
@@ -286,8 +286,8 @@ fun NameRegisterScreen(
 @Preview(device = Devices.AUTOMOTIVE_1024p, widthDp = 864, heightDp = 359)
 @Preview(device = Devices.AUTOMOTIVE_1024p, widthDp = 869, heightDp = 411)
 @Composable
-fun NameRegisterScreenPreview() {
-    NameRegisterScreen(
+fun NameRegisterViewPreview() {
+    NameRegisterView(
         viewModel = NameRegisterViewModel(
             app = Application(),
             rankingRepository = null,

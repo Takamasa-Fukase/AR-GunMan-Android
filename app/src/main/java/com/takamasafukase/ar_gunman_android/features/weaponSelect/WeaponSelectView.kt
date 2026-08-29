@@ -30,7 +30,7 @@ import com.takamasafukase.ar_gunman_android.R
 import com.takamasafukase.ar_gunman_android.utility.CustomDialog
 
 @Composable
-fun WeaponChangeScreen(
+fun WeaponSelectView(
     onClose: () -> Unit,
     onSelectWeapon: (selectedWeapon: WeaponType) -> Unit,
 ) {
@@ -108,8 +108,8 @@ fun WeaponListView(
 @Preview(device = Devices.AUTOMOTIVE_1024p, widthDp = 864, heightDp = 359)
 @Preview(device = Devices.AUTOMOTIVE_1024p, widthDp = 869, heightDp = 411)
 @Composable
-fun WeaponChangeScreenPreview() {
-    WeaponChangeScreen(
+fun WeaponSelectViewPreview() {
+    WeaponSelectView(
         onClose = {},
         onSelectWeapon = {}
     )

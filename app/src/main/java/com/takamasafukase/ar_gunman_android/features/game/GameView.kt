@@ -27,11 +27,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.takamasafukase.ar_gunman_android.R
-import com.takamasafukase.ar_gunman_android.features.tutorial.TutorialScreen
-import com.takamasafukase.ar_gunman_android.features.weaponSelect.WeaponChangeScreen
+import com.takamasafukase.ar_gunman_android.features.tutorial.TutorialView
+import com.takamasafukase.ar_gunman_android.features.weaponSelect.WeaponSelectView
 
 @Composable
-fun GameScreen(
+fun GameView(
     viewModel: GameViewModel,
     toResult: (totalScore: Double) -> Unit,
 ) {
@@ -134,7 +134,7 @@ fun GameScreen(
 
     // チュートリアルダイアログ
     if (state.isShowTutorialDialog) {
-        TutorialScreen(
+        TutorialView(
             onClose = {
                 viewModel.onCloseTutorialDialog()
             }
@@ -143,7 +143,7 @@ fun GameScreen(
 
     // 武器選択画面ダイアログ
     if (state.isShowWeaponChangeDialog) {
-        WeaponChangeScreen(
+        WeaponSelectView(
             onClose = {
                 viewModel.onCloseWeaponChangeDialog()
             },

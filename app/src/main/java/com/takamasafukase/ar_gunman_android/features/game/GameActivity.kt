@@ -34,7 +34,7 @@ class GameActivity : ComponentActivity() {
         // ComposeViewを作成してFrameLayoutに追加
         val composeView = ComposeView(this).apply {
             setContent {
-                GameScreen(
+                GameView(
                     viewModel = GameViewModel(
                         sensorManager = getSystemService(SENSOR_SERVICE) as SensorManager,
                         tutorialPreferencesRepository = TutorialPreferencesRepository(this@GameActivity),

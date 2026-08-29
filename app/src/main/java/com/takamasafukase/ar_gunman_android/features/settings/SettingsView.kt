@@ -27,10 +27,11 @@ import androidx.compose.ui.unit.sp
 import com.takamasafukase.ar_gunman_android.R
 import com.takamasafukase.ar_gunman_android.ui.theme.copperplate
 import com.takamasafukase.ar_gunman_android.features.ranking.RankingScreen
+import com.takamasafukase.ar_gunman_android.features.ranking.RankingView
 import com.takamasafukase.ar_gunman_android.features.ranking.RankingViewModel
 
 @Composable
-fun SettingScreen(
+fun SettingsView(
     viewModel: SettingViewModel,
     onClose: () -> Unit,
 ) {
@@ -134,7 +135,7 @@ fun SettingScreen(
         // ランキングダイアログ
         if (isShowRankingDialog.value) {
             val rankingViewModel = RankingViewModel(app = Application())
-            RankingScreen(
+            RankingView(
                 viewModel = rankingViewModel,
                 onClose = {
                     viewModel.onCloseRankingDialog()
@@ -149,8 +150,8 @@ fun SettingScreen(
 @Preview(device = Devices.AUTOMOTIVE_1024p, widthDp = 864, heightDp = 359)
 @Preview(device = Devices.AUTOMOTIVE_1024p, widthDp = 869, heightDp = 411)
 @Composable
-fun ResultScreenPreview() {
-    SettingScreen(
+fun SettingsViewPreview() {
+    SettingsView(
         viewModel = SettingViewModel(),
         onClose = {},
     )

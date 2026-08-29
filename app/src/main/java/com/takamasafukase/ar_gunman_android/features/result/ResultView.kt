@@ -50,11 +50,13 @@ import com.takamasafukase.ar_gunman_android.repositoryMock.RankingRepository
 import com.takamasafukase.ar_gunman_android.ui.theme.copperplate
 import com.takamasafukase.ar_gunman_android.utility.RankingUtil
 import com.takamasafukase.ar_gunman_android.features.nameRegister.NameRegisterScreen
+import com.takamasafukase.ar_gunman_android.features.nameRegister.NameRegisterView
 import com.takamasafukase.ar_gunman_android.features.ranking.RankingListView
 import com.takamasafukase.ar_gunman_android.features.nameRegister.NameRegisterViewModel
+import com.takamasafukase.ar_gunman_android.repositoryMock.RankingRepositoryOld
 
 @Composable
-fun ResultScreen(
+fun ResultView(
     viewModel: ResultViewModel,
     totalScore: Double,
     onReplay: () -> Unit,
@@ -184,10 +186,10 @@ fun ResultScreen(
         }
 
         if (state.isShowNameRegisterDialog) {
-            NameRegisterScreen(
+            NameRegisterView(
                 viewModel = NameRegisterViewModel(
                     app = Application(),
-                    rankingRepository = RankingRepository(),
+                    rankingRepository = RankingRepositoryOld(),
                     rankingUtil = RankingUtil(),
                     params = NameRegisterViewModel.Params(
                         totalScore = totalScore,
@@ -354,8 +356,8 @@ fun AnimatedButtonsAndIcon(
 @Preview(device = Devices.AUTOMOTIVE_1024p, widthDp = 864, heightDp = 359)
 @Preview(device = Devices.AUTOMOTIVE_1024p, widthDp = 869, heightDp = 411)
 @Composable
-fun ResultScreenPreview() {
-    ResultScreen(
+fun ResultViewPreview() {
+    ResultView(
         viewModel = ResultViewModel(
             app = Application(),
             audioManager = AudioManager(Application()),
