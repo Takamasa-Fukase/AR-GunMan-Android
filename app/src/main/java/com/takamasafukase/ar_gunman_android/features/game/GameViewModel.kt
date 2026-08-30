@@ -9,6 +9,9 @@ import androidx.lifecycle.viewModelScope
 import com.ar_gunman_android.device.arShootingEngine.ARShootingEngineHandlerInterface
 import com.ar_gunman_android.device.motionSensor.MotionSensorHandlerInterface
 import com.ar_gunman_android.device.sound.SoundPlayerInterface
+import com.ar_gunman_android.device.sound.SoundType
+import com.ar_gunman_android.domain.entities.game.ReloadingMotionDetectedCountUpdateResult
+import com.ar_gunman_android.domain.entities.motion.WeaponControlMotion
 import com.ar_gunman_android.domain.entities.weapon.WeaponType
 import com.ar_gunman_android.domain.storeInterfaces.GameStoreInterface
 import com.ar_gunman_android.domain.storeInterfaces.WeaponStoreInterface
@@ -24,6 +27,7 @@ import com.takamasafukase.ar_gunman_android.model.AndroidToUnityMessageEventType
 import com.takamasafukase.ar_gunman_android.R
 import com.takamasafukase.ar_gunman_android.UnityMessageCenter
 import com.takamasafukase.ar_gunman_android.extensions.timeCountText
+import com.takamasafukase.ar_gunman_android.features.game.weaponResources.soundResources
 import com.takamasafukase.ar_gunman_android.features.game.weaponResources.uiResources
 import com.takamasafukase.ar_gunman_android.features.result.ResultViewModel.UIState
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -65,6 +69,7 @@ class GameViewModel(
 
     private val isTutorialViewPresentedFlow = MutableStateFlow(value = false)
     private val isWeaponSelectViewPresentedFlow = MutableStateFlow(value = false)
+    private val _showResultEvent = MutableSharedFlow<Double>()
 
     val uiState: StateFlow<UIState> = combine(
         gameStore.gameFlow,
@@ -91,18 +96,51 @@ class GameViewModel(
     )
 
     // 結果画面で表示する得点と一緒に線に指示を流す
-    private val _showResult = MutableSharedFlow<Double>()
-    val showResult = _showResult.asSharedFlow()
-
-    private var isGameStarted = false
+    val showResultEvent get() = _showResultEvent.asSharedFlow()
 
     init {
-        viewModelScope.launch {
-            UnityMessageCenter.targetHitEvent
-                .debounce(50)
-                .collect {
-                    handleTargetHit()
+        arShootingEngineHandler.targetHit = { weaponType ->
+            scoreAddUseCase.execute(targetHitPoint = weaponType.targetHitPoint)
+            soundPlayer.play(SoundType.TARGET_HIT)
+            weaponType.soundResources.bulletHitSound?.let {
+                soundPlayer.play(it)
+            }
+        }
+
+        motionSensorHandler.motionUpdated = motionUpdated@ { motion ->
+            // 物理モーションを武器の操作モーションに変換
+            val weaponControlMotion = weaponControlMotionDetectUseCase.execute(motion = motion)
+
+            // 武器の操作モーションでは無い場合はreturn
+            weaponControlMotion ?: return@motionUpdated
+
+            // 武器の操作モーション種別をハンドリング
+            when (weaponControlMotion) {
+                WeaponControlMotion.FIRE -> {
+                    // 武器の発射
+                    viewModelScope.launch {
+                        weaponFireUseCase.execute()
+                    }
                 }
+                WeaponControlMotion.RELOAD -> {
+                    // 武器のリロード
+                    viewModelScope.launch {
+                        weaponReloadUseCase.execute()
+                    }
+
+                    // リロードモーションの検知回数をカウント
+                    val reloadingMotionCountUpdateResult = reloadingMotionCountUpdateUseCase.execute()
+
+                    // リロードモーションの検知回数に応じた結果のハンドリング
+                    when (reloadingMotionCountUpdateResult) {
+                        ReloadingMotionDetectedCountUpdateResult.NOT_EXCEEDED_LIMIT -> {}
+                        ReloadingMotionDetectedCountUpdateResult.EXCEEDED_LIMIT -> {
+                            soundPlayer.play(SoundType.TARGET_APPEARANCE_CHANGE)
+                            arShootingEngineHandler.changeTargetsAppearance()
+                        }
+                    }
+                }
+            }
         }
 
         viewModelScope.launch {

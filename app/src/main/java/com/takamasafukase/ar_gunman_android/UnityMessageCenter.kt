@@ -53,6 +53,15 @@ object UnityMessageCenter : UnityMessageCenterInterface {
                 UnityToAndroidMessageEventType.TARGET_HIT -> {
                     _targetHitEvent.emit(Unit)
                 }
+
+                // TODO: debounce(50)の件を検討する
+                //        viewModelScope.launch {
+                //            UnityMessageCenter.targetHitEvent
+                //                .debounce(50)
+                //                .collect {
+                //                    handleTargetHit()
+                //                }
+                //        }
             }
         }
     }
