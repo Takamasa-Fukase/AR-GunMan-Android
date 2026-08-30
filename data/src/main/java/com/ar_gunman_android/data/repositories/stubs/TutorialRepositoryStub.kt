@@ -1,8 +1,8 @@
-package com.takamasafukase.ar_gunman_android.repositoryMock
+package com.ar_gunman_android.data.repositories.stubs
 
 import com.ar_gunman_android.domain.repositoryInterfaces.TutorialRepositoryInterface
 
-class TutorialRepositoryMock : TutorialRepositoryInterface {
+class TutorialRepositoryStub : TutorialRepositoryInterface {
     private var isCompleted = false
 
     override fun getTutorialCompletedFlag(): Boolean {

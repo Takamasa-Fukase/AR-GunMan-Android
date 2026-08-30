@@ -5,11 +5,7 @@ import com.ar_gunman_android.data.dataSources.FirestoreConst
 import com.ar_gunman_android.data.models.RankingItemDto
 import com.ar_gunman_android.data.models.toDto
 import com.ar_gunman_android.domain.entities.ranking.RankingItem
-
-interface RankingRepositoryInterface {
-    suspend fun getItems(): List<RankingItem>
-    suspend fun registerItem(item: RankingItem)
-}
+import com.ar_gunman_android.domain.repositoryInterfaces.RankingRepositoryInterface
 
 class RankingRepository(
     private val firestoreClient: FirestoreClientInterface
