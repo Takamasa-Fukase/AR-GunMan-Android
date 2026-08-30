@@ -6,24 +6,17 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
 import android.util.Log
-import android.Manifest
 import android.app.Application
 import android.net.Uri
 import android.provider.Settings
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.core.app.AppLaunchChecker
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.preferencesDataStore
-import androidx.lifecycle.coroutineScope
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.navigation.NavType
 import androidx.navigation.activity
@@ -32,22 +25,17 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.takamasafukase.ar_gunman_android.factories.Factory
-import com.takamasafukase.ar_gunman_android.manager.AudioManager
-import com.takamasafukase.ar_gunman_android.repositoryMock.RankingRepositoryOld
 import com.takamasafukase.ar_gunman_android.features.game.GameActivity
 import com.takamasafukase.ar_gunman_android.features.top.TopViewModel
 import com.takamasafukase.ar_gunman_android.ui.theme.ARGunManAndroidTheme
 import com.takamasafukase.ar_gunman_android.utility.ErrorAlertDialog
-import com.takamasafukase.ar_gunman_android.utility.RankingUtil
 import com.takamasafukase.ar_gunman_android.features.result.ResultView
 import com.takamasafukase.ar_gunman_android.features.result.ResultViewModel
 import com.takamasafukase.ar_gunman_android.features.settings.SettingViewModel
 import com.takamasafukase.ar_gunman_android.features.settings.SettingsView
 import com.takamasafukase.ar_gunman_android.features.top.TopView
-import kotlinx.coroutines.launch
 
 class MainApplication : Application() {
-    // アプリ全体で参照するFactory
     lateinit var factory: Factory
 
     override fun onCreate() {
@@ -57,8 +45,6 @@ class MainApplication : Application() {
 }
 
 class MainActivity : ComponentActivity() {
-    private val requestPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) {}
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -71,9 +57,8 @@ class MainActivity : ComponentActivity() {
                     color = Color.Transparent
                 ) {
                     RootCompose(
-                        topViewModel = topViewModel,
-                        resultViewModel = resultViewModel,
-                        settingViewModel = settingViewModel,
+                        application = application,
+                        factory = factory,
                         showDeviceSetting = {
                             showDeviceSetting()
                         }
@@ -81,8 +66,6 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
-
-        requestPermissionLauncher.launch(Manifest.permission.CAMERA)
     }
 
     private fun showDeviceSetting() {
@@ -94,7 +77,8 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun RootCompose(
-    settingViewModel: SettingViewModel,
+    application: Application,
+    factory: Factory,
     showDeviceSetting: () -> Unit,
 ) {
     val navController = rememberNavController()
@@ -153,6 +137,7 @@ fun RootCompose(
                 rankingStore = factory.createRankingStore(),
             )
             ResultView(
+                factory = factory,
                 viewModel = resultViewModel,
                 onReplay = {
                     navController.navigate("game")
