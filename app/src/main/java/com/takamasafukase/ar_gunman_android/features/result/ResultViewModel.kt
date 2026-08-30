@@ -21,6 +21,7 @@ import kotlinx.coroutines.launch
 
 class ResultViewModel(
     app: Application,
+    val score: Double,
     private val soundPlayer: SoundPlayerInterface,
     private val rankingGetUseCase: RankingGetUseCaseInterface,
     private val rankingStore: RankingStoreInterface,

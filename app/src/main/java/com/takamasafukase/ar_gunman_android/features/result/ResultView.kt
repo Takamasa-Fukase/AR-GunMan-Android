@@ -54,8 +54,8 @@ import com.takamasafukase.ar_gunman_android.features.nameRegister.NameRegisterVi
 
 @Composable
 fun ResultView(
+    factory: Factory,
     viewModel: ResultViewModel,
-    totalScore: Double,
     onReplay: () -> Unit,
     toHome: () -> Unit,
 ) {
@@ -150,7 +150,7 @@ fun ResultView(
                                         .height((screenHeight * 0.028).dp)
                                 )
                                 Text(
-                                    text = "%.3f".format(totalScore),
+                                    text = "%.3f".format(viewModel.score),
                                     color = colorResource(id = R.color.paper),
                                     fontSize = (screenHeight * 0.12).sp,
                                     fontWeight = FontWeight.Black,
@@ -186,12 +186,9 @@ fun ResultView(
             NameRegisterView(
                 viewModel = NameRegisterViewModel(
                     app = Application(),
-                    rankingRepository = RankingRepositoryOld(),
-                    rankingUtil = RankingUtil(),
-                    params = NameRegisterViewModel.Params(
-                        totalScore = totalScore,
-                        rankingListFlow = viewModel.rankingListEvent
-                    )
+                    score = viewModel.score,
+                    rankingRegisterUseCase = factory.createRankingRegisterUseCase(),
+                    rankingStore = factory.createRankingStore(),
                 ),
                 onClose = { registeredRankingItem ->
                     viewModel.onCloseNameRegisterDialog(registeredRankingItem)

@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.sp
 import com.takamasafukase.ar_gunman_android.utility.CustomDialog
 import com.takamasafukase.ar_gunman_android.R
 import com.ar_gunman_android.domain.entities.ranking.Ranking
+import com.ar_gunman_android.domain.entities.ranking.RankingItem
 import com.takamasafukase.ar_gunman_android.ui.theme.copperplate
 import com.takamasafukase.ar_gunman_android.utility.CustomTextField
 import com.takamasafukase.ar_gunman_android.utility.RankingUtil
@@ -51,15 +52,15 @@ import kotlinx.coroutines.flow.MutableStateFlow
 @Composable
 fun NameRegisterView(
     viewModel: NameRegisterViewModel,
-    onClose: (registeredRanking: Ranking?) -> Unit,
+    onClose: (registeredRankingItem: RankingItem?) -> Unit,
 ) {
     val screenWidth = LocalConfiguration.current.screenWidthDp
     val screenHeight = LocalConfiguration.current.screenHeightDp
-    val state = viewModel.state.collectAsState()
+    val uiState = viewModel.uiState.collectAsState()
 
     LaunchedEffect(Unit) {
-        viewModel.closeDialogEvent.collect { registeredRanking ->
-            onClose(registeredRanking)
+        viewModel.closeDialogEvent.collect { registeredRankingItem ->
+            onClose(registeredRankingItem)
         }
     }
 
@@ -120,7 +121,7 @@ fun NameRegisterView(
                                     fontFamily = copperplate,
                                 )
                                 Text(
-                                    text = " ${state.value.rankText} ",
+                                    text = " ${uiState.value.temporaryRankText} ",
                                     color = colorResource(id = R.color.customBrown1),
                                     fontSize = (screenHeight * 0.046).sp,
                                     fontFamily = copperplate,
@@ -139,7 +140,7 @@ fun NameRegisterView(
                                 fontFamily = copperplate,
                             )
                             Text(
-                                text = "Score: ${"%.3f".format(state.value.totalScore)}",
+                                text = "Score: ${"%.3f".format(viewModel.score)}",
                                 color = colorResource(id = R.color.paper),
                                 fontSize = (screenHeight * 0.066).sp,
                                 fontWeight = FontWeight.Black,
@@ -157,7 +158,7 @@ fun NameRegisterView(
                                     fontFamily = copperplate,
                                 )
                                 CustomTextField(
-                                    value = state.value.nameInputText,
+                                    value = uiState.value.nameInputText,
                                     onValueChange = {
                                         viewModel.onChangeNameText(it)
                                     },
@@ -177,7 +178,7 @@ fun NameRegisterView(
                                     shape = RoundedCornerShape(12),
                                     singleLine = true,
                                     trailingIcon = {
-                                        if (state.value.nameInputText.isNotEmpty()) {
+                                        if (uiState.value.nameInputText.isNotEmpty()) {
                                             IconButton(
                                                 onClick = {
                                                     viewModel.onChangeNameText("")
@@ -243,12 +244,12 @@ fun NameRegisterView(
                                         .fillMaxHeight()
                                         .weight(1f)
                                 ) {
-                                    val buttonColor = if (state.value.nameInputText.isEmpty())
+                                    val buttonColor = if (uiState.value.nameInputText.isEmpty())
                                         colorResource(id = R.color.blackSteel).copy(alpha = 0.1f)
                                     else
                                         colorResource(id = R.color.blackSteel)
 
-                                    if (state.value.isShowLoadingOnRegisterButton) {
+                                    if (uiState.value.isShowLoadingOnRegisterButton) {
                                         CircularProgressIndicator(
                                             color = colorResource(id = R.color.paper),
                                             modifier = Modifier
@@ -281,24 +282,24 @@ fun NameRegisterView(
     )
 }
 
-@Preview(device = Devices.AUTOMOTIVE_1024p, widthDp = 640, heightDp = 360)
-@Preview(device = Devices.AUTOMOTIVE_1024p, widthDp = 730, heightDp = 410)
-@Preview(device = Devices.AUTOMOTIVE_1024p, widthDp = 864, heightDp = 359)
-@Preview(device = Devices.AUTOMOTIVE_1024p, widthDp = 869, heightDp = 411)
-@Composable
-fun NameRegisterViewPreview() {
-    NameRegisterView(
-        viewModel = NameRegisterViewModel(
-            app = Application(),
-            rankingRepository = null,
-            rankingUtil = RankingUtil(),
-            params = NameRegisterViewModel.Params(
-                totalScore = 98.765,
-                rankingListFlow = MutableStateFlow(
-                    listOf()
-                )
-            )
-        ),
-        onClose = {},
-    )
-}
+//@Preview(device = Devices.AUTOMOTIVE_1024p, widthDp = 640, heightDp = 360)
+//@Preview(device = Devices.AUTOMOTIVE_1024p, widthDp = 730, heightDp = 410)
+//@Preview(device = Devices.AUTOMOTIVE_1024p, widthDp = 864, heightDp = 359)
+//@Preview(device = Devices.AUTOMOTIVE_1024p, widthDp = 869, heightDp = 411)
+//@Composable
+//fun NameRegisterViewPreview() {
+//    NameRegisterView(
+//        viewModel = NameRegisterViewModel(
+//            app = Application(),
+//            rankingRepository = null,
+//            rankingUtil = RankingUtil(),
+//            params = NameRegisterViewModel.Params(
+//                totalScore = 98.765,
+//                rankingListFlow = MutableStateFlow(
+//                    listOf()
+//                )
+//            )
+//        ),
+//        onClose = {},
+//    )
+//}

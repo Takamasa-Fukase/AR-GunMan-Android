@@ -7,6 +7,7 @@ import android.content.IntentFilter
 import android.os.Bundle
 import android.util.Log
 import android.Manifest
+import android.app.Application
 import android.net.Uri
 import android.provider.Settings
 import androidx.activity.ComponentActivity
@@ -30,6 +31,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.takamasafukase.ar_gunman_android.factories.Factory
 import com.takamasafukase.ar_gunman_android.manager.AudioManager
 import com.takamasafukase.ar_gunman_android.repositoryMock.RankingRepositoryOld
 import com.takamasafukase.ar_gunman_android.features.game.GameActivity
@@ -44,7 +46,15 @@ import com.takamasafukase.ar_gunman_android.features.settings.SettingsView
 import com.takamasafukase.ar_gunman_android.features.top.TopView
 import kotlinx.coroutines.launch
 
-val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "app_setting_preferences")
+class MainApplication : Application() {
+    // アプリ全体で参照するFactory
+    lateinit var factory: Factory
+
+    override fun onCreate() {
+        super.onCreate()
+        factory = Factory(this)
+    }
+}
 
 class MainActivity : ComponentActivity() {
     private val requestPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) {}
@@ -52,18 +62,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val audioManager = AudioManager(context = application)
-        val topViewModel = TopViewModel(
-            app = application,
-            audioManager = audioManager,
-        )
-        val resultViewModel = ResultViewModel(
-            app = application,
-            audioManager = audioManager,
-            rankingRepository = RankingRepositoryOld(),
-            rankingUtil = RankingUtil(),
-        )
-        val settingViewModel = SettingViewModel()
+        val factory = (application as MainApplication).factory
 
         setContent {
             ARGunManAndroidTheme {
@@ -95,8 +94,6 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun RootCompose(
-    topViewModel: TopViewModel,
-    resultViewModel: ResultViewModel,
     settingViewModel: SettingViewModel,
     showDeviceSetting: () -> Unit,
 ) {
@@ -109,6 +106,11 @@ fun RootCompose(
         startDestination = "top",
     ) {
         composable("top") {
+            val topViewModel = TopViewModel(
+                app = application,
+                cameraPermissionHandler = factory.createCameraPermissionHandler(),
+                soundPlayer = factory.createSoundPlayer(),
+            )
             TopView(
                 viewModel = topViewModel,
                 toGame = {
@@ -123,6 +125,7 @@ fun RootCompose(
             )
         }
         composable("setting") {
+            val settingViewModel = SettingViewModel()
             SettingsView(
                 viewModel = settingViewModel,
                 onClose = {
@@ -141,10 +144,16 @@ fun RootCompose(
                 }
             )
         ) {
-            val totalScore = it.arguments?.getString("totalScore") ?: "0.0"
+            val score = it.arguments?.getString("totalScore") ?: "0.0"
+            val resultViewModel = ResultViewModel(
+                app = application,
+                score = score.toDouble(),
+                soundPlayer = factory.createSoundPlayer(),
+                rankingGetUseCase = factory.createRankingGetUseCase(),
+                rankingStore = factory.createRankingStore(),
+            )
             ResultView(
                 viewModel = resultViewModel,
-                totalScore = totalScore.toDouble(),
                 onReplay = {
                     navController.navigate("game")
                 },
