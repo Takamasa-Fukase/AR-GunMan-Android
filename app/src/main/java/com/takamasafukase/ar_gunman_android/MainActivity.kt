@@ -84,14 +84,6 @@ class MainActivity : ComponentActivity() {
         }
 
         requestPermissionLauncher.launch(Manifest.permission.CAMERA)
-
-        // 初回起動の場合はチュートリアル通過フラグをクリアする
-        if (!AppLaunchChecker.hasStartedFromLauncher(application)) {
-            lifecycle.coroutineScope.launch {
-                TutorialPreferencesRepository(application).clearTutorialSeenStatus()
-            }
-        }
-        AppLaunchChecker.onActivityCreate(this)
     }
 
     private fun showDeviceSetting() {
