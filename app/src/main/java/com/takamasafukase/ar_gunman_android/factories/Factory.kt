@@ -16,6 +16,7 @@ import com.ar_gunman_android.device.sound.SoundPlayerInterfaces
 import com.ar_gunman_android.domain.repositoryInterfaces.RankingRepositoryInterface
 import com.ar_gunman_android.domain.repositoryInterfaces.TutorialRepositoryInterface
 import com.ar_gunman_android.domain.storeInterfaces.GameStoreInterface
+import com.ar_gunman_android.domain.storeInterfaces.RankingStoreInterface
 import com.ar_gunman_android.domain.storeInterfaces.WeaponStoreInterface
 import com.ar_gunman_android.domain.useCases.GameFlowDriveUseCase
 import com.ar_gunman_android.domain.useCases.GameFlowDriveUseCaseInterface
@@ -32,6 +33,7 @@ import com.ar_gunman_android.domain.useCases.WeaponFireUseCaseInterface
 import com.ar_gunman_android.domain.useCases.WeaponReloadUseCase
 import com.ar_gunman_android.domain.useCases.WeaponReloadUseCaseInterface
 import com.takamasafukase.ar_gunman_android.stores.GameStore
+import com.takamasafukase.ar_gunman_android.stores.RankingStore
 import com.takamasafukase.ar_gunman_android.stores.WeaponStore
 import kotlinx.coroutines.CoroutineScope
 
@@ -62,6 +64,7 @@ class Factory(
 
     // MARK: Repositories
     fun createTutorialRepository(): TutorialRepositoryInterface {
+        // TODO: 本物を作って差し替える
         return TutorialRepositoryStub()
     }
 
@@ -72,6 +75,10 @@ class Factory(
     }
 
     // MARK: Stores
+    fun createRankingStore(): RankingStoreInterface {
+        return RankingStore
+    }
+
     fun createWeaponStore(): WeaponStoreInterface {
         return WeaponStore
     }
@@ -81,6 +88,8 @@ class Factory(
     }
 
     // MARK: UseCases
+    // TODO: Ranking系のUseCase2つ
+
     fun createWeaponFireUseCase(
         weaponReloadUseCase: WeaponReloadUseCaseInterface
     ): WeaponFireUseCaseInterface {
