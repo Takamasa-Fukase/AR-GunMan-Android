@@ -2,92 +2,88 @@ package com.takamasafukase.ar_gunman_android.features.result
 
 import android.app.Application
 import android.content.Intent
-import android.os.Handler
-import android.os.Looper
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
-import com.takamasafukase.ar_gunman_android.R
-import com.ar_gunman_android.domain.entities.ranking.Ranking
-import com.takamasafukase.ar_gunman_android.manager.AudioManager
-import com.takamasafukase.ar_gunman_android.repositoryMock.RankingRepository
-import com.takamasafukase.ar_gunman_android.utility.RankingUtil
+import com.ar_gunman_android.device.sound.SoundPlayerInterface
+import com.ar_gunman_android.device.sound.SoundType
+import com.ar_gunman_android.domain.entities.ranking.RankingItem
+import com.ar_gunman_android.domain.storeInterfaces.RankingStoreInterface
+import com.ar_gunman_android.domain.useCases.RankingGetUseCaseInterface
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-
-data class ResultViewState(
-    val rankings: List<Ranking>,
-    val isShowNameRegisterDialog: Boolean,
-    val isShowButtons: Boolean,
-    val rankingListHighlightedIndex: Int?,
-)
 
 class ResultViewModel(
     app: Application,
-    private val audioManager: AudioManager,
-    private val rankingRepository: RankingRepository?,
-    private val rankingUtil: RankingUtil,
+    private val soundPlayer: SoundPlayerInterface,
+    private val rankingGetUseCase: RankingGetUseCaseInterface,
+    private val rankingStore: RankingStoreInterface,
 ) : AndroidViewModel(app) {
-    private val _state = MutableStateFlow(
-        ResultViewState(
-            rankings = listOf(),
-            isShowNameRegisterDialog = false,
-            isShowButtons = false,
-            rankingListHighlightedIndex = null,
-        )
+    data class UIState(
+        val rankingItems: List<RankingItem> = emptyList(),
+        val isShowNameRegisterDialog: Boolean = false,
+        val isShowButtons: Boolean = false,
+        val rankingListHighlightedIndex: Int? = null,
     )
-    val state = _state.asStateFlow()
-    private val rankingListFlow = MutableStateFlow<List<Ranking>>(value = listOf())
-    val rankingListEvent = rankingListFlow.asStateFlow()
+
+    private val isShowNameRegisterDialogFlow = MutableStateFlow(value = false)
+    private val isShowButtonsFlow = MutableStateFlow(value = false)
+    private val rankingListHighlightedIndexFlow = MutableStateFlow<Int?>(value = null)
+
+    val uiState: StateFlow<UIState> = combine(
+        rankingStore.ranking,
+        isShowNameRegisterDialogFlow,
+        isShowButtonsFlow,
+        rankingListHighlightedIndexFlow,
+    ) { ranking, isShowNameRegisterDialog, isShowButtons, rankingListHighlightedIndex ->
+        UIState(
+            rankingItems = ranking?.items ?: emptyList(),
+            isShowNameRegisterDialog = isShowNameRegisterDialog,
+            isShowButtons = isShowButtons,
+            rankingListHighlightedIndex = rankingListHighlightedIndex,
+        )
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
+        initialValue = UIState(),
+    )
     val lazyListState = LazyListState()
 
     init {
-        getRankings()
-
-        viewModelScope.launch {
-            _state
-                .map { it.rankings }
-                .collect {
-                    rankingListFlow.value = it
-                }
-        }
+        getRanking()
     }
 
     fun onViewDidAppear() {
         // 結果画面と名前登録ダイアログの出現音声を再生
-        audioManager.playSound(R.raw.ranking_appear)
+        soundPlayer.play(SoundType.RANKING_APPEAR)
 
-        Handler(Looper.getMainLooper()).postDelayed({
+        viewModelScope.launch {
             // 0.5秒後に名前登録ダイアログを表示させる指示を流す
-            _state.value = _state.value.copy(isShowNameRegisterDialog = true)
-        }, 500)
+            delay(timeMillis = 500)
+            isShowNameRegisterDialogFlow.value = true
+        }
     }
 
-    fun onCloseNameRegisterDialog(registeredRanking: Ranking?) {
-        _state.value = _state.value.copy(isShowNameRegisterDialog = false)
+    fun onCloseNameRegisterDialog(registeredRankingItem: RankingItem?) {
+        isShowNameRegisterDialogFlow.value = false
 
-        Handler(Looper.getMainLooper()).postDelayed({
+        viewModelScope.launch {
             // 0.1秒後にボタンの出現アニメーションを開始させる
-            _state.value = _state.value.copy(isShowButtons = true)
-        }, 100)
+            delay(timeMillis = 100)
+            isShowButtonsFlow.value = true
+        }
 
         // 受け取ったランキングデータがnullじゃ無い場合（ユーザーが登録をした）の処理
-        if (registeredRanking != null) {
-            val newRankingList = _state.value.rankings.toMutableList()
-            val rankIndex = rankingUtil.getTemporaryRankIndex(
-                rankingList = newRankingList,
-                score = registeredRanking.score,
-            )
-
-            //  そのデータを該当順位の位置に挿入してデータを流してリストを更新
-            newRankingList.add(rankIndex, registeredRanking)
-            _state.value = _state.value.copy(
-                rankings = newRankingList,
-                rankingListHighlightedIndex = rankIndex,
-            )
+        if (registeredRankingItem != null) {
+            val rankIndex = rankingStore.ranking.value?.getTentativeRankIndex(
+                score = registeredRankingItem.score
+            ) ?: 0
 
             //  該当データがリストの1番上にくる位置にスクロールさせる
             viewModelScope.launch {
@@ -101,32 +97,29 @@ class ResultViewModel(
 
     // TODO: 暫定対応
     fun resetParams() {
-        Handler(Looper.getMainLooper()).postDelayed({
-            _state.value = _state.value.copy(
-                isShowButtons = false,
-                rankingListHighlightedIndex = null,
+        viewModelScope.launch {
+            delay(timeMillis = 1000)
+            isShowButtonsFlow.value = false
+            rankingListHighlightedIndexFlow.value = null
+            lazyListState.scrollToItem(
+                index = 0,
             )
-            viewModelScope.launch {
-                lazyListState.scrollToItem(
-                    index = 0,
-                )
-            }
-        }, 1000)
+        }
     }
 
-    private fun getRankings() {
-        rankingRepository?.getRankings(
-            onData = {
-                _state.value = _state.value.copy(rankings = it)
-            },
-            onError = {
-                // Broadcastでエラーを通知して最上階層でアラートダイアログ表示させる
-                val intent = Intent("ERROR_EVENT")
-                intent.putExtra("errorMessage", it.message)
-                LocalBroadcastManager
-                    .getInstance(getApplication())
-                    .sendBroadcast(intent)
+    private fun getRanking() {
+        try {
+            viewModelScope.launch {
+                rankingGetUseCase.execute()
             }
-        )
+
+        } catch (error: Exception) {
+            // Broadcastでエラーを通知して最上階層でアラートダイアログ表示させる
+            val intent = Intent("ERROR_EVENT")
+            intent.putExtra("errorMessage", error.message)
+            LocalBroadcastManager
+                .getInstance(getApplication<Application>())
+                .sendBroadcast(intent)
+        }
     }
 }

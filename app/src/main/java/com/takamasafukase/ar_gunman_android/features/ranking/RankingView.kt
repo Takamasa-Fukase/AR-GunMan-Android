@@ -31,7 +31,7 @@ import com.takamasafukase.ar_gunman_android.ui.theme.copperplate
 
 @Composable
 fun RankingView(viewModel: RankingViewModel, onClose: () -> Unit) {
-    val state by viewModel.uiState.collectAsState()
+    val uiState by viewModel.uiState.collectAsState()
     val screenWidth = LocalConfiguration.current.screenWidthDp
     val screenHeight = LocalConfiguration.current.screenHeightDp
 
@@ -73,11 +73,11 @@ fun RankingView(viewModel: RankingViewModel, onClose: () -> Unit) {
                                         shape = RoundedCornerShape(size = 3.dp)
                                     )
                             ) {
-                                if (state.dataList.isEmpty()) {
+                                if (uiState.dataList.isEmpty()) {
                                     CircularProgressIndicator(color = colorResource(id = R.color.paper))
                                 } else {
                                     RankingListView(
-                                        list = state.dataList,
+                                        list = uiState.dataList,
                                         listState = LazyListState(),
                                     )
                                 }

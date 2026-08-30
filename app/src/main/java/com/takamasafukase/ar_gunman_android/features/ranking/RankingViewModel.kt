@@ -14,33 +14,23 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-data class RankingViewState(
-    val dataList: List<RankingItem>,
-)
-
 class RankingViewModel(
     app: Application,
     private val rankingGetUseCase: RankingGetUseCaseInterface,
-    private val rankingStore: RankingStoreInterface,
+    rankingStore: RankingStoreInterface,
 ) : AndroidViewModel(app) {
-    val list = rankingStore.ranking
-        .map { ranking ->
-            RankingViewState(dataList = ranking?.items ?: emptyList())
-        }
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
-            initialValue = RankingViewState(dataList = listOf()),
-        )
+    data class UIState(
+        val dataList: List<RankingItem> = emptyList(),
+    )
 
-    val uiState: StateFlow<RankingViewState> = rankingStore.ranking
+    val uiState: StateFlow<UIState> = rankingStore.ranking
         .map { ranking ->
-            RankingViewState(dataList = ranking?.items ?: emptyList())
+            UIState(dataList = ranking?.items ?: emptyList())
         }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
-            initialValue = RankingViewState(dataList = listOf()),
+            initialValue = UIState(),
         )
 
     init {

@@ -45,15 +45,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.takamasafukase.ar_gunman_android.R
-import com.takamasafukase.ar_gunman_android.manager.AudioManager
-import com.takamasafukase.ar_gunman_android.repositoryMock.RankingRepository
+import com.takamasafukase.ar_gunman_android.factories.Factory
 import com.takamasafukase.ar_gunman_android.ui.theme.copperplate
 import com.takamasafukase.ar_gunman_android.utility.RankingUtil
-import com.takamasafukase.ar_gunman_android.features.nameRegister.NameRegisterScreen
 import com.takamasafukase.ar_gunman_android.features.nameRegister.NameRegisterView
 import com.takamasafukase.ar_gunman_android.features.ranking.RankingListView
 import com.takamasafukase.ar_gunman_android.features.nameRegister.NameRegisterViewModel
-import com.takamasafukase.ar_gunman_android.repositoryMock.RankingRepositoryOld
 
 @Composable
 fun ResultView(
@@ -64,7 +61,7 @@ fun ResultView(
 ) {
     val screenWidth = LocalConfiguration.current.screenWidthDp
     val screenHeight = LocalConfiguration.current.screenHeightDp
-    val state by viewModel.state.collectAsState()
+    val uiState by viewModel.uiState.collectAsState()
 
     LaunchedEffect(Unit) {
         viewModel.onViewDidAppear()
@@ -107,13 +104,13 @@ fun ResultView(
                                 shape = RoundedCornerShape(size = 3.dp)
                             )
                     ) {
-                        if (state.rankings.isEmpty()) {
+                        if (uiState.rankingItems.isEmpty()) {
                             CircularProgressIndicator(color = colorResource(id = R.color.paper))
                         } else {
                             RankingListView(
-                                list = state.rankings,
+                                list = uiState.rankingItems,
                                 listState = viewModel.lazyListState,
-                                highlightedIndex = state.rankingListHighlightedIndex,
+                                highlightedIndex = uiState.rankingListHighlightedIndex,
                             )
                         }
                     }
@@ -166,7 +163,7 @@ fun ResultView(
                         }
 
                         AnimatedButtonsAndIcon(
-                            isShowButtons = state.isShowButtons,
+                            isShowButtons = uiState.isShowButtons,
                             onTapReplay = {
                                 // TODO: 暫定対応
                                 viewModel.resetParams()
@@ -185,7 +182,7 @@ fun ResultView(
             }
         }
 
-        if (state.isShowNameRegisterDialog) {
+        if (uiState.isShowNameRegisterDialog) {
             NameRegisterView(
                 viewModel = NameRegisterViewModel(
                     app = Application(),
@@ -196,8 +193,8 @@ fun ResultView(
                         rankingListFlow = viewModel.rankingListEvent
                     )
                 ),
-                onClose = { registeredRanking ->
-                    viewModel.onCloseNameRegisterDialog(registeredRanking)
+                onClose = { registeredRankingItem ->
+                    viewModel.onCloseNameRegisterDialog(registeredRankingItem)
                 }
             )
         }
@@ -302,7 +299,7 @@ fun AnimatedButtonsAndIcon(
             .padding(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 16.dp)
     ) {
         Image(
-            painter = painterResource(id = WeaponType.PISTOL.weaponIconResourceId),
+            painter = painterResource(id = R.drawable.pistol),
             contentDescription = "Weapon icon",
             colorFilter = ColorFilter.tint(colorResource(id = R.color.paper)),
             modifier = Modifier
@@ -351,21 +348,20 @@ fun AnimatedButtonsAndIcon(
     }
 }
 
-@Preview(device = Devices.AUTOMOTIVE_1024p, widthDp = 640, heightDp = 360)
-@Preview(device = Devices.AUTOMOTIVE_1024p, widthDp = 730, heightDp = 410)
-@Preview(device = Devices.AUTOMOTIVE_1024p, widthDp = 864, heightDp = 359)
-@Preview(device = Devices.AUTOMOTIVE_1024p, widthDp = 869, heightDp = 411)
-@Composable
-fun ResultViewPreview() {
-    ResultView(
-        viewModel = ResultViewModel(
-            app = Application(),
-            audioManager = AudioManager(Application()),
-            rankingRepository = null,
-            rankingUtil = RankingUtil(),
-        ),
-        totalScore = 87.654,
-        onReplay = {},
-        toHome = {},
-    )
-}
+//@Preview(device = Devices.AUTOMOTIVE_1024p, widthDp = 640, heightDp = 360)
+//@Preview(device = Devices.AUTOMOTIVE_1024p, widthDp = 730, heightDp = 410)
+//@Preview(device = Devices.AUTOMOTIVE_1024p, widthDp = 864, heightDp = 359)
+//@Preview(device = Devices.AUTOMOTIVE_1024p, widthDp = 869, heightDp = 411)
+//@Composable
+//fun ResultViewPreview() {
+//    ResultView(
+//        viewModel = ResultViewModel(
+//            app = Application(),
+//            soundPlayer = ,
+//            rankingUtil = RankingUtil(),
+//        ),
+//        totalScore = 87.654,
+//        onReplay = {},
+//        toHome = {},
+//    )
+//}
