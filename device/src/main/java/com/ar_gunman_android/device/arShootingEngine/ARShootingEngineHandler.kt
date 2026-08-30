@@ -12,9 +12,10 @@ interface ARShootingEngineHandlerInterface {
 }
 
 class ARShootingEngineHandler(
-    override var targetHit: ((DomainWeaponType) -> Unit)?
 //    private val arShootingController:
 ) : ARShootingEngineHandlerInterface {
+    override var targetHit: ((DomainWeaponType) -> Unit)? = null
+
     override fun run() {
 
     }

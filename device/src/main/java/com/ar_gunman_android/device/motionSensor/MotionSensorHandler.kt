@@ -17,8 +17,9 @@ interface MotionSensorHandlerInterface {
 
 class MotionSensorHandler(
     context: Context,
-    override var motionUpdated: ((PhysicalMotion) -> Unit)?,
 ) : MotionSensorHandlerInterface, SensorEventListener {
+    override var motionUpdated: ((PhysicalMotion) -> Unit)? = null
+
     private val sensorManager = context.getSystemService(SENSOR_SERVICE) as SensorManager
     private var lastAccelerationProcessedTimeMs = 0L
     private var lastGyroProcessedTimeMs = 0L
