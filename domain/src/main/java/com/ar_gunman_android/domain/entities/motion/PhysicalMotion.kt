@@ -18,9 +18,9 @@ data class PhysicalMotion(
     )
 
     private val values = setOf<DimensionAndValue>(
-        PhysicalMotion.DimensionAndValue(dimension = Dimension.X, value = x),
-        PhysicalMotion.DimensionAndValue(dimension = Dimension.Y, value = y),
-        PhysicalMotion.DimensionAndValue(dimension = Dimension.Z, value = z)
+        DimensionAndValue(dimension = Dimension.X, value = x),
+        DimensionAndValue(dimension = Dimension.Y, value = y),
+        DimensionAndValue(dimension = Dimension.Z, value = z)
     )
 
     internal fun getCompositeValue(dimensions: Set<Dimension>): Double {
