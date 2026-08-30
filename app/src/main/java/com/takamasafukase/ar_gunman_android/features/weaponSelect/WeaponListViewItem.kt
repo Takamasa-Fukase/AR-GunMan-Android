@@ -22,12 +22,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.ar_gunman_android.domain.entities.weapon.WeaponType
 import com.takamasafukase.ar_gunman_android.R
+import com.takamasafukase.ar_gunman_android.features.game.weaponResources.uiResources
 
 
 @Composable
-fun WeaponListItem(
-    type: WeaponType,
+fun WeaponListViewItem(
+    weaponType: WeaponType,
     onTapItem: () -> Unit,
 ) {
     Box {
@@ -38,10 +40,10 @@ fun WeaponListItem(
             }
         ) {
             Image(
-                painter = painterResource(id = type.weaponIconResourceId),
+                painter = painterResource(id = weaponType.uiResources.weaponImageId),
                 contentDescription = "Weapon icon",
                 colorFilter = ColorFilter.tint(colorResource(id = R.color.paper)),
-                alpha = if (type == WeaponType.PISTOL) 1f else 0.5f,
+                alpha = if (weaponType == WeaponType.PISTOL) 1f else 0.5f,
                 modifier = Modifier
                     .size(
                         width = (LocalConfiguration.current.screenWidthDp * 0.38).dp,
@@ -49,7 +51,7 @@ fun WeaponListItem(
                     )
                     .align(Alignment.Center)
             )
-            if (type != WeaponType.PISTOL) {
+            if (weaponType != WeaponType.PISTOL) {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()

@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
@@ -26,6 +27,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.ar_gunman_android.domain.entities.weapon.WeaponType
 import com.takamasafukase.ar_gunman_android.R
 import com.takamasafukase.ar_gunman_android.utility.CustomDialog
 
@@ -93,8 +95,8 @@ fun WeaponListView(
             .fillMaxSize()
     ) {
         items(WeaponType.values()) {
-            WeaponListItem(
-                type = it,
+            WeaponListViewItem(
+                weaponType = it,
                 onTapItem = {
                     onSelectWeapon(it)
                 }
