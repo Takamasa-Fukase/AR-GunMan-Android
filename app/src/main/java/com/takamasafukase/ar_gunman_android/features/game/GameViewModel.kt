@@ -6,53 +6,45 @@ import android.os.Looper
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ar_gunman_android.device.arShootingEngine.ARShootingEngineHandler
 import com.ar_gunman_android.device.arShootingEngine.ARShootingEngineHandlerInterface
-import com.ar_gunman_android.device.motionSensor.MotionSensorHandler
 import com.ar_gunman_android.device.motionSensor.MotionSensorHandlerInterface
-import com.ar_gunman_android.device.sound.SoundPlayer
 import com.ar_gunman_android.device.sound.SoundPlayerInterface
+import com.ar_gunman_android.domain.entities.weapon.WeaponType
 import com.ar_gunman_android.domain.storeInterfaces.GameStoreInterface
 import com.ar_gunman_android.domain.storeInterfaces.WeaponStoreInterface
-import com.ar_gunman_android.domain.useCases.GameFlowDriveUseCase
 import com.ar_gunman_android.domain.useCases.GameFlowDriveUseCaseInterface
-import com.ar_gunman_android.domain.useCases.ReloadingMotionCountUpdateUseCase
 import com.ar_gunman_android.domain.useCases.ReloadingMotionCountUpdateUseCaseInterface
-import com.ar_gunman_android.domain.useCases.ScoreAddUseCase
 import com.ar_gunman_android.domain.useCases.ScoreAddUseCaseInterface
-import com.ar_gunman_android.domain.useCases.WeaponChangeUseCase
 import com.ar_gunman_android.domain.useCases.WeaponChangeUseCaseInterface
-import com.ar_gunman_android.domain.useCases.WeaponControlMotionDetectUseCase
 import com.ar_gunman_android.domain.useCases.WeaponControlMotionDetectUseCaseInterface
-import com.ar_gunman_android.domain.useCases.WeaponFireUseCase
 import com.ar_gunman_android.domain.useCases.WeaponFireUseCaseInterface
-import com.ar_gunman_android.domain.useCases.WeaponReloadUseCase
 import com.ar_gunman_android.domain.useCases.WeaponReloadUseCaseInterface
 import com.takamasafukase.ar_gunman_android.model.AndroidToUnityMessage
 import com.takamasafukase.ar_gunman_android.model.AndroidToUnityMessageEventType
-import com.takamasafukase.ar_gunman_android.manager.AudioManager
 import com.takamasafukase.ar_gunman_android.R
 import com.takamasafukase.ar_gunman_android.UnityMessageCenter
-import com.takamasafukase.ar_gunman_android.manager.CurrentWeapon
-import com.takamasafukase.ar_gunman_android.manager.ScoreCounter
-import com.takamasafukase.ar_gunman_android.manager.TimeCounter
-import com.takamasafukase.ar_gunman_android.utility.TimeCountUtil
+import com.takamasafukase.ar_gunman_android.extensions.timeCountText
+import com.takamasafukase.ar_gunman_android.features.game.weaponResources.uiResources
+import com.takamasafukase.ar_gunman_android.features.result.ResultViewModel.UIState
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class GameViewModel(
+    gameStore: GameStoreInterface,
+    weaponStore: WeaponStoreInterface,
     private val arShootingEngineHandler: ARShootingEngineHandlerInterface,
     private val motionSensorHandler: MotionSensorHandlerInterface,
     private val soundPlayer: SoundPlayerInterface,
-    private val gameStore: GameStoreInterface,
-    private val weaponStore: WeaponStoreInterface,
     private val weaponFireUseCase: WeaponFireUseCaseInterface,
     private val weaponReloadUseCase: WeaponReloadUseCaseInterface,
     private val weaponChangeUseCase: WeaponChangeUseCaseInterface,
@@ -62,21 +54,41 @@ class GameViewModel(
     private val weaponControlMotionDetectUseCase: WeaponControlMotionDetectUseCaseInterface,
 ) : ViewModel() {
     data class UIState(
-        val isShowTutorialDialog: Boolean,
-        val isShowWeaponChangeDialog: Boolean,
-        val timeCountText: String,
-        val bulletsCountImageResourceId: Int,
+        val timeCountText: String = "",
+        val currentWeaponType: WeaponType = WeaponType.defaultType,
+        val sightImageId: Int = 0,
+        val bulletsCountImageName: String = "",
+        val isWeaponChangeButtonEnabled: Boolean = false,
+        val isTutorialViewPresented: Boolean = false,
+        val isWeaponSelectViewPresented: Boolean = false,
     )
 
-    private val _state = MutableStateFlow(
-        GameViewState(
-            isShowTutorialDialog = false,
-            isShowWeaponChangeDialog = false,
-            timeCountText = "",
-            bulletsCountImageResourceId = 0,
+    private val isTutorialViewPresentedFlow = MutableStateFlow(value = false)
+    private val isWeaponSelectViewPresentedFlow = MutableStateFlow(value = false)
+
+    val uiState: StateFlow<UIState> = combine(
+        gameStore.gameFlow,
+        gameStore.timeCount,
+        weaponStore.weapon,
+        isTutorialViewPresentedFlow,
+        isWeaponSelectViewPresentedFlow,
+    ) { gameFlow, timeCount, weapon, isTutorialViewPresented, isWeaponSelectViewPresented ->
+        UIState(
+            timeCountText = timeCount.countMillisec.timeCountText,
+            currentWeaponType = weapon.currentType,
+            sightImageId = weapon.currentType.uiResources.sightImageId,
+            bulletsCountImageName = weapon.currentType.uiResources.bulletsCountImageName(
+                bulletsCount = weapon.bulletsCount
+            ),
+            isWeaponChangeButtonEnabled = gameFlow.status.isTimerRunning,
+            isTutorialViewPresented = isTutorialViewPresented,
+            isWeaponSelectViewPresented = isWeaponSelectViewPresented,
         )
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
+        initialValue = UIState(),
     )
-    val state = _state.asStateFlow()
 
     // 結果画面で表示する得点と一緒に線に指示を流す
     private val _showResult = MutableSharedFlow<Double>()
@@ -98,7 +110,7 @@ class GameViewModel(
                 // isLoadingの値だけのflowに変換
                 .map { MutableStateFlow(it.isLoading) }
                 // falseの場合のみ通す
-                .filter { isLoading -> !isLoading.value}
+                .filter { isLoading -> !isLoading.value }
                 // 最初の一回だけを通す
                 .first()
                 .collect {
@@ -163,7 +175,10 @@ class GameViewModel(
         viewModelScope.launch {
             currentWeapon.bulletsCountChanged
                 .collect {
-                    Log.d("Android", "ログAndroid: GameVM currentWeapon.bulletsCountChanged count: $it")
+                    Log.d(
+                        "Android",
+                        "ログAndroid: GameVM currentWeapon.bulletsCountChanged count: $it"
+                    )
                     _state.value = _state.value.copy(
                         bulletsCountImageResourceId = currentWeapon.weaponTypeChanged.value
                             // 現在の残弾数に応じた画像を設定
@@ -254,7 +269,7 @@ class GameViewModel(
                 timeCounter.startTimer()
             }, 1500)
 
-        }else {
+        } else {
             // まだチュートリアルを見ていない時の処理
             // チュートリアルダイアログの表示
             _state.value = _state.value.copy(isShowTutorialDialog = true)
