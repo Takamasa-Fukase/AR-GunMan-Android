@@ -12,6 +12,7 @@ import com.ar_gunman_android.device.sound.SoundPlayerInterface
 import com.ar_gunman_android.device.sound.SoundType
 import com.ar_gunman_android.domain.entities.game.ReloadingMotionDetectedCountUpdateResult
 import com.ar_gunman_android.domain.entities.motion.WeaponControlMotion
+import com.ar_gunman_android.domain.entities.weapon.WeaponFireResult
 import com.ar_gunman_android.domain.entities.weapon.WeaponType
 import com.ar_gunman_android.domain.storeInterfaces.GameStoreInterface
 import com.ar_gunman_android.domain.storeInterfaces.WeaponStoreInterface
@@ -141,6 +142,30 @@ class GameViewModel(
                     }
                 }
             }
+        }
+
+        viewModelScope.launch {
+            weaponFireUseCase.fireResultEvent
+                .collect { fireResult ->
+                    // 発射結果のハンドリング
+                    when (fireResult) {
+                        is WeaponFireResult.Success -> {
+                            arShootingEngineHandler.renderWeaponFiring()
+                            soundPlayer.play(weaponStore.weapon.value.currentType.soundResources.firingSound)
+                        }
+
+                        is WeaponFireResult.Failure -> {
+                            when (fireResult.reason) {
+                                WeaponFireResult.FailureReason.RELOADING -> {}
+                                WeaponFireResult.FailureReason.OUT_OF_BULLETS -> {
+                                    weaponStore.weapon.value.currentType.soundResources.outOfBulletsSound?.let { outOfBulletsSound ->
+                                        soundPlayer.play(outOfBulletsSound)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
         }
 
         viewModelScope.launch {
