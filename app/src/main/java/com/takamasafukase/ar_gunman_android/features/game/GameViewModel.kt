@@ -6,6 +6,28 @@ import android.os.Looper
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.ar_gunman_android.device.arShootingEngine.ARShootingEngineHandler
+import com.ar_gunman_android.device.arShootingEngine.ARShootingEngineHandlerInterface
+import com.ar_gunman_android.device.motionSensor.MotionSensorHandler
+import com.ar_gunman_android.device.motionSensor.MotionSensorHandlerInterface
+import com.ar_gunman_android.device.sound.SoundPlayer
+import com.ar_gunman_android.device.sound.SoundPlayerInterface
+import com.ar_gunman_android.domain.storeInterfaces.GameStoreInterface
+import com.ar_gunman_android.domain.storeInterfaces.WeaponStoreInterface
+import com.ar_gunman_android.domain.useCases.GameFlowDriveUseCase
+import com.ar_gunman_android.domain.useCases.GameFlowDriveUseCaseInterface
+import com.ar_gunman_android.domain.useCases.ReloadingMotionCountUpdateUseCase
+import com.ar_gunman_android.domain.useCases.ReloadingMotionCountUpdateUseCaseInterface
+import com.ar_gunman_android.domain.useCases.ScoreAddUseCase
+import com.ar_gunman_android.domain.useCases.ScoreAddUseCaseInterface
+import com.ar_gunman_android.domain.useCases.WeaponChangeUseCase
+import com.ar_gunman_android.domain.useCases.WeaponChangeUseCaseInterface
+import com.ar_gunman_android.domain.useCases.WeaponControlMotionDetectUseCase
+import com.ar_gunman_android.domain.useCases.WeaponControlMotionDetectUseCaseInterface
+import com.ar_gunman_android.domain.useCases.WeaponFireUseCase
+import com.ar_gunman_android.domain.useCases.WeaponFireUseCaseInterface
+import com.ar_gunman_android.domain.useCases.WeaponReloadUseCase
+import com.ar_gunman_android.domain.useCases.WeaponReloadUseCaseInterface
 import com.takamasafukase.ar_gunman_android.model.AndroidToUnityMessage
 import com.takamasafukase.ar_gunman_android.model.AndroidToUnityMessageEventType
 import com.takamasafukase.ar_gunman_android.manager.AudioManager
@@ -25,28 +47,29 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
-data class GameViewState(
-    val isLoading: Boolean,
-    val isShowTutorialDialog: Boolean,
-    val isShowWeaponChangeDialog: Boolean,
-    val timeCountText: String,
-    val bulletsCountImageResourceId: Int,
-)
-
 class GameViewModel(
-    sensorManager: SensorManager,
-    private val tutorialPreferencesRepository: TutorialPreferencesRepository,
-    private val audioManager: AudioManager,
-    private val timeCounter: TimeCounter,
-    private val timeCountUtil: TimeCountUtil,
-    private val currentWeapon: CurrentWeapon,
-    private val scoreCounter: ScoreCounter,
+    private val arShootingEngineHandler: ARShootingEngineHandlerInterface,
+    private val motionSensorHandler: MotionSensorHandlerInterface,
+    private val soundPlayer: SoundPlayerInterface,
+    private val gameStore: GameStoreInterface,
+    private val weaponStore: WeaponStoreInterface,
+    private val weaponFireUseCase: WeaponFireUseCaseInterface,
+    private val weaponReloadUseCase: WeaponReloadUseCaseInterface,
+    private val weaponChangeUseCase: WeaponChangeUseCaseInterface,
+    private val gameFlowDriveUseCase: GameFlowDriveUseCaseInterface,
+    private val scoreAddUseCase: ScoreAddUseCaseInterface,
+    private val reloadingMotionCountUpdateUseCase: ReloadingMotionCountUpdateUseCaseInterface,
+    private val weaponControlMotionDetectUseCase: WeaponControlMotionDetectUseCaseInterface,
 ) : ViewModel() {
+    data class UIState(
+        val isShowTutorialDialog: Boolean,
+        val isShowWeaponChangeDialog: Boolean,
+        val timeCountText: String,
+        val bulletsCountImageResourceId: Int,
+    )
 
-    private lateinit var motionDetector: MotionDetector
     private val _state = MutableStateFlow(
         GameViewState(
-            isLoading = true,
             isShowTutorialDialog = false,
             isShowWeaponChangeDialog = false,
             timeCountText = "",
@@ -59,13 +82,9 @@ class GameViewModel(
     private val _showResult = MutableSharedFlow<Double>()
     val showResult = _showResult.asSharedFlow()
 
-    private val onReceivedTargetHitEvent = MutableSharedFlow<Unit>()
     private var isGameStarted = false
 
     init {
-        showLoadingToHideUnityLogoSplash()
-        handleMotionDetector(sensorManager = sensorManager)
-
         viewModelScope.launch {
             UnityMessageCenter.targetHitEvent
                 .debounce(50)
@@ -156,6 +175,14 @@ class GameViewModel(
         }
     }
 
+    fun onViewAppear() {
+
+    }
+
+    fun onViewDisappear() {
+
+    }
+
     fun onTapWeaponChangeButton() {
         // ゲーム開始前の場合は弾く
         if (!isGameStarted) return
@@ -197,13 +224,6 @@ class GameViewModel(
 
         // ダイアログを閉じる
         onCloseWeaponChangeDialog()
-    }
-
-    // Unityビューを起動後にUnityロゴのスプラッシュが出るので、その間は黒背景とインジケータで隠す
-    private fun showLoadingToHideUnityLogoSplash() {
-        Handler(Looper.getMainLooper()).postDelayed({
-            _state.value = _state.value.copy(isLoading = false)
-        }, 3000)
     }
 
     private fun checkTutorialSeenStatus() {

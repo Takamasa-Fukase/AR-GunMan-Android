@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.IconButton
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
@@ -40,6 +39,10 @@ fun GameView(
     val state by viewModel.state.collectAsState()
     val showResultEvent = viewModel.showResult.collectAsState(initial = null)
 
+    LaunchedEffect(Unit) {
+        viewModel.onViewAppear()
+    }
+
     LaunchedEffect(showResultEvent.value) {
         showResultEvent.value?.let {
             toResult(it)
@@ -51,16 +54,6 @@ fun GameView(
         modifier = Modifier
             .fillMaxSize()
     ) {
-        if (state.isLoading) {
-            Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(color = colorResource(id = R.color.blackSteel))
-            ) {
-                CircularProgressIndicator(color = colorResource(id = R.color.paper))
-            }
-        }
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier
@@ -90,17 +83,14 @@ fun GameView(
                         .align(Alignment.Center)
                 )
             }
-            // ローディング中はインジケータと被って見ずらいので非表示
-            if (!state.isLoading) {
-                // 中央の照準アイコン
-                Image(
-                    painter = painterResource(id = R.drawable.pistol_sight),
-                    colorFilter = ColorFilter.tint(Color.Red),
-                    contentDescription = "Pistol sight",
-                    modifier = Modifier
-                        .size(size = (screenHeight / 4).dp)
-                )
-            }
+            // 中央の照準アイコン
+            Image(
+                painter = painterResource(id = R.drawable.pistol_sight),
+                colorFilter = ColorFilter.tint(Color.Red),
+                contentDescription = "Pistol sight",
+                modifier = Modifier
+                    .size(size = (screenHeight / 4).dp)
+            )
             // 弾数表示の画像
             Image(
                 painter = painterResource(id = state.bulletsCountImageResourceId),
@@ -113,10 +103,7 @@ fun GameView(
             // 武器切り替えボタン
             IconButton(
                 onClick = {
-                    // ローディング中は押せなくする
-                    if (!state.isLoading) {
-                        viewModel.onTapWeaponChangeButton()
-                    }
+                    viewModel.onTapWeaponChangeButton()
                 },
                 modifier = Modifier
                     .align(Alignment.TopEnd)

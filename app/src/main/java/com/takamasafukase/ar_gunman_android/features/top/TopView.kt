@@ -1,6 +1,5 @@
 package com.takamasafukase.ar_gunman_android.features.top
 
-import android.app.Application
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Surface
@@ -15,15 +14,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.tooling.preview.Devices
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.takamasafukase.ar_gunman_android.R
-import com.takamasafukase.ar_gunman_android.manager.AudioManager
 import com.takamasafukase.ar_gunman_android.ui.theme.copperplate
 import com.takamasafukase.ar_gunman_android.utility.CameraPermissionDescriptionDialog
-import com.takamasafukase.ar_gunman_android.features.tutorial.TutorialScreen
+import com.takamasafukase.ar_gunman_android.features.tutorial.TutorialView
 
 @Composable
 fun TopView(
@@ -38,6 +34,10 @@ fun TopView(
     val showGameEvent = viewModel.showGame.collectAsState(initial = null)
     val showSettingEvent = viewModel.showSetting.collectAsState(initial = null)
     val showDeviceSettingEvent = viewModel.showDeviceSetting.collectAsState(initial = null)
+
+    LaunchedEffect(Unit) {
+        viewModel.onViewAppear()
+    }
 
     LaunchedEffect(showGameEvent.value) {
         showGameEvent.value?.let {
@@ -109,7 +109,7 @@ fun TopView(
 
         // チュートリアルダイアログ
         if (state.value.isShowTutorialDialog) {
-            TutorialScreen(
+            TutorialView(
                 onClose = {
                     viewModel.onCloseTutorialDialog()
                 }
@@ -196,19 +196,19 @@ fun TargetImage(resourceId: Int, screenHeight: Int) {
     )
 }
 
-@Preview(device = Devices.AUTOMOTIVE_1024p, widthDp = 640, heightDp = 360)
-@Preview(device = Devices.AUTOMOTIVE_1024p, widthDp = 730, heightDp = 410)
-@Preview(device = Devices.AUTOMOTIVE_1024p, widthDp = 864, heightDp = 359)
-@Preview(device = Devices.AUTOMOTIVE_1024p, widthDp = 869, heightDp = 411)
-@Composable
-fun TopViewPreview() {
-    TopView(
-        viewModel = TopViewModel(
-            app = Application(),
-            audioManager = AudioManager(Application()),
-        ),
-        toGame = {},
-        toSetting = {},
-        showDeviceSetting = {},
-    )
-}
+//@Preview(device = Devices.AUTOMOTIVE_1024p, widthDp = 640, heightDp = 360)
+//@Preview(device = Devices.AUTOMOTIVE_1024p, widthDp = 730, heightDp = 410)
+//@Preview(device = Devices.AUTOMOTIVE_1024p, widthDp = 864, heightDp = 359)
+//@Preview(device = Devices.AUTOMOTIVE_1024p, widthDp = 869, heightDp = 411)
+//@Composable
+//fun TopViewPreview() {
+//    TopView(
+//        viewModel = TopViewModel(
+//            app = Application(),
+//            audioManager = AudioManager(Application()),
+//        ),
+//        toGame = {},
+//        toSetting = {},
+//        showDeviceSetting = {},
+//    )
+//}

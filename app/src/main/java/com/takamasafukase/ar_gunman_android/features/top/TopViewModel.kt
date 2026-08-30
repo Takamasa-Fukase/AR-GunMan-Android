@@ -50,6 +50,10 @@ class TopViewModel(
     private val _showDeviceSetting = MutableSharedFlow<Unit>()
     val showDeviceSetting = _showDeviceSetting.asSharedFlow()
 
+    fun onViewAppear() {
+        cameraPermissionHandler.requestCameraUsagePermission()
+    }
+
     fun onTapStartButton() {
         switchButtonIconAndRevert(type = IconButtonType.Start)
     }
