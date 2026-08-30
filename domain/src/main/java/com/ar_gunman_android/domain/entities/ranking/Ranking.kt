@@ -5,14 +5,15 @@ data class RankingItem(
     val userName: String,
 )
 
-data class Ranking private constructor(
-    val items: List<RankingItem>
+class Ranking(
+    items: List<RankingItem>
 ) {
-    companion object {
-        operator fun invoke(items: List<RankingItem>): Ranking {
-            val sortedItems = items.sortedByDescending { it.score }
-            return Ranking(sortedItems)
-        }
+    val items: List<RankingItem>
+
+    init {
+        // スコアの高い順にソート
+        val sortedItems = items.sortedByDescending { it.score }
+        this.items = sortedItems
     }
 
     fun getTentativeRankIndex(score: Double): Int {
@@ -29,6 +30,16 @@ data class Ranking private constructor(
     internal fun insertRegisteredRanking(item: RankingItem): Ranking {
         val tentativeRankIndex = getTentativeRankIndex(score = item.score)
         val updatedItems = items.toMutableList().apply { this.add(index = tentativeRankIndex, element = item) }
-        return this.copy(items = updatedItems)
+        return Ranking(items = updatedItems)
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return false
+        if (other !is Ranking) return false
+        return items == other.items
+    }
+
+    override fun hashCode(): Int {
+        return items.hashCode()
     }
 }
