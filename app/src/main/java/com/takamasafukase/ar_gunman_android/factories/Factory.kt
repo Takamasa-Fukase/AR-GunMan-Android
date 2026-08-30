@@ -20,6 +20,10 @@ import com.ar_gunman_android.domain.storeInterfaces.RankingStoreInterface
 import com.ar_gunman_android.domain.storeInterfaces.WeaponStoreInterface
 import com.ar_gunman_android.domain.useCases.GameFlowDriveUseCase
 import com.ar_gunman_android.domain.useCases.GameFlowDriveUseCaseInterface
+import com.ar_gunman_android.domain.useCases.RankingGetUseCase
+import com.ar_gunman_android.domain.useCases.RankingGetUseCaseInterface
+import com.ar_gunman_android.domain.useCases.RankingRegisterUseCase
+import com.ar_gunman_android.domain.useCases.RankingRegisterUseCaseInterface
 import com.ar_gunman_android.domain.useCases.ReloadingMotionCountUpdateUseCase
 import com.ar_gunman_android.domain.useCases.ReloadingMotionCountUpdateUseCaseInterface
 import com.ar_gunman_android.domain.useCases.ScoreAddUseCase
@@ -88,7 +92,19 @@ class Factory(
     }
 
     // MARK: UseCases
-    // TODO: Ranking系のUseCase2つ
+    fun createRankingGetUseCase(): RankingGetUseCaseInterface {
+        return RankingGetUseCase(
+            rankingRepository = createRankingRepository(),
+            rankingStore = createRankingStore()
+        )
+    }
+
+    fun createRankingRegisterUseCase(): RankingRegisterUseCaseInterface {
+        return RankingRegisterUseCase(
+            rankingRepository = createRankingRepository(),
+            rankingStore = createRankingStore()
+        )
+    }
 
     fun createWeaponFireUseCase(
         weaponReloadUseCase: WeaponReloadUseCaseInterface
