@@ -12,7 +12,7 @@ import com.ar_gunman_android.device.cameraPermission.CameraPermissionHandlerInte
 import com.ar_gunman_android.device.motionSensor.MotionSensorHandler
 import com.ar_gunman_android.device.motionSensor.MotionSensorHandlerInterface
 import com.ar_gunman_android.device.sound.SoundPlayer
-import com.ar_gunman_android.device.sound.SoundPlayerInterfaces
+import com.ar_gunman_android.device.sound.SoundPlayerInterface
 import com.ar_gunman_android.domain.repositoryInterfaces.RankingRepositoryInterface
 import com.ar_gunman_android.domain.repositoryInterfaces.TutorialRepositoryInterface
 import com.ar_gunman_android.domain.storeInterfaces.GameStoreInterface
@@ -57,7 +57,7 @@ class Factory(
         return MotionSensorHandler(context = context)
     }
 
-    fun createSoundPlayer(): SoundPlayerInterfaces {
+    fun createSoundPlayer(): SoundPlayerInterface {
         return SoundPlayer(context = context)
     }
 

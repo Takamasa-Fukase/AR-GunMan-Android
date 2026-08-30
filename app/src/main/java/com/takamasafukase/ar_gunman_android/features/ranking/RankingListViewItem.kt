@@ -24,14 +24,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.takamasafukase.ar_gunman_android.R
-import com.ar_gunman_android.domain.entities.ranking.Ranking
+import com.ar_gunman_android.domain.entities.ranking.RankingItem
 import com.takamasafukase.ar_gunman_android.ui.theme.copperplate
 import kotlinx.coroutines.delay
 
 @Composable
-fun RankingItem(
+fun RankingListViewItem(
     rankIndex: Int,
-    ranking: Ranking,
+    item: RankingItem,
     isHighlighted: Boolean = false,
 ) {
     Box(
@@ -86,7 +86,7 @@ fun RankingItem(
             )
             // スコア
             Text(
-                text = "%.3f".format(ranking.score),
+                text = "%.3f".format(item.score),
                 color = colorResource(id = R.color.paper),
                 fontSize = 16.sp,
                 fontFamily = copperplate,
@@ -95,7 +95,7 @@ fun RankingItem(
             )
             // ユーザー名
             Text(
-                text = ranking.user_name,
+                text = item.userName,
                 color = colorResource(id = R.color.paper),
                 fontSize = 36.sp,
                 fontWeight = FontWeight.Bold,
@@ -174,7 +174,7 @@ fun AnimatedAlphaView() {
 
 @Preview(device = Devices.AUTOMOTIVE_1024p, widthDp = 720, heightDp = 360)
 @Composable
-fun RankingItemPreview() {
-    val dummyRanking = Ranking(score = 98.765, user_name = "ウルトラ深瀬")
-    RankingItem(rankIndex = 1, ranking = dummyRanking)
+fun RankingListViewItemPreview() {
+    val item = RankingItem(score = 98.765, userName = "ウルトラ深瀬")
+    RankingListViewItem(rankIndex = 1, item = item)
 }

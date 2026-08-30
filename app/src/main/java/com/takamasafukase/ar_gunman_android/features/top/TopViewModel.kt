@@ -1,14 +1,13 @@
 package com.takamasafukase.ar_gunman_android.features.top
 
-import android.Manifest
 import android.app.Application
-import android.content.pm.PackageManager
 import android.os.Handler
 import android.os.Looper
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.takamasafukase.ar_gunman_android.manager.AudioManager
+import com.ar_gunman_android.device.cameraPermission.CameraPermissionHandlerInterface
+import com.ar_gunman_android.device.sound.SoundPlayerInterface
+import com.ar_gunman_android.device.sound.SoundType
 import com.takamasafukase.ar_gunman_android.R
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -23,7 +22,8 @@ data class TopViewState(
 
 class TopViewModel(
     app: Application,
-    private val audioManager: AudioManager
+    private val cameraPermissionHandler: CameraPermissionHandlerInterface,
+    private val soundPlayer: SoundPlayerInterface,
 ) : AndroidViewModel(app) {
 
     sealed class IconButtonType {
@@ -79,7 +79,7 @@ class TopViewModel(
 
     private fun switchButtonIconAndRevert(type: IconButtonType) {
         // ウエスタン風な銃声の再生
-        audioManager.playSound(R.raw.western_pistol_fire)
+        soundPlayer.play(SoundType.WESTERN_PISTOL_FIRE)
         // 対象のボタンに弾痕の画像を表示
         when (type) {
             IconButtonType.Start -> {
@@ -110,7 +110,14 @@ class TopViewModel(
             viewModelScope.launch {
                 when (type) {
                     IconButtonType.Start -> {
-                        checkCameraUsagePermission()
+                        val isCameraPermissionGranted = cameraPermissionHandler.getCameraUsagePermissionGrantedFlag()
+                        if (isCameraPermissionGranted) {
+                            viewModelScope.launch {
+                                _showGame.emit(Unit)
+                            }
+                        } else {
+                            _state.value = _state.value.copy(isShowPermissionDescriptionDialog = true)
+                        }
                     }
                     IconButtonType.Settings -> {
                         _showSetting.emit(Unit)
@@ -121,15 +128,5 @@ class TopViewModel(
                 }
             }
         }, 500)
-    }
-
-    private fun checkCameraUsagePermission() {
-        if (ContextCompat.checkSelfPermission(getApplication(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
-            viewModelScope.launch {
-                _showGame.emit(Unit)
-            }
-        }else {
-            _state.value = _state.value.copy(isShowPermissionDescriptionDialog = true)
-        }
     }
 }

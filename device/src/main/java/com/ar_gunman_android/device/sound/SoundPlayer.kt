@@ -3,11 +3,11 @@ package com.ar_gunman_android.device.sound
 import android.content.Context
 import android.media.MediaPlayer
 
-interface SoundPlayerInterfaces {
+interface SoundPlayerInterface {
     fun play(sound: SoundType)
 }
 
-class SoundPlayer(context: Context) : SoundPlayerInterfaces {
+class SoundPlayer(context: Context) : SoundPlayerInterface {
     private lateinit var mediaPlayer: MediaPlayer
     private val myContext: Context = context
 

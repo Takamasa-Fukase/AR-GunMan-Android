@@ -26,12 +26,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.takamasafukase.ar_gunman_android.utility.CustomDialog
 import com.takamasafukase.ar_gunman_android.R
-import com.ar_gunman_android.domain.entities.ranking.Ranking
+import com.ar_gunman_android.domain.entities.ranking.RankingItem
 import com.takamasafukase.ar_gunman_android.ui.theme.copperplate
 
 @Composable
 fun RankingView(viewModel: RankingViewModel, onClose: () -> Unit) {
-    val state by viewModel.state.collectAsState()
+    val state by viewModel.uiState.collectAsState()
     val screenWidth = LocalConfiguration.current.screenWidthDp
     val screenHeight = LocalConfiguration.current.screenHeightDp
 
@@ -73,11 +73,11 @@ fun RankingView(viewModel: RankingViewModel, onClose: () -> Unit) {
                                         shape = RoundedCornerShape(size = 3.dp)
                                     )
                             ) {
-                                if (state.rankings.isEmpty()) {
+                                if (state.dataList.isEmpty()) {
                                     CircularProgressIndicator(color = colorResource(id = R.color.paper))
                                 } else {
                                     RankingListView(
-                                        list = state.rankings,
+                                        list = state.dataList,
                                         listState = LazyListState(),
                                     )
                                 }
@@ -147,20 +147,20 @@ fun BackgroundBorderView() {
 // リストビューの部分
 @Composable
 fun RankingListView(
-    list: List<Ranking>,
+    list: List<RankingItem>,
     listState: LazyListState,
     highlightedIndex: Int? = null,
 ) {
     LazyColumn(
         state = listState,
     ) {
-        itemsIndexed(list) { index, ranking ->
+        itemsIndexed(list) { index, item ->
             if (index == 0) {
                 Spacer(modifier = Modifier.height(10.dp))
             }
-            RankingItem(
+            RankingListViewItem(
                 rankIndex = index + 1,
-                ranking = ranking,
+                item = item,
                 isHighlighted = (index == highlightedIndex)
             )
         }
@@ -171,7 +171,7 @@ fun RankingListView(
 @Composable
 fun RankingListViewPreview() {
     val dummyRankingList = (1..15).map {
-        Ranking(score = 98.765, user_name = "ウルトラ深瀬")
+        RankingItem(score = 98.765, userName = "ウルトラ深瀬")
     }
     RankingListView(
         list = dummyRankingList,
