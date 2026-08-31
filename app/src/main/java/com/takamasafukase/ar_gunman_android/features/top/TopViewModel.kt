@@ -3,7 +3,7 @@ package com.takamasafukase.ar_gunman_android.features.top
 import android.app.Application
 import android.os.Handler
 import android.os.Looper
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ar_gunman_android.device.cameraPermission.CameraPermissionHandlerInterface
 import com.ar_gunman_android.device.sound.SoundPlayerInterface
@@ -21,10 +21,9 @@ data class TopViewState(
 )
 
 class TopViewModel(
-    app: Application,
     private val cameraPermissionHandler: CameraPermissionHandlerInterface,
     private val soundPlayer: SoundPlayerInterface,
-) : AndroidViewModel(app) {
+) : ViewModel() {
 
     sealed class IconButtonType {
         object Start : IconButtonType()

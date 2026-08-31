@@ -34,6 +34,7 @@ import com.takamasafukase.ar_gunman_android.features.result.ResultViewModel
 import com.takamasafukase.ar_gunman_android.features.settings.SettingViewModel
 import com.takamasafukase.ar_gunman_android.features.settings.SettingsView
 import com.takamasafukase.ar_gunman_android.features.top.TopView
+import com.takamasafukase.ar_gunman_android.features.top.TopViewBuilder
 
 class MainApplication : Application() {
     lateinit var factory: Factory
@@ -90,13 +91,8 @@ fun RootCompose(
         startDestination = "top",
     ) {
         composable("top") {
-            val topViewModel = TopViewModel(
-                app = application,
-                cameraPermissionHandler = factory.createCameraPermissionHandler(),
-                soundPlayer = factory.createSoundPlayer(),
-            )
-            TopView(
-                viewModel = topViewModel,
+            TopViewBuilder(
+                factory = factory,
                 toGame = {
                     navController.navigate("game")
                 },

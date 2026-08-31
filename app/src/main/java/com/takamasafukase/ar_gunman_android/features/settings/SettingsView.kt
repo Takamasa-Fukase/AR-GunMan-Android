@@ -26,7 +26,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.takamasafukase.ar_gunman_android.R
 import com.takamasafukase.ar_gunman_android.ui.theme.copperplate
-import com.takamasafukase.ar_gunman_android.features.ranking.RankingScreen
 import com.takamasafukase.ar_gunman_android.features.ranking.RankingView
 import com.takamasafukase.ar_gunman_android.features.ranking.RankingViewModel
 
@@ -134,7 +133,10 @@ fun SettingsView(
 
         // ランキングダイアログ
         if (isShowRankingDialog.value) {
-            val rankingViewModel = RankingViewModel(app = Application())
+            val rankingViewModel = RankingViewModel(
+                app = Application(),
+
+            )
             RankingView(
                 viewModel = rankingViewModel,
                 onClose = {
