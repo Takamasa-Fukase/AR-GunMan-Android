@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -36,15 +37,14 @@ fun GameView(
 ) {
     val screenHeight = LocalConfiguration.current.screenHeightDp
     val screenWidth = LocalConfiguration.current.screenWidthDp
-    val state by viewModel.state.collectAsState()
-    val showResultEvent = viewModel.showResult.collectAsState(initial = null)
+    val uiState by viewModel.uiState.collectAsState()
 
     LaunchedEffect(Unit) {
         viewModel.onViewAppear()
     }
 
-    LaunchedEffect(showResultEvent.value) {
-        showResultEvent.value?.let {
+    LaunchedEffect(Unit) {
+        viewModel.showResultEvent.collect {
             toResult(it)
         }
     }
@@ -75,7 +75,7 @@ fun GameView(
                     )
             ) {
                 Text(
-                    text = state.timeCountText,
+                    text = uiState.timeCountText,
                     color = colorResource(id = R.color.paper),
                     fontSize = (screenHeight * 0.09).sp,
                     fontWeight = FontWeight.Normal,
@@ -93,17 +93,25 @@ fun GameView(
             )
             // 弾数表示の画像
             Image(
-                painter = painterResource(id = state.bulletsCountImageResourceId),
+                painter = painterResource(
+                    id = LocalContext.current.resources.getIdentifier(
+                        uiState.bulletsCountImageName,
+                        "drawable",
+                        LocalContext.current.packageName,
+                    )
+                ),
                 contentDescription = "Pistol bullets",
                 modifier = Modifier
                     .size(width = (screenWidth / 4.28).dp, height = (screenHeight / 5.71).dp)
                     .align(Alignment.BottomStart)
                     .offset(x = (screenWidth / 45).dp, y = (-(screenHeight / 12)).dp)
             )
+
+            // TODO: isEnabledを繋ぎこむ
             // 武器切り替えボタン
             IconButton(
                 onClick = {
-                    viewModel.onTapWeaponChangeButton()
+                    viewModel.weaponChangeButtonTapped()
                 },
                 modifier = Modifier
                     .align(Alignment.TopEnd)
@@ -120,22 +128,22 @@ fun GameView(
     }
 
     // チュートリアルダイアログ
-    if (state.isShowTutorialDialog) {
+    if (uiState.isTutorialViewPresented) {
         TutorialView(
             onClose = {
-                viewModel.onCloseTutorialDialog()
+                viewModel.tutorialEnded()
             }
         )
     }
 
     // 武器選択画面ダイアログ
-    if (state.isShowWeaponChangeDialog) {
+    if (uiState.isWeaponSelectViewPresented) {
         WeaponSelectView(
             onClose = {
-                viewModel.onCloseWeaponChangeDialog()
+                viewModel.weaponSelectViewClosed()
             },
             onSelectWeapon = {
-                viewModel.onSelectWeapon(it)
+                viewModel.weaponSelected(it)
             }
         )
     }
