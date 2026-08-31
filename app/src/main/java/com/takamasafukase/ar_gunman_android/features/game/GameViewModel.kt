@@ -10,9 +10,11 @@ import com.ar_gunman_android.device.arShootingEngine.ARShootingEngineHandlerInte
 import com.ar_gunman_android.device.motionSensor.MotionSensorHandlerInterface
 import com.ar_gunman_android.device.sound.SoundPlayerInterface
 import com.ar_gunman_android.device.sound.SoundType
+import com.ar_gunman_android.domain.entities.game.GameFlowStatus
 import com.ar_gunman_android.domain.entities.game.ReloadingMotionDetectedCountUpdateResult
 import com.ar_gunman_android.domain.entities.motion.WeaponControlMotion
 import com.ar_gunman_android.domain.entities.weapon.WeaponFireResult
+import com.ar_gunman_android.domain.entities.weapon.WeaponReloadStartResult
 import com.ar_gunman_android.domain.entities.weapon.WeaponType
 import com.ar_gunman_android.domain.storeInterfaces.GameStoreInterface
 import com.ar_gunman_android.domain.storeInterfaces.WeaponStoreInterface
@@ -30,14 +32,12 @@ import com.takamasafukase.ar_gunman_android.UnityMessageCenter
 import com.takamasafukase.ar_gunman_android.extensions.timeCountText
 import com.takamasafukase.ar_gunman_android.features.game.weaponResources.soundResources
 import com.takamasafukase.ar_gunman_android.features.game.weaponResources.uiResources
-import com.takamasafukase.ar_gunman_android.features.result.ResultViewModel.UIState
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -108,7 +108,7 @@ class GameViewModel(
             }
         }
 
-        motionSensorHandler.motionUpdated = motionUpdated@ { motion ->
+        motionSensorHandler.motionUpdated = motionUpdated@{ motion ->
             // 物理モーションを武器の操作モーションに変換
             val weaponControlMotion = weaponControlMotionDetectUseCase.execute(motion = motion)
 
@@ -123,6 +123,7 @@ class GameViewModel(
                         weaponFireUseCase.execute()
                     }
                 }
+
                 WeaponControlMotion.RELOAD -> {
                     // 武器のリロード
                     viewModelScope.launch {
@@ -130,7 +131,8 @@ class GameViewModel(
                     }
 
                     // リロードモーションの検知回数をカウント
-                    val reloadingMotionCountUpdateResult = reloadingMotionCountUpdateUseCase.execute()
+                    val reloadingMotionCountUpdateResult =
+                        reloadingMotionCountUpdateUseCase.execute()
 
                     // リロードモーションの検知回数に応じた結果のハンドリング
                     when (reloadingMotionCountUpdateResult) {
@@ -169,88 +171,74 @@ class GameViewModel(
         }
 
         viewModelScope.launch {
-            _state
-                // isLoadingの値だけのflowに変換
-                .map { MutableStateFlow(it.isLoading) }
-                // falseの場合のみ通す
-                .filter { isLoading -> !isLoading.value }
-                // 最初の一回だけを通す
-                .first()
-                .collect {
-                    // 初回のロードが終わった最初の1回だけを検知し、チュートリアル状態のチェックをする
-                    checkTutorialSeenStatus()
-                }
-        }
-
-        viewModelScope.launch {
-            timeCounter.countChanged
-                .collect {
-                    _state.value = _state.value.copy(
-                        timeCountText = timeCountUtil.getTwoDigitTimeCountText(it)
-                    )
-                }
-        }
-
-        viewModelScope.launch {
-            timeCounter.countEnded
-                .collect {
-                    // 終了音声を再生
-                    audioManager.playSound(R.raw.end_whistle)
-
-                    // タイマーを破棄
-                    timeCounter.disposeTimer()
-
-                    // モーション検知を終了
-                    motionDetector.stopUpdate()
-
-                    // 1.5秒後に結果画面に遷移指示を流す
-                    Handler(Looper.getMainLooper()).postDelayed({
-                        viewModelScope.launch {
-                            // 遷移指示を流す
-                            _showResult.emit(
-                                // 結果画面で表示する得点も一緒に渡す
-                                scoreCounter.currentTotalScore.value
-                            )
+            weaponReloadUseCase.reloadStartResultEvent
+                .collect { reloadStartResult ->
+                    // リロード開始結果のハンドリング
+                    when (reloadStartResult) {
+                        WeaponReloadStartResult.SUCCESS -> {
+                            soundPlayer.play(weaponStore.weapon.value.currentType.soundResources.reloadingSound)
                         }
-                    }, 1500)
+
+                        WeaponReloadStartResult.FAILURE -> {}
+                    }
                 }
         }
 
         viewModelScope.launch {
-            currentWeapon.weaponTypeChanged
-                .collect {
-                    // TODO: UnityにshowWeaponの通知を送る（これは武器が2つ以上に増えた時に実装する）
+            gameFlowDriveUseCase.statusStream
+                .collect { status ->
+                    when (status) {
+                        GameFlowStatus.WaitingForTimerStart -> {
+                            soundPlayer.play(WeaponType.defaultType.soundResources.appearingSound)
+                        }
+
+                        GameFlowStatus.TimerStartedAndWaitingForTimerEnd -> {
+                            soundPlayer.play(SoundType.START_WHISTLE)
+                            motionSensorHandler.startDetection()
+                        }
+
+                        GameFlowStatus.TimerEndedAndWaitingForFlowEnd -> {
+                            soundPlayer.play(SoundType.END_WHISTLE)
+                            motionSensorHandler.stopDetection()
+                            isWeaponSelectViewPresentedFlow.value = false
+                        }
+
+                        GameFlowStatus.FlowEnded -> {
+                            soundPlayer.play(SoundType.RANKING_APPEAR)
+                            viewModelScope.launch {
+                                // 結果画面への遷移指示を流す（結果画面で表示する得点も一緒に渡す）
+                                _showResultEvent.emit(gameStore.score.value.value)
+                            }
+                        }
+
+                        is GameFlowStatus.Blocked -> {
+                            when (status.reason) {
+                                GameFlowStatus.BlockedReason.TUTORIAL_NOT_COMPLETED -> {
+                                    isTutorialViewPresentedFlow.value = true
+                                }
+
+                                GameFlowStatus.BlockedReason.TIMER_PAUSED -> {}
+                            }
+                        }
+
+                        GameFlowStatus.FlowNotStarted -> {}
+                        GameFlowStatus.TimerResumedAndWaitingForTimerEnd -> {}
+                        GameFlowStatus.CheckingTutorialCompletedStatus -> {}
+                    }
                 }
         }
 
-        viewModelScope.launch {
-            currentWeapon.fired
-                .collect {
-                    // 現在の武器の射撃命令のメッセージを作成
-                    val toUnityMessage = AndroidToUnityMessage(
-                        eventType = AndroidToUnityMessageEventType.FIRE_WEAPON,
-                        weaponType = currentWeapon.weaponTypeChanged.value,
-                    )
-                    UnityMessageCenter.sendMessageToUnity(toUnityMessage)
-                }
-        }
-
-        viewModelScope.launch {
-            currentWeapon.bulletsCountChanged
-                .collect {
-                    Log.d(
-                        "Android",
-                        "ログAndroid: GameVM currentWeapon.bulletsCountChanged count: $it"
-                    )
-                    _state.value = _state.value.copy(
-                        bulletsCountImageResourceId = currentWeapon.weaponTypeChanged.value
-                            // 現在の残弾数に応じた画像を設定
-                            .getBulletsCountImageResourceId(count = it)
-                    )
-
-                    // TODO: UnityにshowWeaponの通知を送る（これは武器が2つ以上に増えた時に実装する）
-                }
-        }
+//        viewModelScope.launch {
+//            currentWeapon.fired
+//                .collect {
+//                    // 現在の武器の射撃命令のメッセージを作成
+//                    val toUnityMessage = AndroidToUnityMessage(
+//                        eventType = AndroidToUnityMessageEventType.FIRE_WEAPON,
+//                        weaponType = currentWeapon.weaponTypeChanged.value,
+//                    )
+//                    UnityMessageCenter.sendMessageToUnity(toUnityMessage)
+//                }
+//        }
     }
 
     fun onViewAppear() {
