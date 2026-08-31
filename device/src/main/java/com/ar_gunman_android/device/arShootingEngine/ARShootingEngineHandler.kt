@@ -29,7 +29,13 @@ class ARShootingEngineHandler(
     }
 
     override fun renderWeaponFiring() {
-
+        // TODO
+//                    // 現在の武器の射撃命令のメッセージを作成
+//                    val toUnityMessage = AndroidToUnityMessage(
+//                        eventType = AndroidToUnityMessageEventType.FIRE_WEAPON,
+//                        weaponType = currentWeapon.weaponTypeChanged.value,
+//                    )
+//                    UnityMessageCenter.sendMessageToUnity(toUnityMessage)
     }
 
     override fun changeTargetsAppearance() {

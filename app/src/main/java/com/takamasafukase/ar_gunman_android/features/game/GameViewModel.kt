@@ -45,11 +45,11 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class GameViewModel(
-    gameStore: GameStoreInterface,
-    weaponStore: WeaponStoreInterface,
     private val arShootingEngineHandler: ARShootingEngineHandlerInterface,
     private val motionSensorHandler: MotionSensorHandlerInterface,
     private val soundPlayer: SoundPlayerInterface,
+    private val gameStore: GameStoreInterface,
+    private val weaponStore: WeaponStoreInterface,
     private val weaponFireUseCase: WeaponFireUseCaseInterface,
     private val weaponReloadUseCase: WeaponReloadUseCaseInterface,
     private val weaponChangeUseCase: WeaponChangeUseCaseInterface,
@@ -227,132 +227,55 @@ class GameViewModel(
                     }
                 }
         }
-
-//        viewModelScope.launch {
-//            currentWeapon.fired
-//                .collect {
-//                    // 現在の武器の射撃命令のメッセージを作成
-//                    val toUnityMessage = AndroidToUnityMessage(
-//                        eventType = AndroidToUnityMessageEventType.FIRE_WEAPON,
-//                        weaponType = currentWeapon.weaponTypeChanged.value,
-//                    )
-//                    UnityMessageCenter.sendMessageToUnity(toUnityMessage)
-//                }
-//        }
     }
 
     fun onViewAppear() {
+        gameStore.reset()
+        weaponStore.reset()
 
+        arShootingEngineHandler.run()
+        arShootingEngineHandler.showWeapon(type = WeaponType.defaultType)
+        viewModelScope.launch {
+            gameFlowDriveUseCase.start()
+        }
     }
 
     fun onViewDisappear() {
-
+        arShootingEngineHandler.pause()
     }
 
-    fun onTapWeaponChangeButton() {
-        // ゲーム開始前の場合は弾く
-        if (!isGameStarted) return
-
-        _state.value = _state.value.copy(isShowWeaponChangeDialog = true)
-    }
-
-    fun onCloseWeaponChangeDialog() {
-        // ダイアログを閉じる
-        _state.value = _state.value.copy(isShowWeaponChangeDialog = false)
-
-        // TODO: 武器が変更されずにただcloseやエッジスワイプで閉じられた時も含めて鳴らしたい
-    }
-
-    fun onCloseTutorialDialog() {
-        // ダイアログを閉じる
-        _state.value = _state.value.copy(isShowTutorialDialog = false)
+    fun tutorialEnded() {
+        // TODO: iOSではこれが不要なので遷移構造を見直した際にどうなるか確認したい
+        isTutorialViewPresentedFlow.value = false
 
         viewModelScope.launch {
-            // ゲーム画面で既にチュートリアルを見たというフラグを保存する
-            tutorialPreferencesRepository.saveTutorialSeenStatus(true)
+            gameFlowDriveUseCase.resolveBlocked()
         }
-
-        // チュートリアルを既に見ていた時の処理を行わせる
-        handleTutorialSeenStatus(true)
     }
 
-    fun onSelectWeapon(selectedWeapon: WeaponType) {
-        // 今は一旦ピストル以外は弾く
-        if (selectedWeapon != WeaponType.PISTOL) {
-            return
-        }
-
-        // currentWeaponTypeを更新する
-        currentWeapon.changeWeaponTypeTo(newType = selectedWeapon)
-
-        // Unityへ武器表示の通知を送る
-        // TODO: ここは武器が2つ以上に増えた時に実装する。今は武器の切り替えが無いので実装不要。
-
-        // ダイアログを閉じる
-        onCloseWeaponChangeDialog()
+    fun weaponSelectViewClosed() {
+        // TODO: iOSではこれが不要なので遷移構造を見直した際にどうなるか確認したい
+        isWeaponSelectViewPresentedFlow.value = false
     }
 
-    private fun checkTutorialSeenStatus() {
+    fun weaponChangeButtonTapped() {
+        isWeaponSelectViewPresentedFlow.value = true
+
+        // 武器選択中はタイムカウントの更新を止める
         viewModelScope.launch {
-            tutorialPreferencesRepository.getTutorialSeenStatus(
-                onData = { isAlreadySeen ->
-                    handleTutorialSeenStatus(isAlreadySeen)
-                }
-            )
+            gameFlowDriveUseCase.pauseTimer()
         }
     }
 
-    private fun handleTutorialSeenStatus(isAlreadySeen: Boolean) {
-        if (isAlreadySeen) {
-            // すでにチュートリアルを見終わっている時の処理
-            // デフォルトの武器を選択
-            onSelectWeapon(selectedWeapon = WeaponType.PISTOL)
+    fun weaponSelected(weaponType: WeaponType) {
+        weaponChangeUseCase.execute(newType = weaponType)
+        arShootingEngineHandler.showWeapon(type = weaponType)
+        soundPlayer.play(weaponType.soundResources.appearingSound)
 
-            // 1.5秒後にタイマーを開始
-            Handler(Looper.getMainLooper()).postDelayed({
-                // ゲーム開始フラグをtrueに変更
-                isGameStarted = true
-
-                // スタート音声を再生
-                audioManager.playSound(R.raw.start_whistle)
-
-                // タイマーを開始
-                timeCounter.startTimer()
-            }, 1500)
-
-        } else {
-            // まだチュートリアルを見ていない時の処理
-            // チュートリアルダイアログの表示
-            _state.value = _state.value.copy(isShowTutorialDialog = true)
+        // タイムカウントの更新を再開する
+        viewModelScope.launch {
+            gameFlowDriveUseCase.resolveBlocked()
         }
-    }
-
-    private fun handleMotionDetector(sensorManager: SensorManager) {
-        // TODO: MotionDetectorのイベントもFlowでリアクティブにして、isGameStartedでフィルタリングできる様にしたい
-        motionDetector = MotionDetector(
-            sensorManager = sensorManager,
-            onDetectWeaponFiringMotion = {
-                // ゲーム開始後のみ処理をする
-                if (isGameStarted) {
-                    // 現在の武器に発射処理を行わせる
-                    currentWeapon.fire()
-                }
-            },
-            onDetectWeaponReloadingMotion = {
-                // ゲーム開始後のみ処理をする
-                if (isGameStarted) {
-                    // 現在の武器にリロード処理を行わせる
-                    currentWeapon.reload()
-                }
-            }
-        )
-    }
-
-    private fun handleTargetHit() {
-        // ターゲットヒット時の音声を再生
-        audioManager.playSound(R.raw.target_hit)
-        // 現在の武器に応じた得点の加算処理を行わせる
-        scoreCounter.addScore(weaponType = currentWeapon.weaponTypeChanged.value)
     }
 }
 
