@@ -1,9 +1,5 @@
 package com.takamasafukase.ar_gunman_android.features.game
 
-import android.hardware.SensorManager
-import android.os.Handler
-import android.os.Looper
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ar_gunman_android.device.arShootingEngine.ARShootingEngineHandlerInterface
@@ -25,10 +21,6 @@ import com.ar_gunman_android.domain.useCases.WeaponChangeUseCaseInterface
 import com.ar_gunman_android.domain.useCases.WeaponControlMotionDetectUseCaseInterface
 import com.ar_gunman_android.domain.useCases.WeaponFireUseCaseInterface
 import com.ar_gunman_android.domain.useCases.WeaponReloadUseCaseInterface
-import com.takamasafukase.ar_gunman_android.model.AndroidToUnityMessage
-import com.takamasafukase.ar_gunman_android.model.AndroidToUnityMessageEventType
-import com.takamasafukase.ar_gunman_android.R
-import com.takamasafukase.ar_gunman_android.UnityMessageCenter
 import com.takamasafukase.ar_gunman_android.extensions.timeCountText
 import com.takamasafukase.ar_gunman_android.features.game.weaponResources.soundResources
 import com.takamasafukase.ar_gunman_android.features.game.weaponResources.uiResources
@@ -38,9 +30,6 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 

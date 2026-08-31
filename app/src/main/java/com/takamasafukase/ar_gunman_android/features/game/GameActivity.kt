@@ -1,18 +1,13 @@
 package com.takamasafukase.ar_gunman_android.features.game
 
 import android.content.Intent
-import android.hardware.SensorManager
 import android.os.Bundle
 import android.widget.FrameLayout
 import androidx.activity.ComponentActivity
 import androidx.compose.ui.platform.ComposeView
-import com.takamasafukase.ar_gunman_android.manager.AudioManager
+import androidx.lifecycle.lifecycleScope
 import com.takamasafukase.ar_gunman_android.R
-import com.takamasafukase.ar_gunman_android.manager.CurrentWeapon
-import com.takamasafukase.ar_gunman_android.manager.ScoreCounter
-import com.takamasafukase.ar_gunman_android.manager.TimeCounter
-import com.takamasafukase.ar_gunman_android.utility.ScoreCalculator
-import com.takamasafukase.ar_gunman_android.utility.TimeCountUtil
+import com.takamasafukase.ar_gunman_android.factories.Factory
 import com.unity3d.player.UnityPlayer
 
 class GameActivity : ComponentActivity() {
@@ -29,27 +24,35 @@ class GameActivity : ComponentActivity() {
         val frameLayout = findViewById<FrameLayout>(R.id.unity)
         frameLayout.addView(unityPlayer?.rootView, FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT)
 
-        val timeCountUtil = TimeCountUtil()
-        val audioManager = AudioManager(context = application)
+        // TODO: とりあえずビルド通すための仮
+        val factory = Factory(this)
+        val weaponReloadUseCase = factory.createWeaponReloadUseCase(
+            scope = lifecycleScope
+        )
+
         // ComposeViewを作成してFrameLayoutに追加
         val composeView = ComposeView(this).apply {
             setContent {
                 GameView(
                     viewModel = GameViewModel(
-                        sensorManager = getSystemService(SENSOR_SERVICE) as SensorManager,
-                        tutorialPreferencesRepository = TutorialPreferencesRepository(this@GameActivity),
-                        audioManager = audioManager,
-                        timeCounter = TimeCounter(
-                            timeCountUtil = timeCountUtil
+                        arShootingEngineHandler = factory.createARShootingEngineHandler(),
+                        motionSensorHandler = factory.createMotionSensorHandler(),
+                        soundPlayer = factory.createSoundPlayer(),
+                        gameStore = factory.createGameStore(),
+                        weaponStore = factory.createWeaponStore(),
+                        weaponFireUseCase = factory.createWeaponFireUseCase(
+                            weaponReloadUseCase = weaponReloadUseCase
                         ),
-                        timeCountUtil = timeCountUtil,
-                        currentWeapon = CurrentWeapon(
-                            initialType = WeaponType.PISTOL,
-                            audioManager = audioManager,
+                        weaponReloadUseCase = weaponReloadUseCase,
+                        weaponChangeUseCase = factory.createWeaponChangeUseCase(
+                            weaponReloadUseCase = weaponReloadUseCase
                         ),
-                        scoreCounter = ScoreCounter(
-                            scoreCalculator = ScoreCalculator()
+                        gameFlowDriveUseCase = factory.createGameFlowDriveUseCase(
+                            scope = lifecycleScope
                         ),
+                        scoreAddUseCase = factory.createScoreAddUseCase(),
+                        reloadingMotionCountUpdateUseCase = factory.createReloadingMotionCountUpdateUseCase(),
+                        weaponControlMotionDetectUseCase = factory.createWeaponControlMotionDetectUseCase(),
                     ),
                     toResult = { totalScore: Double ->
                         // 通知を送信して、MainActivity内のNavHostでresult画面に切り替える
