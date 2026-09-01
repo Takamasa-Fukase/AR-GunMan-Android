@@ -17,21 +17,20 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.navigation.NavType
-import androidx.navigation.activity
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.dialog
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
 import com.takamasafukase.ar_gunman_android.factories.Factory
-import com.takamasafukase.ar_gunman_android.features.game.GameActivity
+import com.takamasafukase.ar_gunman_android.features.game.GameViewBuilder
+import com.takamasafukase.ar_gunman_android.features.nameRegister.NameRegisterViewBuilder
+import com.takamasafukase.ar_gunman_android.features.ranking.RankingViewBuilder
 import com.takamasafukase.ar_gunman_android.ui.theme.ARGunManAndroidTheme
-import com.takamasafukase.ar_gunman_android.features.result.ResultView
-import com.takamasafukase.ar_gunman_android.features.result.ResultViewModel
+import com.takamasafukase.ar_gunman_android.features.result.ResultViewBuilder
 import com.takamasafukase.ar_gunman_android.features.settings.SettingsViewBuilder
 import com.takamasafukase.ar_gunman_android.features.top.TopViewBuilder
 import com.takamasafukase.ar_gunman_android.features.tutorial.TutorialView
+import com.takamasafukase.ar_gunman_android.features.weaponSelect.WeaponSelectView
 
 class MainApplication : Application() {
     lateinit var factory: Factory
@@ -55,7 +54,6 @@ class MainActivity : ComponentActivity() {
                     color = Color.Transparent
                 ) {
                     RootCompose(
-                        application = application,
                         factory = factory,
                         showDeviceSetting = {
                             showDeviceSetting()
@@ -75,7 +73,6 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun RootCompose(
-    application: Application,
     factory: Factory,
     showDeviceSetting: () -> Unit,
 ) {
@@ -93,7 +90,7 @@ fun RootCompose(
                     navController.navigate("game")
                 },
                 toSetting = {
-                    navController.navigate("setting")
+                    navController.navigate("settings")
                 },
                 showDeviceSetting = {
                     showDeviceSetting()
@@ -107,40 +104,60 @@ fun RootCompose(
                 }
             )
         }
-        composable("setting") {
+        composable("settings") {
             SettingsViewBuilder(
                 onClose = {
                     navController.navigate("top")
                 }
             )
         }
-        activity(route = "game") {
-            activityClass = GameActivity::class
-        }
-        composable(
-            route = "result/{totalScore}",
-            arguments = listOf(
-                navArgument("totalScore") {
-                    type = NavType.StringType
+        dialog("ranking") {
+            RankingViewBuilder(
+                factory = factory,
+                onClose = {
+                    navController.navigate("settings")
                 }
             )
-        ) {
-            val score = it.arguments?.getString("totalScore") ?: "0.0"
-            val resultViewModel = ResultViewModel(
-                app = application,
-                score = score.toDouble(),
-                soundPlayer = factory.createSoundPlayer(),
-                rankingGetUseCase = factory.createRankingGetUseCase(),
-                rankingStore = factory.createRankingStore(),
-            )
-            ResultView(
+        }
+        composable("game") {
+            GameViewBuilder(
                 factory = factory,
-                viewModel = resultViewModel,
+                toResult = { score ->
+                    navController.navigate("result/$score")
+                }
+            )
+        }
+        dialog("weaponSelect") {
+            WeaponSelectView(
+                onClose = {
+                    // TODO: onSelectWeaponと一本化するか？
+                    // というか、onViewAppearが再度呼ばれて平気なのか確認する
+                    navController.navigate("game")
+                },
+                onSelectWeapon = { weaponType ->
+                    // TODO: previousBackStackEntryに渡す
+                    navController.navigate("game")
+                }
+            )
+        }
+        composable("result/{score}") {
+            ResultViewBuilder(
+                factory = factory,
                 onReplay = {
                     navController.navigate("game")
                 },
                 toHome = {
                     navController.navigate("top")
+                }
+            )
+        }
+        dialog("nameRegister") {
+            NameRegisterViewBuilder(
+                factory = factory,
+                onClose = { registeredRankingItem ->
+                    // TODO: previousBackStackEntryに渡す
+                    // scoreの引数なしでも平気なのか？　不用なのにまた渡すのか？
+                    navController.navigate("result")
                 }
             )
         }
@@ -153,11 +170,17 @@ fun RootCompose(
             if (destinationNameText != null) {
                 if (destinationNameText == "result") {
                     val totalScore = intent.getStringExtra("totalScore")
-                    Log.d("Android", "ログAndroid: MainActivity onReceive navController.navigate($destinationNameText/$totalScore)を実行します")
+                    Log.d(
+                        "Android",
+                        "ログAndroid: MainActivity onReceive navController.navigate($destinationNameText/$totalScore)を実行します"
+                    )
                     // 受け取ったスコアと一緒に遷移指示を流す
                     navController.navigate("$destinationNameText/$totalScore")
-                }else {
-                    Log.d("Android", "ログAndroid: MainActivity onReceive navController.navigate($destinationNameText)を実行します")
+                } else {
+                    Log.d(
+                        "Android",
+                        "ログAndroid: MainActivity onReceive navController.navigate($destinationNameText)を実行します"
+                    )
                     // 通知で受け取ったdestinationに遷移
                     navController.navigate(destinationNameText)
                 }
@@ -167,7 +190,8 @@ fun RootCompose(
     DisposableEffect(Unit) {
         // 通知受信時の処理を登録
         context.registerReceiver(
-            navigationNotificationHandler, IntentFilter("com.takamasafukase.ar_gunman_android.NAVIGATION_EVENT")
+            navigationNotificationHandler,
+            IntentFilter("com.takamasafukase.ar_gunman_android.NAVIGATION_EVENT")
         )
         // onDisposeで通知受信時の処理を解除
         onDispose {
