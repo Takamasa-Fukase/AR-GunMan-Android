@@ -54,7 +54,6 @@ import com.takamasafukase.ar_gunman_android.features.nameRegister.NameRegisterVi
 
 @Composable
 fun ResultView(
-    factory: Factory,
     viewModel: ResultViewModel,
     onReplay: () -> Unit,
     toHome: () -> Unit,

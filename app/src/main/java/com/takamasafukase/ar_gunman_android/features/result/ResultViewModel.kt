@@ -1,11 +1,10 @@
 package com.takamasafukase.ar_gunman_android.features.result
 
-import android.app.Application
-import android.content.Intent
+import android.util.Log
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.ar_gunman_android.device.sound.SoundPlayerInterface
 import com.ar_gunman_android.device.sound.SoundType
 import com.ar_gunman_android.domain.entities.ranking.RankingItem
@@ -20,12 +19,11 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class ResultViewModel(
-    app: Application,
-    val score: Double,
+    savedStateHandle: SavedStateHandle,
     private val soundPlayer: SoundPlayerInterface,
     private val rankingGetUseCase: RankingGetUseCaseInterface,
     private val rankingStore: RankingStoreInterface,
-) : AndroidViewModel(app) {
+) : ViewModel() {
     data class UIState(
         val rankingItems: List<RankingItem> = emptyList(),
         val isShowNameRegisterDialog: Boolean = false,
@@ -55,6 +53,7 @@ class ResultViewModel(
         initialValue = UIState(),
     )
     val lazyListState = LazyListState()
+    val score: Double = savedStateHandle.get<Double>("score") ?: 0.0
 
     init {
         getRanking()
@@ -115,12 +114,7 @@ class ResultViewModel(
             }
 
         } catch (error: Exception) {
-            // Broadcastでエラーを通知して最上階層でアラートダイアログ表示させる
-            val intent = Intent("ERROR_EVENT")
-            intent.putExtra("errorMessage", error.message)
-            LocalBroadcastManager
-                .getInstance(getApplication<Application>())
-                .sendBroadcast(intent)
+            Log.d("Android", "ログAndroid: ResultVM getRanking error: $error")
         }
     }
 }

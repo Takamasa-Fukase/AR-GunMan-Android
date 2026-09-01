@@ -29,12 +29,9 @@ import com.takamasafukase.ar_gunman_android.features.game.GameActivity
 import com.takamasafukase.ar_gunman_android.ui.theme.ARGunManAndroidTheme
 import com.takamasafukase.ar_gunman_android.features.result.ResultView
 import com.takamasafukase.ar_gunman_android.features.result.ResultViewModel
-import com.takamasafukase.ar_gunman_android.features.settings.SettingsViewModel
-import com.takamasafukase.ar_gunman_android.features.settings.SettingsView
 import com.takamasafukase.ar_gunman_android.features.settings.SettingsViewBuilder
 import com.takamasafukase.ar_gunman_android.features.top.TopViewBuilder
 import com.takamasafukase.ar_gunman_android.features.tutorial.TutorialView
-import kotlinx.coroutines.flow.MutableSharedFlow
 
 class MainApplication : Application() {
     lateinit var factory: Factory
@@ -84,7 +81,6 @@ fun RootCompose(
 ) {
     val navController = rememberNavController()
     val context = LocalContext.current
-//    var receivedErrorMessage by remember { mutableStateOf<String?>(null) }
 
     NavHost(
         navController = navController,
@@ -150,17 +146,6 @@ fun RootCompose(
         }
     }
 
-    // 未表示のエラーメッセージがあればアラートで表示
-//    if (receivedErrorMessage != null) {
-//        ErrorAlertDialog(
-//            onDismissRequest = {
-//                // 閉じる時にエラーメッセージをリセットする
-//                receivedErrorMessage = null
-//            },
-//            message = receivedErrorMessage
-//        )
-//    }
-
     val navigationNotificationHandler = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             Log.d("Android", "ログAndroid: MainActivity onReceive navigationNotificationHandler")
@@ -184,7 +169,6 @@ fun RootCompose(
         context.registerReceiver(
             navigationNotificationHandler, IntentFilter("com.takamasafukase.ar_gunman_android.NAVIGATION_EVENT")
         )
-
         // onDisposeで通知受信時の処理を解除
         onDispose {
             context.unregisterReceiver(

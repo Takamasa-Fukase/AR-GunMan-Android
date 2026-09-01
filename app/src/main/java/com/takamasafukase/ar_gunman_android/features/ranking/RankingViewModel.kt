@@ -1,10 +1,8 @@
 package com.takamasafukase.ar_gunman_android.features.ranking
 
-import android.app.Application
-import android.content.Intent
-import androidx.lifecycle.AndroidViewModel
+import android.util.Log
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.ar_gunman_android.domain.entities.ranking.RankingItem
 import com.ar_gunman_android.domain.storeInterfaces.RankingStoreInterface
 import com.ar_gunman_android.domain.useCases.RankingGetUseCaseInterface
@@ -15,10 +13,9 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class RankingViewModel(
-    app: Application,
     private val rankingGetUseCase: RankingGetUseCaseInterface,
     rankingStore: RankingStoreInterface,
-) : AndroidViewModel(app) {
+) : ViewModel() {
     data class UIState(
         val dataList: List<RankingItem> = emptyList(),
     )
@@ -44,12 +41,7 @@ class RankingViewModel(
             }
 
         } catch (error: Exception) {
-            // Broadcastでエラーを通知して最上階層でアラートダイアログ表示させる
-            val intent = Intent("ERROR_EVENT")
-            intent.putExtra("errorMessage", error.message)
-            LocalBroadcastManager
-                .getInstance(getApplication<Application>())
-                .sendBroadcast(intent)
+            Log.d("Android", "ログAndroid: RankingVM getRanking error: $error")
         }
     }
 }

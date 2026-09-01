@@ -1,32 +1,27 @@
 package com.takamasafukase.ar_gunman_android.features.nameRegister
 
-import android.app.Application
-import android.content.Intent
-import androidx.lifecycle.AndroidViewModel
+import android.util.Log
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.ar_gunman_android.domain.entities.ranking.Ranking
 import com.ar_gunman_android.domain.entities.ranking.RankingItem
 import com.ar_gunman_android.domain.storeInterfaces.RankingStoreInterface
-import com.ar_gunman_android.domain.useCases.RankingGetUseCaseInterface
 import com.ar_gunman_android.domain.useCases.RankingRegisterUseCaseInterface
-import com.takamasafukase.ar_gunman_android.features.result.ResultViewModel.UIState
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class NameRegisterViewModel(
-    app: Application,
-    val score: Double,
+    savedStateHandle: SavedStateHandle,
     private val rankingRegisterUseCase: RankingRegisterUseCaseInterface,
     rankingStore: RankingStoreInterface,
-) : AndroidViewModel(app) {
+) : ViewModel() {
     data class UIState(
         val temporaryRankText: String? = null,
         val nameInputText: String = "",
@@ -64,6 +59,7 @@ class NameRegisterViewModel(
     )
 
     val closeDialogEvent get() = _closeDialogEvent.asSharedFlow()
+    val score: Double = savedStateHandle.get<Double>("score") ?: 0.0
 
     fun onChangeNameText(text: String) {
         nameInputTextFlow.value = text
@@ -97,12 +93,7 @@ class NameRegisterViewModel(
             }
 
         } catch (error: Exception) {
-            // Broadcastでエラーを通知して最上階層でアラートダイアログ表示させる
-            val intent = Intent("ERROR_EVENT")
-            intent.putExtra("errorMessage", error.message)
-            LocalBroadcastManager
-                .getInstance(getApplication<Application>())
-                .sendBroadcast(intent)
+            Log.d("Android", "ログAndroid: RankingVM getRanking error: $error")
         }
     }
 }
