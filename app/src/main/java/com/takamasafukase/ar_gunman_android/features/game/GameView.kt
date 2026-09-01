@@ -33,7 +33,7 @@ import com.takamasafukase.ar_gunman_android.features.weaponSelect.WeaponSelectVi
 @Composable
 fun GameView(
     viewModel: GameViewModel,
-    toResult: (totalScore: Double) -> Unit,
+    toResult: (score: Double) -> Unit,
 ) {
     val screenHeight = LocalConfiguration.current.screenHeightDp
     val screenWidth = LocalConfiguration.current.screenWidthDp
