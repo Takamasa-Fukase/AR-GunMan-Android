@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class SettingViewModel: ViewModel() {
+class SettingsViewModel: ViewModel() {
     private val isShowRankingDialogFlow = MutableStateFlow(false)
     val isShowRankingDialog = isShowRankingDialogFlow.asStateFlow()
     private val openUrlInBrowserFlow = MutableSharedFlow<String>()

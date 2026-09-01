@@ -107,14 +107,15 @@ fun TopView(
             }
         }
 
+        // TODO: navHostになるので消す
         // チュートリアルダイアログ
-        if (state.value.isShowTutorialDialog) {
-            TutorialView(
-                onClose = {
-                    viewModel.onCloseTutorialDialog()
-                }
-            )
-        }
+//        if (state.value.isShowTutorialDialog) {
+//            TutorialView(
+//                onClose = {
+//                    viewModel.onCloseTutorialDialog()
+//                }
+//            )
+//        }
 
         // カメラ権限の再設定を促すダイアログ
         if (state.value.isShowPermissionDescriptionDialog) {

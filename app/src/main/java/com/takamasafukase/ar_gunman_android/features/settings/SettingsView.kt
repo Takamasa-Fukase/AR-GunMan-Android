@@ -31,7 +31,7 @@ import com.takamasafukase.ar_gunman_android.features.ranking.RankingViewModel
 
 @Composable
 fun SettingsView(
-    viewModel: SettingViewModel,
+    viewModel: SettingsViewModel,
     onClose: () -> Unit,
 ) {
     val screenWidth = LocalConfiguration.current.screenWidthDp
@@ -154,7 +154,7 @@ fun SettingsView(
 @Composable
 fun SettingsViewPreview() {
     SettingsView(
-        viewModel = SettingViewModel(),
+        viewModel = SettingsViewModel(),
         onClose = {},
     )
 }

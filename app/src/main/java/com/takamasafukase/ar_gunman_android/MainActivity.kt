@@ -17,24 +17,24 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.navigation.NavType
 import androidx.navigation.activity
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.dialog
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.takamasafukase.ar_gunman_android.factories.Factory
 import com.takamasafukase.ar_gunman_android.features.game.GameActivity
-import com.takamasafukase.ar_gunman_android.features.top.TopViewModel
 import com.takamasafukase.ar_gunman_android.ui.theme.ARGunManAndroidTheme
-import com.takamasafukase.ar_gunman_android.utility.ErrorAlertDialog
 import com.takamasafukase.ar_gunman_android.features.result.ResultView
 import com.takamasafukase.ar_gunman_android.features.result.ResultViewModel
-import com.takamasafukase.ar_gunman_android.features.settings.SettingViewModel
+import com.takamasafukase.ar_gunman_android.features.settings.SettingsViewModel
 import com.takamasafukase.ar_gunman_android.features.settings.SettingsView
-import com.takamasafukase.ar_gunman_android.features.top.TopView
+import com.takamasafukase.ar_gunman_android.features.settings.SettingsViewBuilder
 import com.takamasafukase.ar_gunman_android.features.top.TopViewBuilder
+import com.takamasafukase.ar_gunman_android.features.tutorial.TutorialView
+import kotlinx.coroutines.flow.MutableSharedFlow
 
 class MainApplication : Application() {
     lateinit var factory: Factory
@@ -84,7 +84,7 @@ fun RootCompose(
 ) {
     val navController = rememberNavController()
     val context = LocalContext.current
-    var receivedErrorMessage by remember { mutableStateOf<String?>(null) }
+//    var receivedErrorMessage by remember { mutableStateOf<String?>(null) }
 
     NavHost(
         navController = navController,
@@ -104,10 +104,15 @@ fun RootCompose(
                 },
             )
         }
+        dialog("tutorial") {
+            TutorialView(
+                onClose = {
+//                    viewModel.onCloseTutorialDialog()
+                }
+            )
+        }
         composable("setting") {
-            val settingViewModel = SettingViewModel()
-            SettingsView(
-                viewModel = settingViewModel,
+            SettingsViewBuilder(
                 onClose = {
                     navController.navigate("top")
                 }
@@ -146,25 +151,16 @@ fun RootCompose(
     }
 
     // 未表示のエラーメッセージがあればアラートで表示
-    if (receivedErrorMessage != null) {
-        ErrorAlertDialog(
-            onDismissRequest = {
-                // 閉じる時にエラーメッセージをリセットする
-                receivedErrorMessage = null
-            },
-            message = receivedErrorMessage
-        )
-    }
+//    if (receivedErrorMessage != null) {
+//        ErrorAlertDialog(
+//            onDismissRequest = {
+//                // 閉じる時にエラーメッセージをリセットする
+//                receivedErrorMessage = null
+//            },
+//            message = receivedErrorMessage
+//        )
+//    }
 
-    val errorNotificationHandler = object : BroadcastReceiver() {
-        override fun onReceive(context: Context?, intent: Intent?) {
-            val errorMessage = intent?.getStringExtra("errorMessage")
-            if (errorMessage != null) {
-                // 通知で受け取ったエラーメッセージをアラートで表示させる為に格納
-                receivedErrorMessage = errorMessage
-            }
-        }
-    }
     val navigationNotificationHandler = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             Log.d("Android", "ログAndroid: MainActivity onReceive navigationNotificationHandler")
@@ -185,18 +181,12 @@ fun RootCompose(
     }
     DisposableEffect(Unit) {
         // 通知受信時の処理を登録
-        LocalBroadcastManager.getInstance(context).registerReceiver(
-            errorNotificationHandler, IntentFilter("ERROR_EVENT")
-        )
         context.registerReceiver(
             navigationNotificationHandler, IntentFilter("com.takamasafukase.ar_gunman_android.NAVIGATION_EVENT")
         )
 
         // onDisposeで通知受信時の処理を解除
         onDispose {
-            LocalBroadcastManager.getInstance(context).unregisterReceiver(
-                errorNotificationHandler
-            )
             context.unregisterReceiver(
                 navigationNotificationHandler
             )
