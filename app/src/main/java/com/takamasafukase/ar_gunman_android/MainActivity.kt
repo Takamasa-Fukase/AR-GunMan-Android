@@ -21,6 +21,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.dialog
 import androidx.navigation.compose.rememberNavController
+import com.takamasafukase.ar_gunman_android.constants.SavedStateHandleKeys
 import com.takamasafukase.ar_gunman_android.factories.Factory
 import com.takamasafukase.ar_gunman_android.features.game.GameViewBuilder
 import com.takamasafukase.ar_gunman_android.features.nameRegister.NameRegisterViewBuilder
@@ -89,6 +90,7 @@ fun RootCompose(
                 toGame = {
                     navController.navigate("game")
                 },
+                // TODO: showTutorialView
                 toSetting = {
                     navController.navigate("settings")
                 },
@@ -100,14 +102,17 @@ fun RootCompose(
         dialog("tutorial") {
             TutorialView(
                 onClose = {
-//                    viewModel.onCloseTutorialDialog()
+                    navController.previousBackStackEntry
+                        ?.savedStateHandle
+                        ?.set(SavedStateHandleKeys.TUTORIAL_ENDED_EVENT, Unit)
+                    navController.popBackStack()
                 }
             )
         }
         composable("settings") {
             SettingsViewBuilder(
                 onClose = {
-                    navController.navigate("top")
+                    navController.popBackStack()
                 }
             )
         }
@@ -115,13 +120,15 @@ fun RootCompose(
             RankingViewBuilder(
                 factory = factory,
                 onClose = {
-                    navController.navigate("settings")
+                    navController.popBackStack()
                 }
             )
         }
         composable("game") {
             GameViewBuilder(
                 factory = factory,
+                // TODO: showTutorialView
+                // TODO: showWeaponSelectView
                 toResult = { score ->
                     navController.navigate("result/$score")
                 }
@@ -130,34 +137,48 @@ fun RootCompose(
         dialog("weaponSelect") {
             WeaponSelectView(
                 onClose = {
-                    // TODO: onSelectWeaponと一本化するか？
-                    // というか、onViewAppearが再度呼ばれて平気なのか確認する
-                    navController.navigate("game")
+                    navController.popBackStack()
                 },
                 onSelectWeapon = { weaponType ->
-                    // TODO: previousBackStackEntryに渡す
-                    navController.navigate("game")
+                    navController.previousBackStackEntry
+                        ?.savedStateHandle
+                        ?.set(SavedStateHandleKeys.SELECTED_WEAPON_TYPE, weaponType)
+
+                    // TODO: onCloseの方も自動で呼ばれるのか、こっちでもpopが必要かを実際に確認する
+                    // TODO: 二重でpopされないかも確認したい
+                    navController.popBackStack()
                 }
             )
         }
         composable("result/{score}") {
             ResultViewBuilder(
                 factory = factory,
+                // TODO: showNameRegisterView
                 onReplay = {
-                    navController.navigate("game")
+                    navController.navigate("game") {
+                        popUpTo("top") {
+                            inclusive = false
+                        }
+                        launchSingleTop = true
+                    }
                 },
                 toHome = {
-                    navController.navigate("top")
+                    navController.navigate("top") {
+                        popUpTo(0) {
+                            inclusive = true
+                        }
+                    }
                 }
             )
         }
-        dialog("nameRegister") {
+        dialog("nameRegister/{score}") {
             NameRegisterViewBuilder(
                 factory = factory,
-                onClose = { registeredRankingItem ->
-                    // TODO: previousBackStackEntryに渡す
-                    // scoreの引数なしでも平気なのか？　不用なのにまた渡すのか？
-                    navController.navigate("result")
+                onClose = { rankingItem ->
+                    navController.previousBackStackEntry
+                        ?.savedStateHandle
+                        ?.set(SavedStateHandleKeys.REGISTERED_RANKING_ITEM, rankingItem)
+                    navController.popBackStack()
                 }
             )
         }

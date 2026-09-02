@@ -9,45 +9,37 @@ import com.ar_gunman_android.device.cameraPermission.CameraPermissionHandlerInte
 import com.ar_gunman_android.device.sound.SoundPlayerInterface
 import com.ar_gunman_android.device.sound.SoundType
 import com.takamasafukase.ar_gunman_android.R
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-
-data class TopViewState(
-    val startButtonImageResourceId: Int,
-    val settingsButtonImageResourceId: Int,
-    val howToPlayButtonImageResourceId: Int,
-    val isShowTutorialDialog: Boolean,
-    val isShowPermissionDescriptionDialog: Boolean,
-)
 
 class TopViewModel(
     private val cameraPermissionHandler: CameraPermissionHandlerInterface,
     private val soundPlayer: SoundPlayerInterface,
 ) : ViewModel() {
-
+    data class UIState(
+        val startButtonImageId: Int = 0,
+        val settingsButtonImageId: Int = 0,
+        val howToPlayButtonImageId: Int = 0,
+        val isPermissionDescriptionDialogPresented: Boolean = false,
+    )
+    enum class OutputEventType {
+        SHOW_GAME_VIEW,
+        SHOW_TUTORIAL_VIEW,
+        SHOW_SETTINGS_VIEW,
+        SHOW_DEVICE_SETTINGS;
+    }
     sealed class IconButtonType {
         object Start : IconButtonType()
         object Settings : IconButtonType()
         object HowToPlay : IconButtonType()
     }
 
-    private val _state = MutableStateFlow(
-        TopViewState(
-            startButtonImageResourceId = R.drawable.target_icon,
-            settingsButtonImageResourceId = R.drawable.target_icon,
-            howToPlayButtonImageResourceId = R.drawable.target_icon,
-            isShowTutorialDialog = false,
-            isShowPermissionDescriptionDialog = false,
-        )
-    )
-    val state = _state.asStateFlow()
+    val uiState get() = _uiState.asStateFlow()
+    val outputEvent get() = _outputEvent.asSharedFlow()
 
-    private val _showGame = MutableSharedFlow<Unit>()
-    val showGame = _showGame.asSharedFlow()
-    private val _showSetting = MutableSharedFlow<Unit>()
-    val showSetting = _showSetting.asSharedFlow()
-    private val _showDeviceSetting = MutableSharedFlow<Unit>()
-    val showDeviceSetting = _showDeviceSetting.asSharedFlow()
+    private val _uiState = MutableStateFlow(UIState())
+    private val _outputEvent = MutableSharedFlow<OutputEventType>()
 
     fun onViewAppear() {
         cameraPermissionHandler.requestCameraUsagePermission()
@@ -65,19 +57,15 @@ class TopViewModel(
         switchButtonIconAndRevert(type = IconButtonType.HowToPlay)
     }
 
-    fun onCloseTutorialDialog() {
-        _state.value = _state.value.copy(isShowTutorialDialog = false)
-    }
-
     fun onTapConfirmButtonOfPermissionDescriptionDialog() {
+        _uiState.value = _uiState.value.copy(isPermissionDescriptionDialogPresented = false)
         viewModelScope.launch {
-            _showDeviceSetting.emit(Unit)
-            _state.value = _state.value.copy(isShowPermissionDescriptionDialog = false)
+            _outputEvent.emit(OutputEventType.SHOW_DEVICE_SETTINGS)
         }
     }
 
     fun onClosePermissionDescriptionDialog() {
-        _state.value = _state.value.copy(isShowPermissionDescriptionDialog = false)
+        _uiState.value = _uiState.value.copy(isPermissionDescriptionDialogPresented = false)
     }
 
     private fun switchButtonIconAndRevert(type: IconButtonType) {
@@ -86,50 +74,49 @@ class TopViewModel(
         // 対象のボタンに弾痕の画像を表示
         when (type) {
             IconButtonType.Start -> {
-                _state.value = _state.value.copy(
-                    startButtonImageResourceId = R.drawable.bullets_hole
+                _uiState.value = _uiState.value.copy(
+                    startButtonImageId = R.drawable.bullets_hole
                 )
             }
             IconButtonType.Settings -> {
-                _state.value = _state.value.copy(
-                    settingsButtonImageResourceId = R.drawable.bullets_hole
+                _uiState.value = _uiState.value.copy(
+                    settingsButtonImageId = R.drawable.bullets_hole
                 )
             }
             IconButtonType.HowToPlay -> {
-                _state.value = _state.value.copy(
-                    howToPlayButtonImageResourceId = R.drawable.bullets_hole
+                _uiState.value = _uiState.value.copy(
+                    howToPlayButtonImageId = R.drawable.bullets_hole
                 )
             }
         }
-        // 0.5秒後の処理
-        Handler(Looper.getMainLooper()).postDelayed({
+        viewModelScope.launch {
+            // 0.5秒待機
+            delay(timeMillis = 500)
+
             // 画像を元の的に戻す
-            _state.value = _state.value.copy(
-                startButtonImageResourceId = R.drawable.target_icon,
-                settingsButtonImageResourceId = R.drawable.target_icon,
-                howToPlayButtonImageResourceId = R.drawable.target_icon,
+            _uiState.value = _uiState.value.copy(
+                startButtonImageId = R.drawable.target_icon,
+                settingsButtonImageId = R.drawable.target_icon,
+                howToPlayButtonImageId = R.drawable.target_icon,
             )
+
             // 対象のボタンごとの遷移指示を流す
-            viewModelScope.launch {
-                when (type) {
-                    IconButtonType.Start -> {
-                        val isCameraPermissionGranted = cameraPermissionHandler.getCameraUsagePermissionGrantedFlag()
-                        if (isCameraPermissionGranted) {
-                            viewModelScope.launch {
-                                _showGame.emit(Unit)
-                            }
-                        } else {
-                            _state.value = _state.value.copy(isShowPermissionDescriptionDialog = true)
-                        }
-                    }
-                    IconButtonType.Settings -> {
-                        _showSetting.emit(Unit)
-                    }
-                    IconButtonType.HowToPlay -> {
-                        _state.value = _state.value.copy(isShowTutorialDialog = true)
+            when (type) {
+                IconButtonType.Start -> {
+                    val isCameraPermissionGranted = cameraPermissionHandler.getCameraUsagePermissionGrantedFlag()
+                    if (isCameraPermissionGranted) {
+                        _outputEvent.emit(OutputEventType.SHOW_GAME_VIEW)
+                    } else {
+                        _uiState.value = _uiState.value.copy(isPermissionDescriptionDialogPresented = true)
                     }
                 }
+                IconButtonType.Settings -> {
+                    _outputEvent.emit(OutputEventType.SHOW_SETTINGS_VIEW)
+                }
+                IconButtonType.HowToPlay -> {
+                    _outputEvent.emit(OutputEventType.SHOW_TUTORIAL_VIEW)
+                }
             }
-        }, 500)
+        }
     }
 }

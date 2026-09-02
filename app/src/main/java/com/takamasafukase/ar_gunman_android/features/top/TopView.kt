@@ -24,36 +24,35 @@ import com.takamasafukase.ar_gunman_android.features.tutorial.TutorialView
 @Composable
 fun TopView(
     viewModel: TopViewModel,
-    toGame: () -> Unit,
-    toSetting: () -> Unit,
-    showDeviceSetting: () -> Unit,
+    showGameView: () -> Unit,
+    showTutorialView: () -> Unit,
+    showSettingsView: () -> Unit,
+    showDeviceSettings: () -> Unit,
 ) {
     val screenWidth = LocalConfiguration.current.screenWidthDp
     val screenHeight = LocalConfiguration.current.screenHeightDp
-    val state = viewModel.state.collectAsState()
-    val showGameEvent = viewModel.showGame.collectAsState(initial = null)
-    val showSettingEvent = viewModel.showSetting.collectAsState(initial = null)
-    val showDeviceSettingEvent = viewModel.showDeviceSetting.collectAsState(initial = null)
+    val uiState = viewModel.uiState.collectAsState()
 
     LaunchedEffect(Unit) {
         viewModel.onViewAppear()
     }
 
-    LaunchedEffect(showGameEvent.value) {
-        showGameEvent.value?.let {
-            toGame()
-        }
-    }
-
-    LaunchedEffect(showSettingEvent.value) {
-        showSettingEvent.value?.let {
-            toSetting()
-        }
-    }
-
-    LaunchedEffect(showDeviceSettingEvent.value) {
-        showDeviceSettingEvent.value?.let {
-            showDeviceSetting()
+    LaunchedEffect(Unit) {
+        viewModel.outputEvent.collect { eventType ->
+            when (eventType) {
+                TopViewModel.OutputEventType.SHOW_GAME_VIEW -> {
+                    showGameView()
+                }
+                TopViewModel.OutputEventType.SHOW_TUTORIAL_VIEW -> {
+                    showTutorialView()
+                }
+                TopViewModel.OutputEventType.SHOW_SETTINGS_VIEW -> {
+                    showSettingsView()
+                }
+                TopViewModel.OutputEventType.SHOW_DEVICE_SETTINGS -> {
+                    showDeviceSettings()
+                }
+            }
         }
     }
 
@@ -80,7 +79,7 @@ fun TopView(
                     CustomIconButton(
                         screenHeight = screenHeight,
                         title = "Start",
-                        iconResourceId = state.value.startButtonImageResourceId,
+                        iconResourceId = uiState.value.startButtonImageId,
                         onTap = {
                             viewModel.onTapStartButton()
                         }
@@ -88,7 +87,7 @@ fun TopView(
                     CustomIconButton(
                         screenHeight = screenHeight,
                         title = "Settings",
-                        iconResourceId = state.value.settingsButtonImageResourceId,
+                        iconResourceId = uiState.value.settingsButtonImageId,
                         onTap = {
                             viewModel.onTapSettingsButton()
                         }
@@ -96,7 +95,7 @@ fun TopView(
                     CustomIconButton(
                         screenHeight = screenHeight,
                         title = "HowToPlay",
-                        iconResourceId = state.value.howToPlayButtonImageResourceId,
+                        iconResourceId = uiState.value.howToPlayButtonImageId,
                         onTap = {
                             viewModel.onTapHowToPlayButton()
                         }
@@ -107,18 +106,8 @@ fun TopView(
             }
         }
 
-        // TODO: navHostになるので消す
-        // チュートリアルダイアログ
-//        if (state.value.isShowTutorialDialog) {
-//            TutorialView(
-//                onClose = {
-//                    viewModel.onCloseTutorialDialog()
-//                }
-//            )
-//        }
-
         // カメラ権限の再設定を促すダイアログ
-        if (state.value.isShowPermissionDescriptionDialog) {
+        if (uiState.value.isPermissionDescriptionDialogPresented) {
             CameraPermissionDescriptionDialog(
                 onTapConfirmButton = {
                     viewModel.onTapConfirmButtonOfPermissionDescriptionDialog()
