@@ -9,9 +9,10 @@ import com.takamasafukase.ar_gunman_android.factories.Factory
 @Composable
 fun TopViewBuilder(
     factory: Factory,
-    toGame: () -> Unit,
-    toSetting: () -> Unit,
-    showDeviceSetting: () -> Unit
+    showGameView: () -> Unit,
+    showTutorialView: () -> Unit,
+    showSettingsView: () -> Unit,
+    showDeviceSettings: () -> Unit,
 ) {
     val vmFactory = viewModelFactory {
         initializer {
@@ -24,8 +25,9 @@ fun TopViewBuilder(
     val viewModel: TopViewModel = viewModel(factory = vmFactory)
     TopView(
         viewModel = viewModel,
-        toGame = toGame,
-        toSetting = toSetting,
-        showDeviceSetting = showDeviceSetting,
+        showGameView = showGameView,
+        showTutorialView = showTutorialView,
+        showSettingsView = showSettingsView,
+        showDeviceSettings = showDeviceSettings,
     )
 }

@@ -19,7 +19,6 @@ import androidx.compose.ui.unit.sp
 import com.takamasafukase.ar_gunman_android.R
 import com.takamasafukase.ar_gunman_android.ui.theme.copperplate
 import com.takamasafukase.ar_gunman_android.utility.CameraPermissionDescriptionDialog
-import com.takamasafukase.ar_gunman_android.features.tutorial.TutorialView
 
 @Composable
 fun TopView(

@@ -87,14 +87,16 @@ fun RootCompose(
         composable("top") {
             TopViewBuilder(
                 factory = factory,
-                toGame = {
+                showGameView = {
                     navController.navigate("game")
                 },
-                // TODO: showTutorialView
-                toSetting = {
+                showTutorialView = {
+                    navController.navigate("tutorial")
+                },
+                showSettingsView = {
                     navController.navigate("settings")
                 },
-                showDeviceSetting = {
+                showDeviceSettings = {
                     showDeviceSetting()
                 },
             )
