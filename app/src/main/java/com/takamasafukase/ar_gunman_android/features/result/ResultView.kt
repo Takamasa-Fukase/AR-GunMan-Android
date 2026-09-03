@@ -1,6 +1,5 @@
 package com.takamasafukase.ar_gunman_android.features.result
 
-import android.app.Application
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -40,21 +39,16 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Devices
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.takamasafukase.ar_gunman_android.R
-import com.takamasafukase.ar_gunman_android.factories.Factory
 import com.takamasafukase.ar_gunman_android.ui.theme.copperplate
-import com.takamasafukase.ar_gunman_android.utility.RankingUtil
-import com.takamasafukase.ar_gunman_android.features.nameRegister.NameRegisterView
 import com.takamasafukase.ar_gunman_android.features.ranking.RankingListView
-import com.takamasafukase.ar_gunman_android.features.nameRegister.NameRegisterViewModel
 
 @Composable
 fun ResultView(
     viewModel: ResultViewModel,
+    showNameRegisterView: (score: Double) -> Unit,
     onReplay: () -> Unit,
     toHome: () -> Unit,
 ) {
@@ -63,7 +57,17 @@ fun ResultView(
     val uiState by viewModel.uiState.collectAsState()
 
     LaunchedEffect(Unit) {
-        viewModel.onViewDidAppear()
+        viewModel.onViewAppear()
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.outputEvent.collect { eventType ->
+            when (eventType) {
+                is ResultViewModel.OutputEventType.ShowNameRegisterView -> {
+                    showNameRegisterView(eventType.score)
+                }
+            }
+        }
     }
 
     Surface(
@@ -162,7 +166,7 @@ fun ResultView(
                         }
 
                         AnimatedButtonsAndIcon(
-                            isShowButtons = uiState.isShowButtons,
+                            isButtonsVisible = uiState.isButtonsVisible,
                             onTapReplay = {
                                 // TODO: 暫定対応
                                 viewModel.resetParams()
@@ -179,20 +183,6 @@ fun ResultView(
                     }
                 }
             }
-        }
-
-        if (uiState.isShowNameRegisterDialog) {
-            NameRegisterView(
-                viewModel = NameRegisterViewModel(
-                    app = Application(),
-                    score = viewModel.score,
-                    rankingRegisterUseCase = factory.createRankingRegisterUseCase(),
-                    rankingStore = factory.createRankingStore(),
-                ),
-                onClose = { registeredRankingItem ->
-                    viewModel.onCloseNameRegisterDialog(registeredRankingItem)
-                }
-            )
         }
     }
 }
@@ -270,13 +260,13 @@ fun TitleView() {
 
 @Composable
 fun AnimatedButtonsAndIcon(
-    isShowButtons: Boolean,
+    isButtonsVisible: Boolean,
     onTapReplay: () -> Unit,
     onTapHome: () -> Unit,
 ) {
     val screenWidth = LocalConfiguration.current.screenWidthDp
     val buttonAlpha = animateFloatAsState(
-        targetValue = if (isShowButtons) 1f else 0f,
+        targetValue = if (isButtonsVisible) 1f else 0f,
         animationSpec = tween(
             durationMillis = 600,
         )
@@ -302,7 +292,7 @@ fun AnimatedButtonsAndIcon(
                 .padding(end = (screenWidth * 0.01).dp)
         )
         AnimatedVisibility(
-            visible = isShowButtons,
+            visible = isButtonsVisible,
             enter = expandHorizontally(
                 animationSpec = tween(durationMillis = 600)
             ),

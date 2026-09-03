@@ -10,6 +10,7 @@ import com.takamasafukase.ar_gunman_android.factories.Factory
 @Composable
 fun ResultViewBuilder(
     factory: Factory,
+    showNameRegisterView: (score: Double) -> Unit,
     onReplay: () -> Unit,
     toHome: () -> Unit,
 ) {
@@ -27,6 +28,7 @@ fun ResultViewBuilder(
     val viewModel: ResultViewModel = viewModel(factory = vmFactory)
     ResultView(
         viewModel = viewModel,
+        showNameRegisterView = showNameRegisterView,
         onReplay = onReplay,
         toHome = toHome,
     )

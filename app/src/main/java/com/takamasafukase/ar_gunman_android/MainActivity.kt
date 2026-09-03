@@ -165,7 +165,9 @@ fun RootCompose(
         composable("result/{score}") {
             ResultViewBuilder(
                 factory = factory,
-                // TODO: showNameRegisterView
+                showNameRegisterView = { score ->
+                    navController.navigate("nameRegister/$score")
+                },
                 onReplay = {
                     navController.navigate("game") {
                         popUpTo("top") {
