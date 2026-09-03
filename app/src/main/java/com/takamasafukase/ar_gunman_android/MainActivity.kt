@@ -1,11 +1,7 @@
 package com.takamasafukase.ar_gunman_android
 
-import android.content.BroadcastReceiver
-import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
 import android.os.Bundle
-import android.util.Log
 import android.app.Application
 import android.net.Uri
 import android.provider.Settings
@@ -16,7 +12,6 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.dialog
@@ -78,7 +73,6 @@ fun RootCompose(
     showDeviceSetting: () -> Unit,
 ) {
     val navController = rememberNavController()
-    val context = LocalContext.current
 
     // TODO: route文字列をConstにする
     NavHost(
@@ -194,44 +188,6 @@ fun RootCompose(
                         ?.set(SavedStateHandleKeys.REGISTERED_RANKING_ITEM, rankingItem)
                     navController.popBackStack()
                 }
-            )
-        }
-    }
-
-    val navigationNotificationHandler = object : BroadcastReceiver() {
-        override fun onReceive(context: Context?, intent: Intent?) {
-            Log.d("Android", "ログAndroid: MainActivity onReceive navigationNotificationHandler")
-            val destinationNameText = intent?.getStringExtra("destination")
-            if (destinationNameText != null) {
-                if (destinationNameText == "result") {
-                    val totalScore = intent.getStringExtra("totalScore")
-                    Log.d(
-                        "Android",
-                        "ログAndroid: MainActivity onReceive navController.navigate($destinationNameText/$totalScore)を実行します"
-                    )
-                    // 受け取ったスコアと一緒に遷移指示を流す
-                    navController.navigate("$destinationNameText/$totalScore")
-                } else {
-                    Log.d(
-                        "Android",
-                        "ログAndroid: MainActivity onReceive navController.navigate($destinationNameText)を実行します"
-                    )
-                    // 通知で受け取ったdestinationに遷移
-                    navController.navigate(destinationNameText)
-                }
-            }
-        }
-    }
-    DisposableEffect(Unit) {
-        // 通知受信時の処理を登録
-        context.registerReceiver(
-            navigationNotificationHandler,
-            IntentFilter("com.takamasafukase.ar_gunman_android.NAVIGATION_EVENT")
-        )
-        // onDisposeで通知受信時の処理を解除
-        onDispose {
-            context.unregisterReceiver(
-                navigationNotificationHandler
             )
         }
     }
