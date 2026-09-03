@@ -25,7 +25,6 @@ import com.takamasafukase.ar_gunman_android.extensions.timeCountText
 import com.takamasafukase.ar_gunman_android.features.game.weaponResources.soundResources
 import com.takamasafukase.ar_gunman_android.features.game.weaponResources.uiResources
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -53,21 +52,19 @@ class GameViewModel(
         val sightImageId: Int = 0,
         val bulletsCountImageName: String = "",
         val isWeaponChangeButtonEnabled: Boolean = false,
-        val isTutorialViewPresented: Boolean = false,
-        val isWeaponSelectViewPresented: Boolean = false,
     )
-
-    private val isTutorialViewPresentedFlow = MutableStateFlow(value = false)
-    private val isWeaponSelectViewPresentedFlow = MutableStateFlow(value = false)
-    private val _showResultEvent = MutableSharedFlow<Double>()
+    sealed interface OutputEventType {
+        object ShowTutorialView : OutputEventType
+        object ShowWeaponSelectView : OutputEventType
+        object CloseWeaponSelectView : OutputEventType
+        data class ShowResultView(val score: Double) : OutputEventType
+    }
 
     val uiState: StateFlow<UIState> = combine(
         gameStore.gameFlow,
         gameStore.timeCount,
         weaponStore.weapon,
-        isTutorialViewPresentedFlow,
-        isWeaponSelectViewPresentedFlow,
-    ) { gameFlow, timeCount, weapon, isTutorialViewPresented, isWeaponSelectViewPresented ->
+    ) { gameFlow, timeCount, weapon ->
         UIState(
             timeCountText = timeCount.countMillisec.timeCountText,
             currentWeaponType = weapon.currentType,
@@ -76,17 +73,14 @@ class GameViewModel(
                 bulletsCount = weapon.bulletsCount
             ),
             isWeaponChangeButtonEnabled = gameFlow.status.isTimerRunning,
-            isTutorialViewPresented = isTutorialViewPresented,
-            isWeaponSelectViewPresented = isWeaponSelectViewPresented,
         )
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
         initialValue = UIState(),
     )
-
-    // 結果画面で表示する得点と一緒に線に指示を流す
-    val showResultEvent get() = _showResultEvent.asSharedFlow()
+    val outputEvent get() = _outputEvent.asSharedFlow()
+    private val _outputEvent = MutableSharedFlow<OutputEventType>()
 
     init {
         arShootingEngineHandler.targetHit = { weaponType ->
@@ -189,21 +183,27 @@ class GameViewModel(
                         GameFlowStatus.TimerEndedAndWaitingForFlowEnd -> {
                             soundPlayer.play(SoundType.END_WHISTLE)
                             motionSensorHandler.stopDetection()
-                            isWeaponSelectViewPresentedFlow.value = false
+                            viewModelScope.launch {
+                                _outputEvent.emit(OutputEventType.CloseWeaponSelectView)
+                            }
                         }
 
                         GameFlowStatus.FlowEnded -> {
                             soundPlayer.play(SoundType.RANKING_APPEAR)
                             viewModelScope.launch {
-                                // 結果画面への遷移指示を流す（結果画面で表示する得点も一緒に渡す）
-                                _showResultEvent.emit(gameStore.score.value.value)
+                                // 結果画面で表示する得点と一緒に遷移指示を流す
+                                _outputEvent.emit(
+                                    OutputEventType.ShowResultView(gameStore.score.value.value)
+                                )
                             }
                         }
 
                         is GameFlowStatus.Blocked -> {
                             when (status.reason) {
                                 GameFlowStatus.BlockedReason.TUTORIAL_NOT_COMPLETED -> {
-                                    isTutorialViewPresentedFlow.value = true
+                                    viewModelScope.launch {
+                                        _outputEvent.emit(OutputEventType.ShowTutorialView)
+                                    }
                                 }
 
                                 GameFlowStatus.BlockedReason.TIMER_PAUSED -> {}
@@ -229,33 +229,28 @@ class GameViewModel(
         }
     }
 
+    // TODO 必要性を確認
     fun onViewDisappear() {
         arShootingEngineHandler.pause()
     }
 
+    // TODO: initでSavedStateHandleからイベントを購読して呼び出す
     fun tutorialEnded() {
-        // TODO: iOSではこれが不要なので遷移構造を見直した際にどうなるか確認したい
-        isTutorialViewPresentedFlow.value = false
-
         viewModelScope.launch {
             gameFlowDriveUseCase.resolveBlocked()
         }
     }
 
-    fun weaponSelectViewClosed() {
-        // TODO: iOSではこれが不要なので遷移構造を見直した際にどうなるか確認したい
-        isWeaponSelectViewPresentedFlow.value = false
-    }
-
     fun weaponChangeButtonTapped() {
-        isWeaponSelectViewPresentedFlow.value = true
-
-        // 武器選択中はタイムカウントの更新を止める
         viewModelScope.launch {
+            _outputEvent.emit(OutputEventType.ShowWeaponSelectView)
+
+            // 武器選択中はタイムカウントの更新を止める
             gameFlowDriveUseCase.pauseTimer()
         }
     }
 
+    // TODO: initでSavedStateHandleからイベントを購読して呼び出す
     fun weaponSelected(weaponType: WeaponType) {
         weaponChangeUseCase.execute(newType = weaponType)
         arShootingEngineHandler.showWeapon(type = weaponType)

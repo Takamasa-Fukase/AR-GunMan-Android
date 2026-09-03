@@ -10,7 +10,10 @@ import com.takamasafukase.ar_gunman_android.factories.Factory
 @Composable
 fun GameViewBuilder(
     factory: Factory,
-    toResult: (score: Double) -> Unit,
+    showTutorialView: () -> Unit,
+    showWeaponSelectView: () -> Unit,
+    closeWeaponSelectView: () -> Unit,
+    showResultView: (score: Double) -> Unit,
 ) {
     val rememberCoroutineScope = rememberCoroutineScope()
     val vmFactory = viewModelFactory {
@@ -43,6 +46,9 @@ fun GameViewBuilder(
     val viewModel: GameViewModel = viewModel(factory = vmFactory)
     GameView(
         viewModel = viewModel,
-        toResult = toResult,
+        showTutorialView = showTutorialView,
+        showWeaponSelectView = showWeaponSelectView,
+        closeWeaponSelectView = closeWeaponSelectView,
+        showResultView = showResultView
     )
 }

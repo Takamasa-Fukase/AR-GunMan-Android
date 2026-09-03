@@ -27,13 +27,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.takamasafukase.ar_gunman_android.R
-import com.takamasafukase.ar_gunman_android.features.tutorial.TutorialView
-import com.takamasafukase.ar_gunman_android.features.weaponSelect.WeaponSelectView
 
 @Composable
 fun GameView(
     viewModel: GameViewModel,
-    toResult: (score: Double) -> Unit,
+    showTutorialView: () -> Unit,
+    showWeaponSelectView: () -> Unit,
+    closeWeaponSelectView: () -> Unit,
+    showResultView: (score: Double) -> Unit,
 ) {
     val screenHeight = LocalConfiguration.current.screenHeightDp
     val screenWidth = LocalConfiguration.current.screenWidthDp
@@ -44,8 +45,21 @@ fun GameView(
     }
 
     LaunchedEffect(Unit) {
-        viewModel.showResultEvent.collect {
-            toResult(it)
+        viewModel.outputEvent.collect { eventType ->
+            when (eventType) {
+                GameViewModel.OutputEventType.ShowTutorialView -> {
+                    showTutorialView()
+                }
+                GameViewModel.OutputEventType.ShowWeaponSelectView -> {
+                    showWeaponSelectView()
+                }
+                GameViewModel.OutputEventType.CloseWeaponSelectView -> {
+                    closeWeaponSelectView()
+                }
+                is GameViewModel.OutputEventType.ShowResultView -> {
+                    showResultView(eventType.score)
+                }
+            }
         }
     }
 
@@ -125,26 +139,5 @@ fun GameView(
                 )
             }
         }
-    }
-
-    // チュートリアルダイアログ
-    if (uiState.isTutorialViewPresented) {
-        TutorialView(
-            onClose = {
-                viewModel.tutorialEnded()
-            }
-        )
-    }
-
-    // 武器選択画面ダイアログ
-    if (uiState.isWeaponSelectViewPresented) {
-        WeaponSelectView(
-            onClose = {
-                viewModel.weaponSelectViewClosed()
-            },
-            onSelectWeapon = {
-                viewModel.weaponSelected(it)
-            }
-        )
     }
 }

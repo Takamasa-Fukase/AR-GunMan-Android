@@ -80,6 +80,7 @@ fun RootCompose(
     val navController = rememberNavController()
     val context = LocalContext.current
 
+    // TODO: route文字列をConstにする
     NavHost(
         navController = navController,
         startDestination = "top",
@@ -129,9 +130,18 @@ fun RootCompose(
         composable("game") {
             GameViewBuilder(
                 factory = factory,
-                // TODO: showTutorialView
-                // TODO: showWeaponSelectView
-                toResult = { score ->
+                showTutorialView = {
+                    navController.navigate("tutorial")
+                },
+                showWeaponSelectView = {
+                    navController.navigate("weaponSelect")
+                },
+                closeWeaponSelectView = {
+                    // TODO: 挙動を検証する
+                    // ここで単純にpopしたらどうなるのか
+                    // 明示的に今のGameを残してそれより上があれば消す　とかの方がいいかも？
+                },
+                showResultView = { score ->
                     navController.navigate("result/$score")
                 }
             )
