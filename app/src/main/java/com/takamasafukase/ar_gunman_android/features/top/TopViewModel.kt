@@ -1,8 +1,5 @@
 package com.takamasafukase.ar_gunman_android.features.top
 
-import android.app.Application
-import android.os.Handler
-import android.os.Looper
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ar_gunman_android.device.cameraPermission.CameraPermissionHandlerInterface
@@ -18,9 +15,9 @@ class TopViewModel(
     private val soundPlayer: SoundPlayerInterface,
 ) : ViewModel() {
     data class UIState(
-        val startButtonImageId: Int = 0,
-        val settingsButtonImageId: Int = 0,
-        val howToPlayButtonImageId: Int = 0,
+        val startButtonImageId: Int = R.drawable.target_icon,
+        val settingsButtonImageId: Int = R.drawable.target_icon,
+        val howToPlayButtonImageId: Int = R.drawable.target_icon,
         val isPermissionDescriptionDialogPresented: Boolean = false,
     )
     enum class OutputEventType {

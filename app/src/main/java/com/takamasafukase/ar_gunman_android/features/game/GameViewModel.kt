@@ -32,8 +32,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.drop
-import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.skip
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -55,7 +53,7 @@ class GameViewModel(
     data class UIState(
         val timeCountText: String = "",
         val currentWeaponType: WeaponType = WeaponType.defaultType,
-        val sightImageId: Int = 0,
+        val sightImageId: Int = WeaponType.defaultType.uiResources.sightImageId,
         val bulletsCountImageName: String = "",
         val isWeaponChangeButtonEnabled: Boolean = false,
     )
