@@ -10,6 +10,7 @@ import com.ar_gunman_android.device.sound.SoundType
 import com.ar_gunman_android.domain.entities.ranking.RankingItem
 import com.ar_gunman_android.domain.storeInterfaces.RankingStoreInterface
 import com.ar_gunman_android.domain.useCases.RankingGetUseCaseInterface
+import com.takamasafukase.ar_gunman_android.constants.SavedStateHandleKeys
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,6 +18,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -60,6 +62,15 @@ class ResultViewModel(
 
     init {
         getRanking()
+
+        viewModelScope.launch {
+            savedStateHandle
+                .getStateFlow<RankingItem?>(SavedStateHandleKeys.REGISTERED_RANKING_ITEM, null)
+                .drop(1)
+                .collect { rankingItem ->
+                    onCloseNameRegisterDialog(registeredRankingItem = rankingItem)
+                }
+        }
     }
 
     fun onViewAppear() {
@@ -73,8 +84,31 @@ class ResultViewModel(
         }
     }
 
-    // TODO: SavedStateHandleからのイベントを購読して呼び出す
-    fun onCloseNameRegisterDialog(registeredRankingItem: RankingItem?) {
+    // TODO: 暫定対応
+    fun resetParams() {
+        viewModelScope.launch {
+            delay(timeMillis = 1000)
+            isButtonsVisibleFlow.value = false
+            rankingListHighlightedIndexFlow.value = null
+            lazyListState.scrollToItem(
+                index = 0,
+            )
+        }
+    }
+
+    // MARK: - Private Methods
+    private fun getRanking() {
+        try {
+            viewModelScope.launch {
+                rankingGetUseCase.execute()
+            }
+
+        } catch (error: Exception) {
+            Log.d("Android", "ログAndroid: ResultVM getRanking error: $error")
+        }
+    }
+
+    private fun onCloseNameRegisterDialog(registeredRankingItem: RankingItem?) {
         viewModelScope.launch {
             // 0.1秒後にボタンの出現アニメーションを開始させる
             delay(timeMillis = 100)
@@ -94,29 +128,6 @@ class ResultViewModel(
                     scrollOffset = -24,
                 )
             }
-        }
-    }
-
-    // TODO: 暫定対応
-    fun resetParams() {
-        viewModelScope.launch {
-            delay(timeMillis = 1000)
-            isButtonsVisibleFlow.value = false
-            rankingListHighlightedIndexFlow.value = null
-            lazyListState.scrollToItem(
-                index = 0,
-            )
-        }
-    }
-
-    private fun getRanking() {
-        try {
-            viewModelScope.launch {
-                rankingGetUseCase.execute()
-            }
-
-        } catch (error: Exception) {
-            Log.d("Android", "ログAndroid: ResultVM getRanking error: $error")
         }
     }
 }

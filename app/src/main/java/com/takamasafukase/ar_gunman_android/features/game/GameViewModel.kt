@@ -1,5 +1,6 @@
 package com.takamasafukase.ar_gunman_android.features.game
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ar_gunman_android.device.arShootingEngine.ARShootingEngineHandlerInterface
@@ -21,6 +22,7 @@ import com.ar_gunman_android.domain.useCases.WeaponChangeUseCaseInterface
 import com.ar_gunman_android.domain.useCases.WeaponControlMotionDetectUseCaseInterface
 import com.ar_gunman_android.domain.useCases.WeaponFireUseCaseInterface
 import com.ar_gunman_android.domain.useCases.WeaponReloadUseCaseInterface
+import com.takamasafukase.ar_gunman_android.constants.SavedStateHandleKeys
 import com.takamasafukase.ar_gunman_android.extensions.timeCountText
 import com.takamasafukase.ar_gunman_android.features.game.weaponResources.soundResources
 import com.takamasafukase.ar_gunman_android.features.game.weaponResources.uiResources
@@ -29,10 +31,14 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.skip
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class GameViewModel(
+    savedStateHandle: SavedStateHandle,
     private val arShootingEngineHandler: ARShootingEngineHandlerInterface,
     private val motionSensorHandler: MotionSensorHandlerInterface,
     private val soundPlayer: SoundPlayerInterface,
@@ -83,6 +89,24 @@ class GameViewModel(
     private val _outputEvent = MutableSharedFlow<OutputEventType>()
 
     init {
+        viewModelScope.launch {
+            savedStateHandle
+                .getStateFlow(SavedStateHandleKeys.TUTORIAL_ENDED_EVENT, Unit)
+                .drop(1)
+                .collect {
+                    tutorialEnded()
+                }
+        }
+
+        viewModelScope.launch {
+            savedStateHandle
+                .getStateFlow(SavedStateHandleKeys.SELECTED_WEAPON_TYPE, WeaponType.defaultType)
+                .drop(1)
+                .collect { weaponType ->
+                    weaponSelected(weaponType)
+                }
+        }
+
         arShootingEngineHandler.targetHit = { weaponType ->
             scoreAddUseCase.execute(targetHitPoint = weaponType.targetHitPoint)
             soundPlayer.play(SoundType.TARGET_HIT)
@@ -229,16 +253,8 @@ class GameViewModel(
         }
     }
 
-    // TODO 必要性を確認
     fun onViewDisappear() {
         arShootingEngineHandler.pause()
-    }
-
-    // TODO: initでSavedStateHandleからイベントを購読して呼び出す
-    fun tutorialEnded() {
-        viewModelScope.launch {
-            gameFlowDriveUseCase.resolveBlocked()
-        }
     }
 
     fun weaponChangeButtonTapped() {
@@ -250,8 +266,14 @@ class GameViewModel(
         }
     }
 
-    // TODO: initでSavedStateHandleからイベントを購読して呼び出す
-    fun weaponSelected(weaponType: WeaponType) {
+    // MARK: - Private Methods
+    private fun tutorialEnded() {
+        viewModelScope.launch {
+            gameFlowDriveUseCase.resolveBlocked()
+        }
+    }
+
+    private fun weaponSelected(weaponType: WeaponType) {
         weaponChangeUseCase.execute(newType = weaponType)
         arShootingEngineHandler.showWeapon(type = weaponType)
         soundPlayer.play(weaponType.soundResources.appearingSound)

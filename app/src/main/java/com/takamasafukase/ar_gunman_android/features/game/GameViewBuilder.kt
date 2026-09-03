@@ -2,6 +2,7 @@ package com.takamasafukase.ar_gunman_android.features.game
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
@@ -18,10 +19,12 @@ fun GameViewBuilder(
     val rememberCoroutineScope = rememberCoroutineScope()
     val vmFactory = viewModelFactory {
         initializer {
+            val savedStateHandle = createSavedStateHandle()
             val weaponReloadUseCase = factory.createWeaponReloadUseCase(
                 scope = rememberCoroutineScope
             )
             GameViewModel(
+                savedStateHandle = savedStateHandle,
                 arShootingEngineHandler = factory.createARShootingEngineHandler(),
                 motionSensorHandler = factory.createMotionSensorHandler(),
                 soundPlayer = factory.createSoundPlayer(),

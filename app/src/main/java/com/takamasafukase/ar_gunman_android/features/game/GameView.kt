@@ -12,6 +12,7 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -40,8 +41,12 @@ fun GameView(
     val screenWidth = LocalConfiguration.current.screenWidthDp
     val uiState by viewModel.uiState.collectAsState()
 
-    LaunchedEffect(Unit) {
+    DisposableEffect(Unit) {
         viewModel.onViewAppear()
+
+        onDispose {
+            viewModel.onViewDisappear()
+        }
     }
 
     LaunchedEffect(Unit) {
