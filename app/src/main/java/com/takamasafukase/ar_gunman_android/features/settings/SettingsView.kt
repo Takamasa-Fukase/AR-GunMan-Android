@@ -1,6 +1,5 @@
 package com.takamasafukase.ar_gunman_android.features.settings
 
-import android.app.Application
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,7 +10,6 @@ import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
@@ -26,28 +24,29 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.takamasafukase.ar_gunman_android.R
 import com.takamasafukase.ar_gunman_android.ui.theme.copperplate
-import com.takamasafukase.ar_gunman_android.features.ranking.RankingView
-import com.takamasafukase.ar_gunman_android.features.ranking.RankingViewModel
 
 @Composable
 fun SettingsView(
     viewModel: SettingsViewModel,
+    showRankingView: () -> Unit,
     onClose: () -> Unit,
 ) {
-    val screenWidth = LocalConfiguration.current.screenWidthDp
     val screenHeight = LocalConfiguration.current.screenHeightDp
     val uriHandler = LocalUriHandler.current
-    val isShowRankingDialog = viewModel.isShowRankingDialog.collectAsState()
 
     LaunchedEffect(Unit) {
-        viewModel.openUrlInBrowserEvent.collect {
-            uriHandler.openUri(it)
-        }
-    }
-
-    LaunchedEffect(Unit) {
-        viewModel.closePageEvent.collect {
-            onClose()
+        viewModel.outputEvent.collect { eventType ->
+            when (eventType) {
+                SettingsViewModel.OutputEventType.ShowRankingView -> {
+                    showRankingView()
+                }
+                is SettingsViewModel.OutputEventType.OpenUrl -> {
+                    uriHandler.openUri(eventType.urlString)
+                }
+                SettingsViewModel.OutputEventType.Close -> {
+                    onClose()
+                }
+            }
         }
     }
 
@@ -130,20 +129,6 @@ fun SettingsView(
                 )
             }
         }
-
-        // ランキングダイアログ
-        if (isShowRankingDialog.value) {
-            val rankingViewModel = RankingViewModel(
-                app = Application(),
-
-            )
-            RankingView(
-                viewModel = rankingViewModel,
-                onClose = {
-                    viewModel.onCloseRankingDialog()
-                }
-            )
-        }
     }
 }
 
@@ -155,6 +140,7 @@ fun SettingsView(
 fun SettingsViewPreview() {
     SettingsView(
         viewModel = SettingsViewModel(),
+        showRankingView = {},
         onClose = {},
     )
 }

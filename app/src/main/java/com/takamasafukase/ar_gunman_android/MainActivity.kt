@@ -108,6 +108,9 @@ fun RootCompose(
         }
         composable("settings") {
             SettingsViewBuilder(
+                showRankingView = {
+                    navController.navigate("ranking")
+                },
                 onClose = {
                     navController.popBackStack()
                 }
