@@ -1,6 +1,5 @@
 package com.takamasafukase.ar_gunman_android.features.nameRegister
 
-import android.app.Application
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -35,19 +34,14 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Devices
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.takamasafukase.ar_gunman_android.utility.CustomDialog
 import com.takamasafukase.ar_gunman_android.R
-import com.ar_gunman_android.domain.entities.ranking.Ranking
 import com.ar_gunman_android.domain.entities.ranking.RankingItem
 import com.takamasafukase.ar_gunman_android.ui.theme.copperplate
 import com.takamasafukase.ar_gunman_android.utility.CustomTextField
-import com.takamasafukase.ar_gunman_android.utility.RankingUtil
-import kotlinx.coroutines.flow.MutableStateFlow
 
 @Composable
 fun NameRegisterView(

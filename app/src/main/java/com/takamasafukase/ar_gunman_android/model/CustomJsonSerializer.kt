@@ -1,6 +1,5 @@
 package com.takamasafukase.ar_gunman_android.model
 
-import com.ar_gunman_android.domain.entities.weapon.WeaponType
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.Serializer
@@ -15,17 +14,6 @@ object AndroidToUnityMessageEventTypeSerializer : KSerializer<AndroidToUnityMess
 
     override fun deserialize(decoder: Decoder): AndroidToUnityMessageEventType {
         return AndroidToUnityMessageEventType.values()[decoder.decodeInt()]
-    }
-}
-
-@Serializer(forClass = WeaponType::class)
-object WeaponTypeSerializer : KSerializer<WeaponType> {
-    override fun serialize(encoder: Encoder, value: WeaponType) {
-        encoder.encodeInt(value.ordinal)
-    }
-
-    override fun deserialize(decoder: Decoder): WeaponType {
-        return WeaponType.values()[decoder.decodeInt()]
     }
 }
 

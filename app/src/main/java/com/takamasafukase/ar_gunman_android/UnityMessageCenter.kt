@@ -16,12 +16,14 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.launch
+import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
 interface UnityMessageCenterInterface {
     val targetHitEvent: SharedFlow<Unit>
+    @OptIn(InternalSerializationApi::class)
     fun sendMessageToUnity(message: AndroidToUnityMessage)
 }
 
@@ -30,6 +32,7 @@ object UnityMessageCenter : UnityMessageCenterInterface {
     private val _targetHitEvent = MutableSharedFlow<Unit>()
     private val scope = CoroutineScope(Dispatchers.Default)
 
+    @OptIn(InternalSerializationApi::class)
     override fun sendMessageToUnity(message: AndroidToUnityMessage) {
         // JSON文字列に変換
         val jsonString = Json.encodeToString(message)
