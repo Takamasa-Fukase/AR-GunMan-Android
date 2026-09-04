@@ -1,4 +1,4 @@
-package com.takamasafukase.ar_gunman_android.model
+package com.ar_gunman_android.arshootingengine.models
 
 import kotlinx.serialization.Serializable
 

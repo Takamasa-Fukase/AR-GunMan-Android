@@ -1,23 +1,5 @@
 package com.ar_gunman_android.domain.entities.weapon
 
-import kotlinx.serialization.KSerializer
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.Serializer
-import kotlinx.serialization.encoding.Decoder
-import kotlinx.serialization.encoding.Encoder
-
-@Serializer(forClass = WeaponType::class)
-object WeaponTypeSerializer : KSerializer<WeaponType> {
-    override fun serialize(encoder: Encoder, value: WeaponType) {
-        encoder.encodeInt(value.ordinal)
-    }
-
-    override fun deserialize(decoder: Decoder): WeaponType {
-        return WeaponType.values()[decoder.decodeInt()]
-    }
-}
-
-@Serializable(with = WeaponTypeSerializer::class)
 enum class WeaponType {
     PISTOL,
     BAZOOKA;
