@@ -1,5 +1,7 @@
 package com.ar_gunman_android.device.arShootingEngine
 
+import com.ar_gunman_android.arshootingengine.ARShootingControllerInterface
+import com.ar_gunman_android.arshootingengine.models.WeaponType as ARShootingWeaponType
 import com.ar_gunman_android.domain.entities.weapon.WeaponType as DomainWeaponType
 
 interface ARShootingEngineHandlerInterface {
@@ -12,33 +14,55 @@ interface ARShootingEngineHandlerInterface {
 }
 
 class ARShootingEngineHandler(
-//    private val arShootingController:
+    private val arShootingController: ARShootingControllerInterface
 ) : ARShootingEngineHandlerInterface {
     override var targetHit: ((DomainWeaponType) -> Unit)? = null
 
-    override fun run() {
+    init {
+        arShootingController.targetHit = { weaponType ->
+            targetHit?.invoke(weaponType.toDomainWeaponType)
+        }
+    }
 
+    override fun run() {
+        arShootingController.run()
     }
 
     override fun pause() {
-
+        arShootingController.stop()
     }
 
     override fun showWeapon(type: DomainWeaponType) {
-
+        arShootingController.showWeapon(type = type.toARShootingWeaponType)
     }
 
     override fun renderWeaponFiring() {
-        // TODO
-//                    // 現在の武器の射撃命令のメッセージを作成
-//                    val toUnityMessage = AndroidToUnityMessage(
-//                        eventType = AndroidToUnityMessageEventType.FIRE_WEAPON,
-//                        weaponType = currentWeapon.weaponTypeChanged.value,
-//                    )
-//                    UnityMessageCenter.sendMessageToUnity(toUnityMessage)
+        arShootingController.renderWeaponFiring()
     }
 
     override fun changeTargetsAppearance() {
-
+        arShootingController.changeTargetsAppearance()
     }
 }
+
+private val DomainWeaponType.toARShootingWeaponType: ARShootingWeaponType
+    get() = when (this) {
+        DomainWeaponType.PISTOL -> {
+            ARShootingWeaponType.PISTOL
+        }
+
+        DomainWeaponType.BAZOOKA -> {
+            ARShootingWeaponType.BAZOOKA
+        }
+    }
+
+private val ARShootingWeaponType.toDomainWeaponType: DomainWeaponType
+    get() = when (this) {
+        ARShootingWeaponType.PISTOL -> {
+            DomainWeaponType.PISTOL
+        }
+
+        ARShootingWeaponType.BAZOOKA -> {
+            DomainWeaponType.BAZOOKA
+        }
+    }

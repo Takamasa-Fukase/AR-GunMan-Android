@@ -1,6 +1,7 @@
 package com.takamasafukase.ar_gunman_android.factories
 
 import android.content.Context
+import com.ar_gunman_android.arshootingengine.ARShootingEngineFactory
 import com.ar_gunman_android.data.dataSources.FirestoreClient
 import com.ar_gunman_android.data.dataSources.FirestoreClientInterface
 import com.ar_gunman_android.data.repositories.RankingRepository
@@ -46,7 +47,10 @@ class Factory(
 ) {
     // MARK: Devices
     fun createARShootingEngineHandler(): ARShootingEngineHandlerInterface {
-        return ARShootingEngineHandler()
+        val arShootingController = ARShootingEngineFactory.create()
+        return ARShootingEngineHandler(
+            arShootingController = arShootingController
+        )
     }
 
     fun createCameraPermissionHandler(): CameraPermissionHandlerInterface {
