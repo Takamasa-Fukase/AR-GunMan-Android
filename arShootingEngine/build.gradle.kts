@@ -14,12 +14,10 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
     }
-
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
-
     kotlinOptions {
         jvmTarget = "1.8"
     }
@@ -30,6 +28,8 @@ dependencies {
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.material:material:1.8.0")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.3")
+
+    // unityLibrary関連
     implementation(project(":unityLibrary"))
     implementation(project(":unityLibrary:xrmanifest.androidlib"))
     implementation(fileTree(mapOf("dir" to "../unityLibrary/libs", "include" to listOf("*.jar"))))

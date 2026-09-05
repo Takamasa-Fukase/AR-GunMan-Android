@@ -34,11 +34,11 @@ class NameRegisterViewModel(
 
     private fun makeTemporaryRankText(ranking: Ranking?): String? {
         // ランキング取得中の場合はrankingがnilなのでnilを返す
-        val ranking = ranking ?: return null
+        val _ranking = ranking ?: return null
         // 今回のscoreで仮に登録した場合の順位
-        val temporaryRank = ranking.getTentativeRankIndex(score = score) + 1
+        val temporaryRank = _ranking.getTentativeRankIndex(score = score) + 1
         // 登録済みランキング数に今回の結果を加えた数
-        val totalCount = ranking.items.size + 1
+        val totalCount = _ranking.items.size + 1
         return "$temporaryRank / $totalCount"
     }
 
