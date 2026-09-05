@@ -4,9 +4,6 @@ import android.util.Log
 import com.ar_gunman_android.arshootingengine.models.AndroidToUnityMessage
 import com.ar_gunman_android.arshootingengine.models.UnityToAndroidMessage
 import com.ar_gunman_android.arshootingengine.models.UnityToAndroidMessageEventType
-import com.takamasafukase.ar_gunman_android.model.AndroidToUnityMessage
-import com.takamasafukase.ar_gunman_android.model.UnityToAndroidMessage
-import com.takamasafukase.ar_gunman_android.model.UnityToAndroidMessageEventType
 import com.unity3d.player.UnityPlayer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -15,6 +12,7 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import kotlinx.serialization.InternalSerializationApi
+import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 

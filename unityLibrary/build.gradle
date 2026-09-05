@@ -3,7 +3,8 @@ apply plugin: 'com.android.library'
 
 dependencies {
     implementation project(':unityLibrary:xrmanifest.androidlib')
-    implementation fileTree(dir: project(':unityLibrary').getProjectDir().toString() + ('\\libs'), include: ['*.jar', '*.aar'])
+//    implementation fileTree(dir: project(':unityLibrary').getProjectDir().toString() + ('\\libs'), include: ['*.jar', '*.aar'])
+    implementation fileTree(dir: project(':unityLibrary').getProjectDir().toString() + ('\\libs'), include: ['*.jar'])
 }
 
 android {

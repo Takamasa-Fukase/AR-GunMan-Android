@@ -68,13 +68,20 @@ dependencies {
     implementation("com.google.firebase:firebase-firestore-ktx")
     def navigation_compose_version = "2.5.3"
     implementation "androidx.navigation:navigation-compose:$navigation_compose_version"
-    implementation project(':unityLibrary')
-    implementation project(':unityLibrary:xrmanifest.androidlib')
     implementation fileTree(dir: project(':unityLibrary').getProjectDir().toString() + ('\\libs'), include: ['*.jar', '*.aar'])
     implementation 'androidx.compose.foundation:foundation:1.4.3'
     implementation "com.google.accompanist:accompanist-pager-indicators:0.30.1"
     implementation "androidx.datastore:datastore-preferences:1.0.0"
+
+    // 自作ローカルモジュール群
+    implementation(project(":arShootingEngine"))
     implementation(project(":data"))
     implementation(project(":device"))
     implementation(project(":domain"))
+
+    // unityLibraryの.aarは:app側で扱う必要があるため記述
+    implementation(name: 'ARPresto', ext: 'aar')
+    implementation(name: 'unityandroidpermissions', ext: 'aar')
+    implementation(name: 'UnityARCore', ext: 'aar')
+    implementation(name: 'arcore_client', ext: 'aar')
 }

@@ -1,14 +1,14 @@
 package com.takamasafukase.ar_gunman_android.features.game
 
-import android.content.Intent
-import android.os.Bundle
-import android.widget.FrameLayout
-import androidx.activity.ComponentActivity
-import androidx.compose.ui.platform.ComposeView
-import androidx.lifecycle.lifecycleScope
-import com.takamasafukase.ar_gunman_android.R
-import com.takamasafukase.ar_gunman_android.factories.Factory
-import com.unity3d.player.UnityPlayer
+//import android.content.Intent
+//import android.os.Bundle
+//import android.widget.FrameLayout
+//import androidx.activity.ComponentActivity
+//import androidx.compose.ui.platform.ComposeView
+//import androidx.lifecycle.lifecycleScope
+//import com.takamasafukase.ar_gunman_android.R
+//import com.takamasafukase.ar_gunman_android.factories.Factory
+//import com.unity3d.player.UnityPlayer
 
 //class GameActivity : ComponentActivity() {
 //    private var unityPlayer: UnityPlayer? = null
