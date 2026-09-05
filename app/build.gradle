@@ -68,7 +68,6 @@ dependencies {
     implementation("com.google.firebase:firebase-firestore-ktx")
     def navigation_compose_version = "2.5.3"
     implementation "androidx.navigation:navigation-compose:$navigation_compose_version"
-    implementation fileTree(dir: project(':unityLibrary').getProjectDir().toString() + ('\\libs'), include: ['*.jar', '*.aar'])
     implementation 'androidx.compose.foundation:foundation:1.4.3'
     implementation "com.google.accompanist:accompanist-pager-indicators:0.30.1"
     implementation "androidx.datastore:datastore-preferences:1.0.0"
