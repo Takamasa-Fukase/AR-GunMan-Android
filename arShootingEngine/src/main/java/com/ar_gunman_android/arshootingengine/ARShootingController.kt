@@ -1,13 +1,17 @@
 package com.ar_gunman_android.arshootingengine
 
+import android.view.View
 import android.view.ViewTreeObserver
 import androidx.activity.ComponentActivity
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.lifecycleScope
 import com.ar_gunman_android.arshootingengine.models.AndroidToUnityMessage
 import com.ar_gunman_android.arshootingengine.models.AndroidToUnityMessageEventType
 import com.ar_gunman_android.arshootingengine.models.WeaponType
 import com.unity3d.player.UnityPlayer
+import kotlinx.coroutines.launch
+import kotlinx.serialization.InternalSerializationApi
 
 interface ARShootingControllerInterface {
     var targetHit: ((WeaponType) -> Unit)?
@@ -22,9 +26,9 @@ internal class ARShootingController(
     private val activity: ComponentActivity
 ) : ARShootingControllerInterface, DefaultLifecycleObserver {
     override var targetHit: ((WeaponType) -> Unit)? = null
-    val rootView: android.view.View get() = unityPlayer!!.rootView
+    val rootView: View get() = unityPlayer!!.rootView
 
-    private var unityPlayer: UnityPlayer? = UnityPlayer(activity)
+    private var unityPlayer: UnityPlayer? = null
     private val focusChangeListener = ViewTreeObserver.OnWindowFocusChangeListener { hasFocus ->
         unityPlayer?.windowFocusChanged(hasFocus)
     }
@@ -34,10 +38,17 @@ internal class ARShootingController(
         activity.window.decorView.viewTreeObserver.addOnWindowFocusChangeListener(
             focusChangeListener
         )
+
+        activity.lifecycleScope.launch {
+            UnityMessageCenter.targetHitEvent
+                .collect {
+                    targetHit?.invoke(WeaponType.PISTOL)
+                }
+        }
     }
 
     override fun run() {
-
+        unityPlayer = UnityPlayer(activity)
     }
 
     override fun stop() {
@@ -49,13 +60,14 @@ internal class ARShootingController(
 
     }
 
+    @OptIn(InternalSerializationApi::class)
     override fun renderWeaponFiring() {
         // 現在の武器の射撃命令のメッセージを作成
-//        val toUnityMessage = AndroidToUnityMessage(
-//            eventType = AndroidToUnityMessageEventType.FIRE_WEAPON,
-//            weaponType = currentWeapon.weaponTypeChanged.value,
-//        )
-//        UnityMessageCenter.sendMessageToUnity(toUnityMessage)
+        val toUnityMessage = AndroidToUnityMessage(
+            eventType = AndroidToUnityMessageEventType.FIRE_WEAPON,
+            weaponType = WeaponType.PISTOL,
+        )
+        UnityMessageCenter.sendMessageToUnity(toUnityMessage)
     }
 
     override fun changeTargetsAppearance() {

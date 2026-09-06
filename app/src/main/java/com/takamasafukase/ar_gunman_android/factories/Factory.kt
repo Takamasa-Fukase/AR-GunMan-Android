@@ -1,6 +1,6 @@
 package com.takamasafukase.ar_gunman_android.factories
 
-import android.content.Context
+import androidx.activity.ComponentActivity
 import com.ar_gunman_android.arshootingengine.ARShootingEngineFactory
 import com.ar_gunman_android.data.dataSources.FirestoreClient
 import com.ar_gunman_android.data.dataSources.FirestoreClientInterface
@@ -43,26 +43,26 @@ import com.takamasafukase.ar_gunman_android.stores.WeaponStore
 import kotlinx.coroutines.CoroutineScope
 
 class Factory(
-    private val context: Context
+    private val activity: ComponentActivity
 ) {
     // MARK: Devices
     fun createARShootingEngineHandler(): ARShootingEngineHandlerInterface {
-        val arShootingController = ARShootingEngineFactory.create()
+        val arShootingController = ARShootingEngineFactory.create(activity = activity)
         return ARShootingEngineHandler(
             arShootingController = arShootingController
         )
     }
 
     fun createCameraPermissionHandler(): CameraPermissionHandlerInterface {
-        return CameraPermissionHandler(context = context)
+        return CameraPermissionHandler(context = activity.applicationContext)
     }
 
     fun createMotionSensorHandler(): MotionSensorHandlerInterface {
-        return MotionSensorHandler(context = context)
+        return MotionSensorHandler(context = activity.applicationContext)
     }
 
     fun createSoundPlayer(): SoundPlayerInterface {
-        return SoundPlayer(context = context)
+        return SoundPlayer(context = activity.applicationContext)
     }
 
     // MARK: DataSources

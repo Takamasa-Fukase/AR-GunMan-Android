@@ -2,8 +2,6 @@ package com.takamasafukase.ar_gunman_android
 
 import android.content.Intent
 import android.os.Bundle
-import android.app.Application
-import android.net.Uri
 import android.provider.Settings
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -27,21 +25,13 @@ import com.takamasafukase.ar_gunman_android.features.settings.SettingsViewBuilde
 import com.takamasafukase.ar_gunman_android.features.top.TopViewBuilder
 import com.takamasafukase.ar_gunman_android.features.tutorial.TutorialView
 import com.takamasafukase.ar_gunman_android.features.weaponSelect.WeaponSelectView
-
-class MainApplication : Application() {
-    lateinit var factory: Factory
-
-    override fun onCreate() {
-        super.onCreate()
-        factory = Factory(this)
-    }
-}
+import androidx.core.net.toUri
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val factory = (application as MainApplication).factory
+        val factory = Factory(activity = this)
 
         setContent {
             ARGunManAndroidTheme {
@@ -62,7 +52,7 @@ class MainActivity : ComponentActivity() {
 
     private fun showDeviceSetting() {
         val uriString = "package:$packageName"
-        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse(uriString))
+        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, uriString.toUri())
         startActivity(intent)
     }
 }

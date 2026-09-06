@@ -28,7 +28,7 @@ dependencies {
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.material:material:1.8.0")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.3")
-
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1")
     // unityLibrary関連
     implementation(project(":unityLibrary"))
     implementation(project(":unityLibrary:xrmanifest.androidlib"))
