@@ -119,10 +119,9 @@ class Factory(
         )
     }
 
-    fun createWeaponReloadUseCase(scope: CoroutineScope): WeaponReloadUseCaseInterface {
+    fun createWeaponReloadUseCase(): WeaponReloadUseCaseInterface {
         return WeaponReloadUseCase(
             weaponStore = createWeaponStore(),
-            scope = scope
         )
     }
 
@@ -135,11 +134,10 @@ class Factory(
         )
     }
 
-    fun createGameFlowDriveUseCase(scope: CoroutineScope): GameFlowDriveUseCaseInterface {
+    fun createGameFlowDriveUseCase(): GameFlowDriveUseCaseInterface {
         return GameFlowDriveUseCase(
             tutorialRepository = createTutorialRepository(),
             gameStore = createGameStore(),
-            scope = scope
         )
     }
 

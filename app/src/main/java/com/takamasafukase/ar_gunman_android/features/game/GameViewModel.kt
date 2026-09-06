@@ -89,6 +89,10 @@ class GameViewModel(
     private val _outputEvent = MutableSharedFlow<OutputEventType>()
 
     init {
+        // FIXME: 暫定対応
+        gameFlowDriveUseCase.setScope(scope = viewModelScope)
+        weaponReloadUseCase.setScope(scope = viewModelScope)
+
         viewModelScope.launch {
             savedStateHandle
                 .getStateFlow(SavedStateHandleKeys.TUTORIAL_ENDED_EVENT, false)
@@ -246,6 +250,7 @@ class GameViewModel(
     }
 
     fun onViewAppear() {
+        print("🟦GameVM onViewAppear")
         gameStore.reset()
         weaponStore.reset()
 

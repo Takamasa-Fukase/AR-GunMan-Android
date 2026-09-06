@@ -20,9 +20,8 @@ fun GameViewBuilder(
     val vmFactory = viewModelFactory {
         initializer {
             val savedStateHandle = createSavedStateHandle()
-            val weaponReloadUseCase = factory.createWeaponReloadUseCase(
-                scope = rememberCoroutineScope
-            )
+            val gameFlowDriveUseCase = factory.createGameFlowDriveUseCase()
+            val weaponReloadUseCase = factory.createWeaponReloadUseCase()
             GameViewModel(
                 savedStateHandle = savedStateHandle,
                 arShootingEngineHandler = factory.createARShootingEngineHandler(),
@@ -37,9 +36,7 @@ fun GameViewBuilder(
                 weaponChangeUseCase = factory.createWeaponChangeUseCase(
                     weaponReloadUseCase = weaponReloadUseCase
                 ),
-                gameFlowDriveUseCase = factory.createGameFlowDriveUseCase(
-                    scope = rememberCoroutineScope
-                ),
+                gameFlowDriveUseCase = gameFlowDriveUseCase,
                 scoreAddUseCase = factory.createScoreAddUseCase(),
                 reloadingMotionCountUpdateUseCase = factory.createReloadingMotionCountUpdateUseCase(),
                 weaponControlMotionDetectUseCase = factory.createWeaponControlMotionDetectUseCase(),

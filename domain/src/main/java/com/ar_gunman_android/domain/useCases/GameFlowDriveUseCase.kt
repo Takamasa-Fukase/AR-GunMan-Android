@@ -18,14 +18,15 @@ interface GameFlowDriveUseCaseInterface {
     suspend fun start()
     suspend fun pauseTimer()
     suspend fun resolveBlocked()
+    fun setScope(scope: CoroutineScope)
 }
 
 class GameFlowDriveUseCase(
     private val tutorialRepository: TutorialRepositoryInterface,
     private val gameStore: GameStoreInterface,
-    private val scope: CoroutineScope,
 ) : GameFlowDriveUseCaseInterface {
     override val statusStream: SharedFlow<GameFlowStatus> get() = _statusStream.asSharedFlow()
+    private var scope: CoroutineScope? = null
 
     private val _statusStream = MutableSharedFlow<GameFlowStatus>()
     private var timerJob: Job? = null
@@ -55,6 +56,10 @@ class GameFlowDriveUseCase(
         }
     }
 
+    override fun setScope(scope: CoroutineScope) {
+        this.scope = scope
+    }
+
     private suspend fun updateAndHandleNextStatus(nextStatus: GameFlowStatus) {
         gameStore.updateGameFlow { gameFlow ->
             gameFlow.drive(nextStatus = nextStatus)
@@ -76,7 +81,7 @@ class GameFlowDriveUseCase(
             }
 
             GameFlowStatus.WaitingForTimerStart -> {
-                scope.launch {
+                scope?.launch {
                     // 1.5秒待機
                     delay(timeMillis = 1500)
                     updateAndHandleNextStatus(nextStatus = GameFlowStatus.TimerStartedAndWaitingForTimerEnd)
@@ -84,7 +89,7 @@ class GameFlowDriveUseCase(
             }
 
             GameFlowStatus.TimerStartedAndWaitingForTimerEnd, GameFlowStatus.TimerResumedAndWaitingForTimerEnd -> {
-                timerJob = scope.launch {
+                timerJob = scope?.launch {
                     while (coroutineContext.isActive) {
                         if (gameStore.timeCount.value.isTimeUp) {
                             updateAndHandleNextStatus(nextStatus = GameFlowStatus.TimerEndedAndWaitingForFlowEnd)
@@ -102,7 +107,7 @@ class GameFlowDriveUseCase(
             }
 
             GameFlowStatus.TimerEndedAndWaitingForFlowEnd -> {
-                scope.launch {
+                scope?.launch {
                     // 1.5秒待機
                     delay(timeMillis = 1500)
                     updateAndHandleNextStatus(nextStatus = GameFlowStatus.FlowEnded)
