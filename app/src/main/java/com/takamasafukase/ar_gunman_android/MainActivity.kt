@@ -91,7 +91,7 @@ fun RootCompose(
                 onClose = {
                     navController.previousBackStackEntry
                         ?.savedStateHandle
-                        ?.set(SavedStateHandleKeys.TUTORIAL_ENDED_EVENT, Unit)
+                        ?.set(SavedStateHandleKeys.TUTORIAL_ENDED_EVENT, true)
                     navController.popBackStack()
                 }
             )

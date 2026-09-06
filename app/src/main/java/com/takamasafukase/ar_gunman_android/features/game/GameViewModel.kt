@@ -54,7 +54,9 @@ class GameViewModel(
         val timeCountText: String = "",
         val currentWeaponType: WeaponType = WeaponType.defaultType,
         val sightImageId: Int = WeaponType.defaultType.uiResources.sightImageId,
-        val bulletsCountImageName: String = "",
+        val bulletsCountImageName: String = WeaponType.defaultType.uiResources.bulletsCountImageName(
+            bulletsCount = WeaponType.defaultType.capacity
+        ),
         val isWeaponChangeButtonEnabled: Boolean = false,
     )
     sealed interface OutputEventType {
@@ -89,7 +91,7 @@ class GameViewModel(
     init {
         viewModelScope.launch {
             savedStateHandle
-                .getStateFlow(SavedStateHandleKeys.TUTORIAL_ENDED_EVENT, Unit)
+                .getStateFlow(SavedStateHandleKeys.TUTORIAL_ENDED_EVENT, false)
                 .drop(1)
                 .collect {
                     tutorialEnded()
@@ -98,10 +100,13 @@ class GameViewModel(
 
         viewModelScope.launch {
             savedStateHandle
-                .getStateFlow(SavedStateHandleKeys.SELECTED_WEAPON_TYPE, WeaponType.defaultType)
+                .getStateFlow<WeaponType?>(SavedStateHandleKeys.SELECTED_WEAPON_TYPE, null)
                 .drop(1)
                 .collect { weaponType ->
-                    weaponSelected(weaponType)
+                    weaponType?.let {
+                        weaponSelected(weaponType)
+                        savedStateHandle.remove<WeaponType?>(SavedStateHandleKeys.SELECTED_WEAPON_TYPE)
+                    }
                 }
         }
 

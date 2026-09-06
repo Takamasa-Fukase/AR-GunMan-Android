@@ -10,6 +10,7 @@ import com.ar_gunman_android.arshootingengine.models.AndroidToUnityMessage
 import com.ar_gunman_android.arshootingengine.models.AndroidToUnityMessageEventType
 import com.ar_gunman_android.arshootingengine.models.WeaponType
 import com.unity3d.player.UnityPlayer
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.launch
 import kotlinx.serialization.InternalSerializationApi
 
@@ -41,6 +42,7 @@ internal class ARShootingController(
 
         activity.lifecycleScope.launch {
             UnityMessageCenter.targetHitEvent
+                .debounce(50)
                 .collect {
                     targetHit?.invoke(WeaponType.PISTOL)
                 }
