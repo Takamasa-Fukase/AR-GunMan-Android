@@ -1,7 +1,7 @@
 package com.takamasafukase.ar_gunman_android.features.game
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.remember
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.initializer
@@ -17,13 +17,17 @@ fun GameViewBuilder(
     closeWeaponSelectView: () -> Unit,
     showResultView: (score: Double) -> Unit,
 ) {
+    val (arShootingEngineHandler, arView) = remember(factory) {
+        factory.createARShootingEngineHandler()
+    }
+
     val vmFactory = viewModelFactory {
         initializer {
             val gameFlowDriveUseCase = factory.createGameFlowDriveUseCase()
             val weaponReloadUseCase = factory.createWeaponReloadUseCase()
             GameViewModel(
                 savedStateHandle = savedStateHandle,
-                arShootingEngineHandler = factory.createARShootingEngineHandler(),
+                arShootingEngineHandler = arShootingEngineHandler,
                 motionSensorHandler = factory.createMotionSensorHandler(),
                 soundPlayer = factory.createSoundPlayer(),
                 gameStore = factory.createGameStore(),
@@ -45,6 +49,7 @@ fun GameViewBuilder(
     val viewModel: GameViewModel = viewModel(factory = vmFactory)
     GameView(
         viewModel = viewModel,
+        arView = arView,
         showTutorialView = showTutorialView,
         showWeaponSelectView = showWeaponSelectView,
         closeWeaponSelectView = closeWeaponSelectView,

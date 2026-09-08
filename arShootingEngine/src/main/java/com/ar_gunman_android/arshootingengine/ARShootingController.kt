@@ -29,7 +29,8 @@ internal class ARShootingController(
     override var targetHit: ((WeaponType) -> Unit)? = null
     val rootView: View get() = unityPlayer!!.rootView
 
-    private var unityPlayer: UnityPlayer? = null
+//    private var unityPlayer: UnityPlayer? = null
+    private var unityPlayer: UnityPlayer? = UnityPlayer(activity)
     private val focusChangeListener = ViewTreeObserver.OnWindowFocusChangeListener { hasFocus ->
         unityPlayer?.windowFocusChanged(hasFocus)
     }
@@ -50,7 +51,7 @@ internal class ARShootingController(
     }
 
     override fun run() {
-        unityPlayer = UnityPlayer(activity)
+//        unityPlayer = UnityPlayer(activity)
     }
 
     override fun stop() {

@@ -1,14 +1,15 @@
 package com.ar_gunman_android.arshootingengine
 
+import android.view.View
 import androidx.activity.ComponentActivity
 
 object ARShootingEngineFactory {
     fun create(
         activity: ComponentActivity
-    ): ARShootingControllerInterface {
+    ): Pair<ARShootingControllerInterface, View> {
         val controller = ARShootingController(
             activity = activity
         )
-        return controller
+        return Pair(controller, controller.rootView)
     }
 }
