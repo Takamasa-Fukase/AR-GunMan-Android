@@ -26,12 +26,12 @@ import com.takamasafukase.ar_gunman_android.constants.SavedStateHandleKeys
 import com.takamasafukase.ar_gunman_android.extensions.timeCountText
 import com.takamasafukase.ar_gunman_android.features.game.weaponResources.soundResources
 import com.takamasafukase.ar_gunman_android.features.game.weaponResources.uiResources
-import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -85,8 +85,8 @@ class GameViewModel(
         started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
         initialValue = UIState(),
     )
-    val outputEvent get() = _outputEvent.asSharedFlow()
-    private val _outputEvent = MutableSharedFlow<OutputEventType>()
+    val outputEvent get() = _outputEvent.receiveAsFlow()
+    private val _outputEvent = Channel<OutputEventType>(Channel.BUFFERED)
 
     init {
         // FIXME: 暫定対応
@@ -215,7 +215,7 @@ class GameViewModel(
                             soundPlayer.play(SoundType.END_WHISTLE)
                             motionSensorHandler.stopDetection()
                             viewModelScope.launch {
-                                _outputEvent.emit(OutputEventType.CloseWeaponSelectView)
+                                _outputEvent.send(OutputEventType.CloseWeaponSelectView)
                             }
                         }
 
@@ -223,7 +223,7 @@ class GameViewModel(
                             soundPlayer.play(SoundType.RANKING_APPEAR)
                             viewModelScope.launch {
                                 // 結果画面で表示する得点と一緒に遷移指示を流す
-                                _outputEvent.emit(
+                                _outputEvent.send(
                                     OutputEventType.ShowResultView(gameStore.score.value.value)
                                 )
                             }
@@ -233,7 +233,7 @@ class GameViewModel(
                             when (status.reason) {
                                 GameFlowStatus.BlockedReason.TUTORIAL_NOT_COMPLETED -> {
                                     viewModelScope.launch {
-                                        _outputEvent.emit(OutputEventType.ShowTutorialView)
+                                        _outputEvent.send(OutputEventType.ShowTutorialView)
                                     }
                                 }
 
@@ -267,7 +267,7 @@ class GameViewModel(
 
     fun weaponChangeButtonTapped() {
         viewModelScope.launch {
-            _outputEvent.emit(OutputEventType.ShowWeaponSelectView)
+            _outputEvent.send(OutputEventType.ShowWeaponSelectView)
 
             // 武器選択中はタイムカウントの更新を止める
             gameFlowDriveUseCase.pauseTimer()

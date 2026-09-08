@@ -16,7 +16,6 @@ fun GameViewBuilder(
     closeWeaponSelectView: () -> Unit,
     showResultView: (score: Double) -> Unit,
 ) {
-    val rememberCoroutineScope = rememberCoroutineScope()
     val vmFactory = viewModelFactory {
         initializer {
             val savedStateHandle = createSavedStateHandle()
