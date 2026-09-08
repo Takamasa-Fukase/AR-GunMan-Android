@@ -2,7 +2,7 @@ package com.takamasafukase.ar_gunman_android.features.game
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.lifecycle.createSavedStateHandle
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
@@ -11,6 +11,7 @@ import com.takamasafukase.ar_gunman_android.factories.Factory
 @Composable
 fun GameViewBuilder(
     factory: Factory,
+    savedStateHandle: SavedStateHandle,
     showTutorialView: () -> Unit,
     showWeaponSelectView: () -> Unit,
     closeWeaponSelectView: () -> Unit,
@@ -18,7 +19,6 @@ fun GameViewBuilder(
 ) {
     val vmFactory = viewModelFactory {
         initializer {
-            val savedStateHandle = createSavedStateHandle()
             val gameFlowDriveUseCase = factory.createGameFlowDriveUseCase()
             val weaponReloadUseCase = factory.createWeaponReloadUseCase()
             GameViewModel(

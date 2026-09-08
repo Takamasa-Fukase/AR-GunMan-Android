@@ -1,5 +1,6 @@
 package com.takamasafukase.ar_gunman_android.factories
 
+import android.view.View
 import androidx.activity.ComponentActivity
 import com.ar_gunman_android.arshootingengine.ARShootingEngineFactory
 import com.ar_gunman_android.data.dataSources.FirestoreClient
@@ -40,17 +41,17 @@ import com.ar_gunman_android.domain.useCases.WeaponReloadUseCaseInterface
 import com.takamasafukase.ar_gunman_android.stores.GameStore
 import com.takamasafukase.ar_gunman_android.stores.RankingStore
 import com.takamasafukase.ar_gunman_android.stores.WeaponStore
-import kotlinx.coroutines.CoroutineScope
 
 class Factory(
     private val activity: ComponentActivity
 ) {
     // MARK: Devices
-    fun createARShootingEngineHandler(): ARShootingEngineHandlerInterface {
-        val arShootingController = ARShootingEngineFactory.create(activity = activity)
-        return ARShootingEngineHandler(
+    fun createARShootingEngineHandler(): Pair<ARShootingEngineHandlerInterface, View> {
+        val (arShootingController, arView) = ARShootingEngineFactory.create(activity = activity)
+        val arShootingEngineHandler = ARShootingEngineHandler(
             arShootingController = arShootingController
         )
+        return Pair(arShootingEngineHandler, arView)
     }
 
     fun createCameraPermissionHandler(): CameraPermissionHandlerInterface {

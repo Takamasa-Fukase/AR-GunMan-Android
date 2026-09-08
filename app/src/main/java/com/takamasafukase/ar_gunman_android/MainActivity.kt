@@ -89,9 +89,9 @@ fun RootCompose(
         dialog("tutorial") {
             TutorialView(
                 onClose = {
-                    navController.previousBackStackEntry
-                        ?.savedStateHandle
-                        ?.set(SavedStateHandleKeys.TUTORIAL_ENDED_EVENT, true)
+                    navController
+                        .getBackStackEntry("game")
+                        .savedStateHandle[SavedStateHandleKeys.TUTORIAL_ENDED_EVENT] = true
                     navController.popBackStack()
                 }
             )
@@ -114,9 +114,10 @@ fun RootCompose(
                 }
             )
         }
-        composable("game") {
+        composable("game") { navBackStackEntry ->
             GameViewBuilder(
                 factory = factory,
+                savedStateHandle = navBackStackEntry.savedStateHandle,
                 showTutorialView = {
                     navController.navigate("tutorial")
                 },
@@ -139,19 +140,20 @@ fun RootCompose(
                     navController.popBackStack()
                 },
                 onSelectWeapon = { weaponType ->
-                    navController.previousBackStackEntry
-                        ?.savedStateHandle
-                        ?.set(SavedStateHandleKeys.SELECTED_WEAPON_TYPE, weaponType)
 
+                    navController
+                        .getBackStackEntry("game")
+                        .savedStateHandle[SavedStateHandleKeys.SELECTED_WEAPON_TYPE] = weaponType
                     // TODO: onCloseの方も自動で呼ばれるのか、こっちでもpopが必要かを実際に確認する
                     // TODO: 二重でpopされないかも確認したい
                     navController.popBackStack()
                 }
             )
         }
-        composable("result/{score}") {
+        composable("result/{score}") { navBackStackEntry ->
             ResultViewBuilder(
                 factory = factory,
+                savedStateHandle = navBackStackEntry.savedStateHandle,
                 showNameRegisterView = { score ->
                     navController.navigate("nameRegister/$score")
                 },
@@ -172,9 +174,10 @@ fun RootCompose(
                 }
             )
         }
-        dialog("nameRegister/{score}") {
+        dialog("nameRegister/{score}") { navBackStackEntry ->
             NameRegisterViewBuilder(
                 factory = factory,
+                savedStateHandle = navBackStackEntry.savedStateHandle,
                 onClose = { rankingItem ->
                     navController.previousBackStackEntry
                         ?.savedStateHandle

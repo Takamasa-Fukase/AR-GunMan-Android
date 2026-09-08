@@ -57,7 +57,7 @@ class MotionSensorHandler(
             if (currentTimeMs - lastAccelerationProcessedTimeMs < 200L) {
                 return
             }
-            Log.d("Android", "ログAndroid: 🟢🟥200ms経ったので通過")
+//            Log.d("Android", "ログAndroid: 🟢🟥200ms経ったので通過")
             lastAccelerationProcessedTimeMs = currentTimeMs
 
             motionUpdated?.invoke(event.accelerationMotion)
@@ -69,7 +69,7 @@ class MotionSensorHandler(
             if (currentTimeMs - lastGyroProcessedTimeMs < 200L) {
                 return
             }
-            Log.d("Android", "ログAndroid: 🟢🟦200ms経ったので通過")
+//            Log.d("Android", "ログAndroid: 🟢🟦200ms経ったので通過")
             lastGyroProcessedTimeMs = currentTimeMs
 
             motionUpdated?.invoke(event.gyroMotion)

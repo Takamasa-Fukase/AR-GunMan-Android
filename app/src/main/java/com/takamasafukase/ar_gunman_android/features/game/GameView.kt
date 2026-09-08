@@ -1,5 +1,6 @@
 package com.takamasafukase.ar_gunman_android.features.game
 
+import android.view.View
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -27,11 +28,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
 import com.takamasafukase.ar_gunman_android.R
 
 @Composable
 fun GameView(
     viewModel: GameViewModel,
+    arView: View,
     showTutorialView: () -> Unit,
     showWeaponSelectView: () -> Unit,
     closeWeaponSelectView: () -> Unit,
@@ -77,6 +80,13 @@ fun GameView(
             contentAlignment = Alignment.Center,
             modifier = Modifier
         ) {
+            AndroidView(
+                factory = {
+                    arView
+                },
+                modifier = Modifier.fillMaxSize()
+            )
+
             // タイマービュー
             Box(
                 modifier = Modifier

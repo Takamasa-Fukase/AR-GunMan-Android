@@ -1,6 +1,7 @@
 package com.takamasafukase.ar_gunman_android.features.nameRegister
 
 import androidx.compose.runtime.Composable
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.initializer
@@ -11,11 +12,11 @@ import com.takamasafukase.ar_gunman_android.factories.Factory
 @Composable
 fun NameRegisterViewBuilder(
     factory: Factory,
+    savedStateHandle: SavedStateHandle,
     onClose: (registeredRankingItem: RankingItem?) -> Unit
 ) {
     val vmFactory = viewModelFactory {
         initializer {
-            val savedStateHandle = createSavedStateHandle()
             NameRegisterViewModel(
                 savedStateHandle = savedStateHandle,
                 rankingRegisterUseCase = factory.createRankingRegisterUseCase(),
