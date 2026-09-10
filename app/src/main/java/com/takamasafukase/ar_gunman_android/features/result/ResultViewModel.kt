@@ -11,6 +11,7 @@ import com.ar_gunman_android.domain.entities.ranking.RankingItem
 import com.ar_gunman_android.domain.storeInterfaces.RankingStoreInterface
 import com.ar_gunman_android.domain.useCases.RankingGetUseCaseInterface
 import com.takamasafukase.ar_gunman_android.constants.SavedStateHandleKeys
+import com.takamasafukase.ar_gunman_android.features.nameRegister.NameRegisterResult
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -65,10 +66,20 @@ class ResultViewModel(
 
         viewModelScope.launch {
             savedStateHandle
-                .getStateFlow<RankingItem?>(SavedStateHandleKeys.REGISTERED_RANKING_ITEM, null)
+                .getStateFlow<NameRegisterResult?>(SavedStateHandleKeys.NAME_REGISTER_RESULT, null)
                 .drop(1)
-                .collect { rankingItem ->
-                    onCloseNameRegisterDialog(registeredRankingItem = rankingItem)
+                .collect { result ->
+                    result?.let {
+                        if (result.isRegistered) {
+                            val rankingItem = RankingItem(
+                                score = result.score ?: 0.0,
+                                userName = result.userName ?: ""
+                            )
+                            onCloseNameRegisterDialog(registeredRankingItem = rankingItem)
+                        } else {
+                            onCloseNameRegisterDialog(registeredRankingItem = null)
+                        }
+                    }
                 }
         }
     }

@@ -46,21 +46,21 @@ import com.takamasafukase.ar_gunman_android.utility.CustomTextField
 @Composable
 fun NameRegisterView(
     viewModel: NameRegisterViewModel,
-    onClose: (registeredRankingItem: RankingItem?) -> Unit,
+    onClose: (result: NameRegisterResult) -> Unit,
 ) {
     val screenWidth = LocalConfiguration.current.screenWidthDp
     val screenHeight = LocalConfiguration.current.screenHeightDp
     val uiState = viewModel.uiState.collectAsState()
 
     LaunchedEffect(Unit) {
-        viewModel.closeDialogEvent.collect { registeredRankingItem ->
-            onClose(registeredRankingItem)
+        viewModel.closeDialogEvent.collect { result ->
+            onClose(result)
         }
     }
 
     CustomDialog(
         onDismissRequest = {
-            onClose(null)
+            onClose(NameRegisterResult(isRegistered = false))
         },
         size = DpSize(
             width = (screenWidth * 0.5).dp,

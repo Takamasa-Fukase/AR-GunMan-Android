@@ -178,10 +178,10 @@ fun RootCompose(
             NameRegisterViewBuilder(
                 factory = factory,
                 savedStateHandle = navBackStackEntry.savedStateHandle,
-                onClose = { rankingItem ->
+                onClose = { result ->
                     navController.previousBackStackEntry
                         ?.savedStateHandle
-                        ?.set(SavedStateHandleKeys.REGISTERED_RANKING_ITEM, rankingItem)
+                        ?.set(SavedStateHandleKeys.NAME_REGISTER_RESULT, result)
                     navController.popBackStack()
                 }
             )

@@ -13,7 +13,7 @@ import com.takamasafukase.ar_gunman_android.factories.Factory
 fun NameRegisterViewBuilder(
     factory: Factory,
     savedStateHandle: SavedStateHandle,
-    onClose: (registeredRankingItem: RankingItem?) -> Unit
+    onClose: (result: NameRegisterResult) -> Unit
 ) {
     val vmFactory = viewModelFactory {
         initializer {

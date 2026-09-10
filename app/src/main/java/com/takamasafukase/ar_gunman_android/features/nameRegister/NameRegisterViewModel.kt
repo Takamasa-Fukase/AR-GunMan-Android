@@ -16,6 +16,15 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
+@Parcelize
+data class NameRegisterResult(
+    val isRegistered: Boolean,
+    val userName: String? = null,
+    val score: Double? = null,
+) : Parcelable
 
 class NameRegisterViewModel(
     savedStateHandle: SavedStateHandle,
@@ -30,7 +39,7 @@ class NameRegisterViewModel(
 
     private val nameInputTextFlow = MutableStateFlow(value = "")
     private val isShowLoadingOnRegisterButtonFlow = MutableStateFlow(value = false)
-    private val _closeDialogEvent = MutableSharedFlow<RankingItem?>()
+    private val _closeDialogEvent = MutableSharedFlow<NameRegisterResult>()
 
     private fun makeTemporaryRankText(ranking: Ranking?): String? {
         // ランキング取得中の場合はrankingがnilなのでnilを返す
@@ -67,13 +76,15 @@ class NameRegisterViewModel(
 
     fun onTapNoThanksButton() {
         viewModelScope.launch {
-            _closeDialogEvent.emit(null)
+            _closeDialogEvent.emit(NameRegisterResult(isRegistered = false))
         }
     }
 
     fun onTapRegisterButton() {
         // 名前未入力の場合は弾く
-        if (nameInputTextFlow.value.isEmpty()) { return }
+        if (nameInputTextFlow.value.isEmpty()) {
+            return
+        }
 
         // ボタン上にインジケータ表示
         isShowLoadingOnRegisterButtonFlow.value = true
@@ -89,7 +100,13 @@ class NameRegisterViewModel(
             viewModelScope.launch {
                 rankingRegisterUseCase.execute(item = newRankingItem)
                 // 今回登録したランキングデータと一緒にダイアログを閉じる指示を流す
-                _closeDialogEvent.emit(newRankingItem)
+                _closeDialogEvent.emit(
+                    NameRegisterResult(
+                        isRegistered = true,
+                        userName = newRankingItem.userName,
+                        score = newRankingItem.score,
+                    )
+                )
             }
 
         } catch (error: Exception) {
