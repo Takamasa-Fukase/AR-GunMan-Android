@@ -6,6 +6,7 @@ import com.ar_gunman_android.arshootingengine.ARShootingEngineFactory
 import com.ar_gunman_android.data.dataSources.FirestoreClient
 import com.ar_gunman_android.data.dataSources.FirestoreClientInterface
 import com.ar_gunman_android.data.repositories.RankingRepository
+import com.ar_gunman_android.data.repositories.stubs.RankingRepositoryStub
 import com.ar_gunman_android.data.repositories.stubs.TutorialRepositoryStub
 import com.ar_gunman_android.device.arShootingEngine.ARShootingEngineHandler
 import com.ar_gunman_android.device.arShootingEngine.ARShootingEngineHandlerInterface
@@ -54,6 +55,14 @@ class Factory(
         return Pair(arShootingEngineHandler, arView)
     }
 
+    fun createARShootingEngineHandlerMock(): Pair<ARShootingEngineHandlerInterface, View> {
+        val (arShootingController, arView) = ARShootingEngineFactory.createMock(context = activity.applicationContext)
+        val arShootingEngineHandler = ARShootingEngineHandler(
+            arShootingController = arShootingController
+        )
+        return Pair(arShootingEngineHandler, arView)
+    }
+
     fun createCameraPermissionHandler(): CameraPermissionHandlerInterface {
         return CameraPermissionHandler(context = activity.applicationContext)
     }
@@ -83,6 +92,10 @@ class Factory(
         )
     }
 
+    fun createRankingRepositoryMock(): RankingRepositoryInterface {
+        return RankingRepositoryStub
+    }
+
     // MARK: Stores
     fun createRankingStore(): RankingStoreInterface {
         return RankingStore
@@ -99,14 +112,14 @@ class Factory(
     // MARK: UseCases
     fun createRankingGetUseCase(): RankingGetUseCaseInterface {
         return RankingGetUseCase(
-            rankingRepository = createRankingRepository(),
+            rankingRepository = createRankingRepositoryMock(),
             rankingStore = createRankingStore()
         )
     }
 
     fun createRankingRegisterUseCase(): RankingRegisterUseCaseInterface {
         return RankingRegisterUseCase(
-            rankingRepository = createRankingRepository(),
+            rankingRepository = createRankingRepositoryMock(),
             rankingStore = createRankingStore()
         )
     }
