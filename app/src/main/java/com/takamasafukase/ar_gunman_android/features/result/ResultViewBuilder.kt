@@ -11,13 +11,13 @@ import com.takamasafukase.ar_gunman_android.factories.Factory
 @Composable
 fun ResultViewBuilder(
     factory: Factory,
-    savedStateHandle: SavedStateHandle,
     showNameRegisterView: (score: Double) -> Unit,
     onReplay: () -> Unit,
     toHome: () -> Unit,
 ) {
     val vmFactory = viewModelFactory {
         initializer {
+            val savedStateHandle = createSavedStateHandle()
             ResultViewModel(
                 savedStateHandle = savedStateHandle,
                 soundPlayer = factory.createSoundPlayer(),

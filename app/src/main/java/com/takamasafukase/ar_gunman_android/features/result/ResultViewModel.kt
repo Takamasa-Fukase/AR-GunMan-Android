@@ -59,8 +59,7 @@ class ResultViewModel(
     )
     val outputEvent get() = _outputEvent.asSharedFlow()
     val lazyListState = LazyListState()
-    val score: Double = savedStateHandle.get<Double>("score") ?: 0.0
-
+    val score: Double = savedStateHandle.get<String>("score")?.toDoubleOrNull() ?: 0.0
     init {
         getRanking()
 

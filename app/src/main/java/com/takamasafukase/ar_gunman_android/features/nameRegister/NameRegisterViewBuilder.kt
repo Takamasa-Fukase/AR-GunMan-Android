@@ -12,11 +12,11 @@ import com.takamasafukase.ar_gunman_android.factories.Factory
 @Composable
 fun NameRegisterViewBuilder(
     factory: Factory,
-    savedStateHandle: SavedStateHandle,
     onClose: (result: NameRegisterResult) -> Unit
 ) {
     val vmFactory = viewModelFactory {
         initializer {
+            val savedStateHandle = createSavedStateHandle()
             NameRegisterViewModel(
                 savedStateHandle = savedStateHandle,
                 rankingRegisterUseCase = factory.createRankingRegisterUseCase(),

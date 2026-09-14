@@ -150,10 +150,9 @@ fun RootCompose(
                 }
             )
         }
-        composable("result/{score}") { navBackStackEntry ->
+        composable("result/{score}") {
             ResultViewBuilder(
                 factory = factory,
-                savedStateHandle = navBackStackEntry.savedStateHandle,
                 showNameRegisterView = { score ->
                     navController.navigate("nameRegister/$score")
                 },
@@ -174,10 +173,9 @@ fun RootCompose(
                 }
             )
         }
-        dialog("nameRegister/{score}") { navBackStackEntry ->
+        dialog("nameRegister/{score}") {
             NameRegisterViewBuilder(
                 factory = factory,
-                savedStateHandle = navBackStackEntry.savedStateHandle,
                 onClose = { result ->
                     navController.previousBackStackEntry
                         ?.savedStateHandle
