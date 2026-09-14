@@ -250,7 +250,6 @@ class GameViewModel(
     }
 
     fun onViewAppear() {
-        print("🟦GameVM onViewAppear")
         gameStore.reset()
         weaponStore.reset()
 
