@@ -135,16 +135,10 @@ fun RootCompose(
         }
         dialog(NavigationRoute.WeaponSelect.route) {
             WeaponSelectView(
-                onClose = {
-                    navController.popBackStack()
-                },
-                onSelectWeapon = { weaponType ->
-
+                onClose = { result ->
                     navController
                         .getBackStackEntry(NavigationRoute.Game.route)
-                        .savedStateHandle[SavedStateHandleKeys.SELECTED_WEAPON_TYPE] = weaponType
-                    // TODO: onCloseの方も自動で呼ばれるのか、こっちでもpopが必要かを実際に確認する
-                    // TODO: 二重でpopされないかも確認したい
+                        .savedStateHandle[SavedStateHandleKeys.WEAPON_SELECT_RESULT] = result
                     navController.popBackStack()
                 }
             )

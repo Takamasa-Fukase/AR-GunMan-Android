@@ -248,14 +248,14 @@ class GameViewModel(
         }
     }
 
-    // MARK: - Private Methods
-    private fun tutorialEnded() {
+    fun tutorialEnded() {
         viewModelScope.launch {
             gameFlowDriveUseCase.resolveBlocked()
         }
     }
 
-    private fun weaponSelected(weaponType: WeaponType) {
+    fun weaponSelected(weaponType: WeaponType?) {
+        val weaponType = weaponType ?: weaponStore.weapon.value.currentType
         weaponChangeUseCase.execute(newType = weaponType)
         arShootingEngineHandler.showWeapon(type = weaponType)
         soundPlayer.play(weaponType.soundResources.appearingSound)

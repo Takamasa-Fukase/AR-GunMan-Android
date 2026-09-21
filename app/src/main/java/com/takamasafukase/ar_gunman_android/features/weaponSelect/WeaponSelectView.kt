@@ -1,5 +1,6 @@
 package com.takamasafukase.ar_gunman_android.features.weaponSelect
 
+import android.os.Parcelable
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -30,17 +31,25 @@ import androidx.compose.ui.unit.sp
 import com.ar_gunman_android.domain.entities.weapon.WeaponType
 import com.takamasafukase.ar_gunman_android.R
 import com.takamasafukase.ar_gunman_android.utility.CustomDialog
+import kotlinx.parcelize.Parcelize
+
+@Parcelize
+data class WeaponSelectResult(
+    val isSelected: Boolean,
+    val weaponType: WeaponType? = null,
+) : Parcelable
 
 @Composable
 fun WeaponSelectView(
-    onClose: () -> Unit,
-    onSelectWeapon: (selectedWeapon: WeaponType) -> Unit,
+    onClose: (result: WeaponSelectResult) -> Unit,
 ) {
     val screenWidth = LocalConfiguration.current.screenWidthDp
     val screenHeight = LocalConfiguration.current.screenHeightDp
 
     CustomDialog(
-        onDismissRequest = onClose,
+        onDismissRequest = {
+            onClose(WeaponSelectResult(isSelected = false))
+        },
         size = DpSize(
             width = screenWidth.dp,
             height = screenHeight.dp
@@ -50,12 +59,19 @@ fun WeaponSelectView(
                 color = Color.Transparent
             ) {
                 Box {
-                    WeaponListView(onSelectWeapon)
+                    WeaponListView(onSelectWeapon = { selectedWeaponType ->
+                        onClose(
+                            WeaponSelectResult(
+                                isSelected = true,
+                                weaponType = selectedWeaponType
+                            )
+                        )
+                    })
                     TextButton(
                         modifier = Modifier
                             .align(Alignment.TopEnd),
                         onClick = {
-                            onClose()
+                            onClose(WeaponSelectResult(isSelected = false))
                         }
                     ) {
                         Row(
@@ -113,6 +129,5 @@ fun WeaponListView(
 fun WeaponSelectViewPreview() {
     WeaponSelectView(
         onClose = {},
-        onSelectWeapon = {}
     )
 }
