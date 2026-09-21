@@ -2,7 +2,6 @@ package com.takamasafukase.ar_gunman_android.features.result
 
 import android.util.Log
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ar_gunman_android.device.sound.SoundPlayerInterface
@@ -10,8 +9,6 @@ import com.ar_gunman_android.device.sound.SoundType
 import com.ar_gunman_android.domain.entities.ranking.RankingItem
 import com.ar_gunman_android.domain.storeInterfaces.RankingStoreInterface
 import com.ar_gunman_android.domain.useCases.RankingGetUseCaseInterface
-import com.takamasafukase.ar_gunman_android.constants.SavedStateHandleKeys
-import com.takamasafukase.ar_gunman_android.features.nameRegister.NameRegisterResult
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,12 +16,11 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class ResultViewModel(
-    savedStateHandle: SavedStateHandle,
+    val score: Double,
     private val soundPlayer: SoundPlayerInterface,
     private val rankingGetUseCase: RankingGetUseCaseInterface,
     private val rankingStore: RankingStoreInterface,
@@ -59,29 +55,6 @@ class ResultViewModel(
     )
     val outputEvent get() = _outputEvent.asSharedFlow()
     val lazyListState = LazyListState()
-    val score: Double = savedStateHandle.get<String>("score")?.toDoubleOrNull() ?: 0.0
-    init {
-        getRanking()
-
-        viewModelScope.launch {
-            savedStateHandle
-                .getStateFlow<NameRegisterResult?>(SavedStateHandleKeys.NAME_REGISTER_RESULT, null)
-                .drop(1)
-                .collect { result ->
-                    result?.let {
-                        if (result.isRegistered) {
-                            val rankingItem = RankingItem(
-                                score = result.score ?: 0.0,
-                                userName = result.userName ?: ""
-                            )
-                            onCloseNameRegisterDialog(registeredRankingItem = rankingItem)
-                        } else {
-                            onCloseNameRegisterDialog(registeredRankingItem = null)
-                        }
-                    }
-                }
-        }
-    }
 
     fun onViewAppear() {
         // 結果画面と名前登録ダイアログの出現音声を再生
@@ -92,6 +65,8 @@ class ResultViewModel(
             delay(timeMillis = 500)
             _outputEvent.emit(OutputEventType.ShowNameRegisterView(score = score))
         }
+
+        getRanking()
     }
 
     // TODO: 暫定対応
@@ -106,19 +81,7 @@ class ResultViewModel(
         }
     }
 
-    // MARK: - Private Methods
-    private fun getRanking() {
-        try {
-            viewModelScope.launch {
-                rankingGetUseCase.execute()
-            }
-
-        } catch (error: Exception) {
-            Log.d("Android", "ログAndroid: ResultVM getRanking error: $error")
-        }
-    }
-
-    private fun onCloseNameRegisterDialog(registeredRankingItem: RankingItem?) {
+    fun onCloseNameRegisterDialog(registeredRankingItem: RankingItem?) {
         viewModelScope.launch {
             // 0.1秒後にボタンの出現アニメーションを開始させる
             delay(timeMillis = 100)
@@ -138,6 +101,18 @@ class ResultViewModel(
                     scrollOffset = -24,
                 )
             }
+        }
+    }
+
+    // MARK: - Private Methods
+    private fun getRanking() {
+        try {
+            viewModelScope.launch {
+                rankingGetUseCase.execute()
+            }
+
+        } catch (error: Exception) {
+            Log.d("Android", "ログAndroid: ResultVM getRanking error: $error")
         }
     }
 }

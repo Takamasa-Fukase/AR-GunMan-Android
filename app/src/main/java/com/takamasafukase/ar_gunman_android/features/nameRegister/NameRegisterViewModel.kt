@@ -1,7 +1,6 @@
 package com.takamasafukase.ar_gunman_android.features.nameRegister
 
 import android.util.Log
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ar_gunman_android.domain.entities.ranking.Ranking
@@ -27,7 +26,7 @@ data class NameRegisterResult(
 ) : Parcelable
 
 class NameRegisterViewModel(
-    savedStateHandle: SavedStateHandle,
+    val score: Double,
     private val rankingRegisterUseCase: RankingRegisterUseCaseInterface,
     rankingStore: RankingStoreInterface,
 ) : ViewModel() {
@@ -68,7 +67,6 @@ class NameRegisterViewModel(
     )
 
     val closeDialogEvent get() = _closeDialogEvent.asSharedFlow()
-    val score: Double = savedStateHandle.get<String>("score")?.toDoubleOrNull() ?: 0.0
 
     fun onChangeNameText(text: String) {
         nameInputTextFlow.value = text

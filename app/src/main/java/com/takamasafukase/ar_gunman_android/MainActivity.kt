@@ -149,9 +149,11 @@ fun RootCompose(
                 }
             )
         }
-        composable(NavigationRoute.Result.route) {
+        composable(NavigationRoute.Result.route) { navBackStackEntry ->
             ResultViewBuilder(
                 factory = factory,
+                navBackStackEntry = navBackStackEntry,
+                score = NavigationRoute.getScore(navBackStackEntry),
                 showNameRegisterView = { score ->
                     navController.navigate(NavigationRoute.NameRegister.createRoute(score))
                 },
@@ -172,14 +174,11 @@ fun RootCompose(
                 }
             )
         }
-        dialog(NavigationRoute.NameRegister.route) {
+        dialog(NavigationRoute.NameRegister.route) { navBackStackEntry ->
             NameRegisterViewBuilder(
                 factory = factory,
+                score = NavigationRoute.getScore(navBackStackEntry),
                 onClose = { result ->
-//                    navController
-//                        .getBackStackEntry("result")
-//                        .savedStateHandle[SavedStateHandleKeys.NAME_REGISTER_RESULT] = result
-
                     navController.previousBackStackEntry
                         ?.savedStateHandle
                         ?.set(SavedStateHandleKeys.NAME_REGISTER_RESULT, result)
