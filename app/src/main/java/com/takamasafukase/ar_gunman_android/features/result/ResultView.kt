@@ -169,13 +169,13 @@ fun ResultView(
                             isButtonsVisible = uiState.isButtonsVisible,
                             onTapReplay = {
                                 // TODO: 暫定対応
-                                viewModel.resetParams()
+//                                viewModel.resetParams()
 
                                 onReplay()
                             },
                             onTapHome = {
                                 // TODO: 暫定対応
-                                viewModel.resetParams()
+//                                viewModel.resetParams()
 
                                 toHome()
                             }

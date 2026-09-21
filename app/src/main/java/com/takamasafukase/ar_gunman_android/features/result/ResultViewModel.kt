@@ -57,27 +57,12 @@ class ResultViewModel(
     val lazyListState = LazyListState()
 
     fun onViewAppear() {
-        // 結果画面と名前登録ダイアログの出現音声を再生
-        soundPlayer.play(SoundType.RANKING_APPEAR)
+        getRanking()
 
         viewModelScope.launch {
             // 0.5秒後に名前登録ダイアログを表示させる指示を流す
             delay(timeMillis = 500)
             _outputEvent.emit(OutputEventType.ShowNameRegisterView(score = score))
-        }
-
-        getRanking()
-    }
-
-    // TODO: 暫定対応
-    fun resetParams() {
-        viewModelScope.launch {
-            delay(timeMillis = 1000)
-            isButtonsVisibleFlow.value = false
-            rankingListHighlightedIndexFlow.value = null
-            lazyListState.scrollToItem(
-                index = 0,
-            )
         }
     }
 
@@ -93,6 +78,9 @@ class ResultViewModel(
             val rankIndex = rankingStore.ranking.value?.getTentativeRankIndex(
                 score = registeredRankingItem.score
             ) ?: 0
+
+            // 該当データをハイライトさせる為のindexをセット
+            rankingListHighlightedIndexFlow.value = rankIndex
 
             //  該当データがリストの1番上にくる位置にスクロールさせる
             viewModelScope.launch {
