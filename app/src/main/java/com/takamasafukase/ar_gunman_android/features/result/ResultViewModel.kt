@@ -5,7 +5,6 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ar_gunman_android.device.sound.SoundPlayerInterface
-import com.ar_gunman_android.device.sound.SoundType
 import com.ar_gunman_android.domain.entities.ranking.RankingItem
 import com.ar_gunman_android.domain.storeInterfaces.RankingStoreInterface
 import com.ar_gunman_android.domain.useCases.RankingGetUseCaseInterface

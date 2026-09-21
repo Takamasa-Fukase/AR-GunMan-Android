@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.CircularProgressIndicator
@@ -39,7 +40,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.takamasafukase.ar_gunman_android.utility.CustomDialog
 import com.takamasafukase.ar_gunman_android.R
-import com.ar_gunman_android.domain.entities.ranking.RankingItem
 import com.takamasafukase.ar_gunman_android.ui.theme.copperplate
 import com.takamasafukase.ar_gunman_android.utility.CustomTextField
 
@@ -50,7 +50,7 @@ fun NameRegisterView(
 ) {
     val screenWidth = LocalConfiguration.current.screenWidthDp
     val screenHeight = LocalConfiguration.current.screenHeightDp
-    val uiState = viewModel.uiState.collectAsState()
+    val uiState by viewModel.uiState.collectAsState()
 
     LaunchedEffect(Unit) {
         viewModel.closeDialogEvent.collect { result ->
@@ -65,7 +65,7 @@ fun NameRegisterView(
         size = DpSize(
             width = (screenWidth * 0.5).dp,
             height = (screenHeight).dp,
-            ),
+        ),
         content = {
             Column(
                 verticalArrangement = Arrangement.Center,
@@ -96,7 +96,7 @@ fun NameRegisterView(
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.SpaceEvenly,
                             modifier = Modifier
-                                .padding(top = 12.dp,)
+                                .padding(top = 12.dp)
                         ) {
                             Text(
                                 text = "Congratulations!",
@@ -114,12 +114,28 @@ fun NameRegisterView(
                                     fontSize = (screenHeight * 0.036).sp,
                                     fontFamily = copperplate,
                                 )
-                                Text(
-                                    text = " ${uiState.value.temporaryRankText} ",
-                                    color = colorResource(id = R.color.customBrown1),
-                                    fontSize = (screenHeight * 0.046).sp,
-                                    fontFamily = copperplate,
-                                )
+                                Box(
+                                    modifier = Modifier
+                                        .widthIn(min = 58.dp),
+                                    contentAlignment = Alignment.Center,
+                                ) {
+                                    // ランク表示
+                                    Text(
+                                        text = " ${uiState.temporaryRankText ?: ""} ",
+                                        color = colorResource(id = R.color.customBrown1),
+                                        fontSize = (screenHeight * 0.046).sp,
+                                        fontFamily = copperplate,
+                                    )
+                                    if (uiState.temporaryRankText == null) {
+                                        // インジケーター
+                                        CircularProgressIndicator(
+                                            color = colorResource(id = R.color.paper),
+                                            modifier = Modifier
+                                                .size((screenHeight * 0.042).dp),
+                                            strokeWidth = (screenHeight * 0.006).dp,
+                                        )
+                                    }
+                                }
                                 Text(
                                     text = "in",
                                     color = colorResource(id = R.color.paper),
@@ -152,7 +168,7 @@ fun NameRegisterView(
                                     fontFamily = copperplate,
                                 )
                                 CustomTextField(
-                                    value = uiState.value.nameInputText,
+                                    value = uiState.nameInputText,
                                     onValueChange = {
                                         viewModel.onChangeNameText(it)
                                     },
@@ -172,7 +188,7 @@ fun NameRegisterView(
                                     shape = RoundedCornerShape(12),
                                     singleLine = true,
                                     trailingIcon = {
-                                        if (uiState.value.nameInputText.isNotEmpty()) {
+                                        if (uiState.nameInputText.isNotEmpty()) {
                                             IconButton(
                                                 onClick = {
                                                     viewModel.onChangeNameText("")
@@ -220,7 +236,10 @@ fun NameRegisterView(
                                         fontWeight = FontWeight.Bold,
                                         fontFamily = copperplate,
                                         modifier = Modifier
-                                            .wrapContentSize(align = Alignment.Center, unbounded = true)
+                                            .wrapContentSize(
+                                                align = Alignment.Center,
+                                                unbounded = true
+                                            )
                                             .padding(bottom = 4.dp)
                                     )
                                 }
@@ -238,19 +257,19 @@ fun NameRegisterView(
                                         .fillMaxHeight()
                                         .weight(1f)
                                 ) {
-                                    val buttonColor = if (uiState.value.nameInputText.isEmpty())
+                                    val buttonColor = if (uiState.nameInputText.isEmpty())
                                         colorResource(id = R.color.blackSteel).copy(alpha = 0.1f)
                                     else
                                         colorResource(id = R.color.blackSteel)
 
-                                    if (uiState.value.isShowLoadingOnRegisterButton) {
+                                    if (uiState.isShowLoadingOnRegisterButton) {
                                         CircularProgressIndicator(
                                             color = colorResource(id = R.color.paper),
                                             modifier = Modifier
                                                 .padding(bottom = 4.dp)
                                                 .size(28.dp)
                                         )
-                                    }else {
+                                    } else {
                                         Text(
                                             text = "Register!",
                                             color = buttonColor,

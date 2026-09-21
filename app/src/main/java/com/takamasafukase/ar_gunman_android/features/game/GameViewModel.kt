@@ -195,6 +195,7 @@ class GameViewModel(
                         }
 
                         GameFlowStatus.FlowEnded -> {
+                            // 結果画面と名前登録ダイアログの出現音声を再生
                             soundPlayer.play(SoundType.RANKING_APPEAR)
                             viewModelScope.launch {
                                 // 結果画面で表示する得点と一緒に遷移指示を流す
