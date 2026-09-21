@@ -88,9 +88,9 @@ fun RootCompose(
         dialog(NavigationRoute.Tutorial.route) {
             TutorialView(
                 onClose = {
-                    navController
-                        .getBackStackEntry(NavigationRoute.Game.route)
-                        .savedStateHandle[SavedStateHandleKeys.TUTORIAL_ENDED_EVENT] = true
+                    navController.previousBackStackEntry
+                        ?.savedStateHandle
+                        ?.set(SavedStateHandleKeys.TUTORIAL_ENDED_EVENT, true)
                     navController.popBackStack()
                 }
             )
@@ -136,9 +136,9 @@ fun RootCompose(
         dialog(NavigationRoute.WeaponSelect.route) {
             WeaponSelectView(
                 onClose = { result ->
-                    navController
-                        .getBackStackEntry(NavigationRoute.Game.route)
-                        .savedStateHandle[SavedStateHandleKeys.WEAPON_SELECT_RESULT] = result
+                    navController.previousBackStackEntry
+                        ?.savedStateHandle
+                        ?.set(SavedStateHandleKeys.WEAPON_SELECT_RESULT, result)
                     navController.popBackStack()
                 }
             )
