@@ -64,49 +64,48 @@ fun RootCompose(
 ) {
     val navController = rememberNavController()
 
-    // TODO: route文字列をConstにする
     NavHost(
         navController = navController,
-        startDestination = "top",
+        startDestination = NavigationRoute.Top.route,
     ) {
-        composable("top") {
+        composable(NavigationRoute.Top.route) {
             TopViewBuilder(
                 factory = factory,
                 showGameView = {
-                    navController.navigate("game")
+                    navController.navigate(NavigationRoute.Game.route)
                 },
                 showTutorialView = {
-                    navController.navigate("tutorial")
+                    navController.navigate(NavigationRoute.Tutorial.route)
                 },
                 showSettingsView = {
-                    navController.navigate("settings")
+                    navController.navigate(NavigationRoute.Settings.route)
                 },
                 showDeviceSettings = {
                     showDeviceSetting()
                 },
             )
         }
-        dialog("tutorial") {
+        dialog(NavigationRoute.Tutorial.route) {
             TutorialView(
                 onClose = {
                     navController
-                        .getBackStackEntry("game")
+                        .getBackStackEntry(NavigationRoute.Game.route)
                         .savedStateHandle[SavedStateHandleKeys.TUTORIAL_ENDED_EVENT] = true
                     navController.popBackStack()
                 }
             )
         }
-        composable("settings") {
+        composable(NavigationRoute.Settings.route) {
             SettingsViewBuilder(
                 showRankingView = {
-                    navController.navigate("ranking")
+                    navController.navigate(NavigationRoute.Ranking.route)
                 },
                 onClose = {
                     navController.popBackStack()
                 }
             )
         }
-        dialog("ranking") {
+        dialog(NavigationRoute.Ranking.route) {
             RankingViewBuilder(
                 factory = factory,
                 onClose = {
@@ -114,15 +113,15 @@ fun RootCompose(
                 }
             )
         }
-        composable("game") { navBackStackEntry ->
+        composable(NavigationRoute.Game.route) { navBackStackEntry ->
             GameViewBuilder(
                 factory = factory,
                 savedStateHandle = navBackStackEntry.savedStateHandle,
                 showTutorialView = {
-                    navController.navigate("tutorial")
+                    navController.navigate(NavigationRoute.Tutorial.route)
                 },
                 showWeaponSelectView = {
-                    navController.navigate("weaponSelect")
+                    navController.navigate(NavigationRoute.WeaponSelect.route)
                 },
                 closeWeaponSelectView = {
                     // TODO: 挙動を検証する
@@ -130,11 +129,11 @@ fun RootCompose(
                     // 明示的に今のGameを残してそれより上があれば消す　とかの方がいいかも？
                 },
                 showResultView = { score ->
-                    navController.navigate("result/$score")
+                    navController.navigate(NavigationRoute.Result.createRoute(score))
                 }
             )
         }
-        dialog("weaponSelect") {
+        dialog(NavigationRoute.WeaponSelect.route) {
             WeaponSelectView(
                 onClose = {
                     navController.popBackStack()
@@ -142,7 +141,7 @@ fun RootCompose(
                 onSelectWeapon = { weaponType ->
 
                     navController
-                        .getBackStackEntry("game")
+                        .getBackStackEntry(NavigationRoute.Game.route)
                         .savedStateHandle[SavedStateHandleKeys.SELECTED_WEAPON_TYPE] = weaponType
                     // TODO: onCloseの方も自動で呼ばれるのか、こっちでもpopが必要かを実際に確認する
                     // TODO: 二重でpopされないかも確認したい
@@ -150,22 +149,22 @@ fun RootCompose(
                 }
             )
         }
-        composable("result/{score}") {
+        composable(NavigationRoute.Result.route) {
             ResultViewBuilder(
                 factory = factory,
                 showNameRegisterView = { score ->
-                    navController.navigate("nameRegister/$score")
+                    navController.navigate(NavigationRoute.NameRegister.createRoute(score))
                 },
                 onReplay = {
-                    navController.navigate("game") {
-                        popUpTo("top") {
+                    navController.navigate(NavigationRoute.Game.route) {
+                        popUpTo(NavigationRoute.Top.route) {
                             inclusive = false
                         }
                         launchSingleTop = true
                     }
                 },
                 toHome = {
-                    navController.navigate("top") {
+                    navController.navigate(NavigationRoute.Top.route) {
                         popUpTo(0) {
                             inclusive = true
                         }
@@ -173,10 +172,14 @@ fun RootCompose(
                 }
             )
         }
-        dialog("nameRegister/{score}") {
+        dialog(NavigationRoute.NameRegister.route) {
             NameRegisterViewBuilder(
                 factory = factory,
                 onClose = { result ->
+//                    navController
+//                        .getBackStackEntry("result")
+//                        .savedStateHandle[SavedStateHandleKeys.NAME_REGISTER_RESULT] = result
+
                     navController.previousBackStackEntry
                         ?.savedStateHandle
                         ?.set(SavedStateHandleKeys.NAME_REGISTER_RESULT, result)
