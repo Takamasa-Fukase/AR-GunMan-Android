@@ -1,6 +1,5 @@
 package com.takamasafukase.ar_gunman_android.features.game
 
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ar_gunman_android.device.arShootingEngine.ARShootingEngineHandlerInterface
@@ -22,7 +21,6 @@ import com.ar_gunman_android.domain.useCases.WeaponChangeUseCaseInterface
 import com.ar_gunman_android.domain.useCases.WeaponControlMotionDetectUseCaseInterface
 import com.ar_gunman_android.domain.useCases.WeaponFireUseCaseInterface
 import com.ar_gunman_android.domain.useCases.WeaponReloadUseCaseInterface
-import com.takamasafukase.ar_gunman_android.constants.SavedStateHandleKeys
 import com.takamasafukase.ar_gunman_android.extensions.timeCountText
 import com.takamasafukase.ar_gunman_android.features.game.weaponResources.soundResources
 import com.takamasafukase.ar_gunman_android.features.game.weaponResources.uiResources
@@ -30,13 +28,11 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class GameViewModel(
-    savedStateHandle: SavedStateHandle,
     private val arShootingEngineHandler: ARShootingEngineHandlerInterface,
     private val motionSensorHandler: MotionSensorHandlerInterface,
     private val soundPlayer: SoundPlayerInterface,
@@ -92,27 +88,6 @@ class GameViewModel(
         // FIXME: 暫定対応
         gameFlowDriveUseCase.setScope(scope = viewModelScope)
         weaponReloadUseCase.setScope(scope = viewModelScope)
-
-        viewModelScope.launch {
-            savedStateHandle
-                .getStateFlow(SavedStateHandleKeys.TUTORIAL_ENDED_EVENT, false)
-                .drop(1)
-                .collect {
-                    tutorialEnded()
-                }
-        }
-
-        viewModelScope.launch {
-            savedStateHandle
-                .getStateFlow<WeaponType?>(SavedStateHandleKeys.SELECTED_WEAPON_TYPE, null)
-                .drop(1)
-                .collect { weaponType ->
-                    weaponType?.let {
-                        weaponSelected(weaponType)
-                        savedStateHandle.remove<WeaponType?>(SavedStateHandleKeys.SELECTED_WEAPON_TYPE)
-                    }
-                }
-        }
 
         arShootingEngineHandler.targetHit = { weaponType ->
             scoreAddUseCase.execute(targetHitPoint = weaponType.targetHitPoint)

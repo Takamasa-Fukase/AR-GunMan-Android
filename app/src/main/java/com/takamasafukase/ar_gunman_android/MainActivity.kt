@@ -116,7 +116,7 @@ fun RootCompose(
         composable(NavigationRoute.Game.route) { navBackStackEntry ->
             GameViewBuilder(
                 factory = factory,
-                savedStateHandle = navBackStackEntry.savedStateHandle,
+                navBackStackEntry = navBackStackEntry,
                 showTutorialView = {
                     navController.navigate(NavigationRoute.Tutorial.route)
                 },

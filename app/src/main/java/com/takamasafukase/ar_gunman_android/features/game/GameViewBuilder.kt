@@ -1,17 +1,22 @@
 package com.takamasafukase.ar_gunman_android.features.game
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import androidx.navigation.NavBackStackEntry
+import com.ar_gunman_android.domain.entities.weapon.WeaponType
+import com.takamasafukase.ar_gunman_android.constants.SavedStateHandleKeys
 import com.takamasafukase.ar_gunman_android.factories.Factory
+import com.takamasafukase.ar_gunman_android.features.weaponSelect.WeaponSelectResult
+import kotlinx.coroutines.flow.drop
 
 @Composable
 fun GameViewBuilder(
     factory: Factory,
-    savedStateHandle: SavedStateHandle,
+    navBackStackEntry: NavBackStackEntry,
     showTutorialView: () -> Unit,
     showWeaponSelectView: () -> Unit,
     closeWeaponSelectView: () -> Unit,
@@ -26,7 +31,6 @@ fun GameViewBuilder(
             val gameFlowDriveUseCase = factory.createGameFlowDriveUseCase()
             val weaponReloadUseCase = factory.createWeaponReloadUseCase()
             GameViewModel(
-                savedStateHandle = savedStateHandle,
                 arShootingEngineHandler = arShootingEngineHandler,
                 motionSensorHandler = factory.createMotionSensorHandler(),
                 soundPlayer = factory.createSoundPlayer(),
@@ -47,6 +51,32 @@ fun GameViewBuilder(
         }
     }
     val viewModel: GameViewModel = viewModel(factory = vmFactory)
+
+    LaunchedEffect(Unit) {
+        navBackStackEntry.savedStateHandle
+            .getStateFlow(SavedStateHandleKeys.TUTORIAL_ENDED_EVENT, false)
+            .drop(1)
+            .collect {
+                viewModel.tutorialEnded()
+            }
+    }
+
+    LaunchedEffect(Unit) {
+        navBackStackEntry.savedStateHandle
+            .getStateFlow<WeaponSelectResult?>(SavedStateHandleKeys.WEAPON_SELECT_RESULT, null)
+            .drop(1)
+            .collect { result ->
+                result?.let {
+                    if (result.isSelected) {
+                        viewModel.weaponSelected(weaponType = result.weaponType)
+                    } else {
+                        viewModel.weaponSelected(weaponType = null)
+                    }
+                }
+                navBackStackEntry.savedStateHandle[SavedStateHandleKeys.WEAPON_SELECT_RESULT] = null
+            }
+    }
+
     GameView(
         viewModel = viewModel,
         arView = arView,
