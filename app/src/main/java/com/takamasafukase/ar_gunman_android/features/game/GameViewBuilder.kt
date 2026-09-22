@@ -23,7 +23,7 @@ fun GameViewBuilder(
     showResultView: (score: Double) -> Unit,
 ) {
     val (arShootingEngineHandler, arView) = remember(factory) {
-        factory.createARShootingEngineHandlerMock()
+        factory.createARShootingEngineHandler()
     }
 
     val vmFactory = viewModelFactory {
