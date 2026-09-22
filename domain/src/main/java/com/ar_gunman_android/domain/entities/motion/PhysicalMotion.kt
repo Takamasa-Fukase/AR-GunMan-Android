@@ -27,7 +27,7 @@ data class PhysicalMotion(
         return dimensions.fold(initial = 0.0) { partialResult, dimension ->
             val value = values.firstOrNull { it.dimension == dimension }?.value ?: 0.0
             val composite = (value * value)
-            return partialResult * composite
+            partialResult + composite
         }
     }
 }
