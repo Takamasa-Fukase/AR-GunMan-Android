@@ -22,7 +22,7 @@ fun GameViewBuilder(
     closeWeaponSelectView: () -> Unit,
     showResultView: (score: Double) -> Unit,
 ) {
-    val (arShootingEngineHandler, arView) = remember(factory) {
+    val (arShootingEngineHandler, arView, splashCompletion) = remember(factory) {
         factory.createARShootingEngineHandler()
     }
 
@@ -31,6 +31,7 @@ fun GameViewBuilder(
             val gameFlowDriveUseCase = factory.createGameFlowDriveUseCase()
             val weaponReloadUseCase = factory.createWeaponReloadUseCase()
             GameViewModel(
+                arShootingEngineSplashCompletion = splashCompletion,
                 arShootingEngineHandler = arShootingEngineHandler,
                 motionSensorHandler = factory.createMotionSensorHandler(),
                 soundPlayer = factory.createSoundPlayer(),

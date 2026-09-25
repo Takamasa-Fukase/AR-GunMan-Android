@@ -9,5 +9,6 @@ data class UnityToAndroidMessage(
 
 @Serializable(with = UnityToAndroidMessageEventTypeSerializer::class)
 enum class UnityToAndroidMessageEventType {
+    SPLASH_FINISHED,
     TARGET_HIT,
 }

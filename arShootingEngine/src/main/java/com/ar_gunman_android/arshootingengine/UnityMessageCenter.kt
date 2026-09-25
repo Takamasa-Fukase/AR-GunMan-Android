@@ -17,13 +17,17 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
 interface UnityMessageCenterInterface {
+    val splashFinishedEvent: SharedFlow<Unit>
     val targetHitEvent: SharedFlow<Unit>
     @OptIn(InternalSerializationApi::class)
     fun sendMessageToUnity(message: AndroidToUnityMessage)
 }
 
 object UnityMessageCenter : UnityMessageCenterInterface {
+    override val splashFinishedEvent: SharedFlow<Unit> get() = _splashFinishedEvent.asSharedFlow()
     override val targetHitEvent: SharedFlow<Unit> get() = _targetHitEvent.asSharedFlow()
+
+    private val _splashFinishedEvent = MutableSharedFlow<Unit>()
     private val _targetHitEvent = MutableSharedFlow<Unit>()
     private val scope = CoroutineScope(Dispatchers.Default)
 
@@ -41,13 +45,24 @@ object UnityMessageCenter : UnityMessageCenterInterface {
 
     // Unity側から呼び出される
     fun onReceivedMessageFromUnity(message: String) {
-        Log.d("Android", "ログAndroid: UnityMessageCenter onReceivedMessageFromUnity message: $message")
+        Log.d(
+            "Android",
+            "ログAndroid: UnityMessageCenter onReceivedMessageFromUnity message: $message"
+        )
 
         val fromUnityMessage = Json.decodeFromString<UnityToAndroidMessage>(message)
-        Log.d("Android", "ログAndroid: UnityMessageCenter fromUnityMessage: $fromUnityMessage, eventType: ${fromUnityMessage.eventType}")
+        Log.d(
+            "Android",
+            "ログAndroid: UnityMessageCenter fromUnityMessage: $fromUnityMessage, eventType: ${fromUnityMessage.eventType}"
+        )
 
         scope.launch {
             when (fromUnityMessage.eventType) {
+                UnityToAndroidMessageEventType.SPLASH_FINISHED -> {
+                    println("ログAndroid UnityToAndroidMessageEventType.SPLASH_FINISHED")
+                    _splashFinishedEvent.emit(Unit)
+                }
+
                 UnityToAndroidMessageEventType.TARGET_HIT -> {
                     _targetHitEvent.emit(Unit)
                 }

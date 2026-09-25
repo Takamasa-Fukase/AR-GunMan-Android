@@ -47,12 +47,12 @@ class Factory(
     private val activity: ComponentActivity
 ) {
     // MARK: Devices
-    fun createARShootingEngineHandler(): Pair<ARShootingEngineHandlerInterface, View> {
-        val (arShootingController, arView) = ARShootingEngineFactory.create(activity = activity)
+    fun createARShootingEngineHandler(): Triple<ARShootingEngineHandlerInterface, View, (() -> Unit)?> {
+        val (arShootingController, arView, splashCompletion) = ARShootingEngineFactory.create(activity = activity)
         val arShootingEngineHandler = ARShootingEngineHandler(
             arShootingController = arShootingController
         )
-        return Pair(arShootingEngineHandler, arView)
+        return Triple(arShootingEngineHandler, arView, splashCompletion)
     }
 
     fun createARShootingEngineHandlerMock(): Pair<ARShootingEngineHandlerInterface, View> {
