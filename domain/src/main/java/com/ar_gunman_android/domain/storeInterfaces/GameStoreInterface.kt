@@ -11,9 +11,9 @@ interface GameStoreInterface {
     val timeCount: StateFlow<GameTimeCount>
     val score: StateFlow<GameScore>
     val reloadingMotionDetectedCount: StateFlow<ReloadingMotionDetectedCount>
-    fun updateGameFlow(transform: (GameFlow) -> GameFlow)
-    fun updateTimeCount(transform: (GameTimeCount) -> GameTimeCount)
-    fun updateScore(transform: (GameScore) -> GameScore)
-    fun <R> updateReloadingMotionDetectedCountWithResult(transform: (ReloadingMotionDetectedCount) -> Pair<ReloadingMotionDetectedCount, R>): R
+    fun updateGameFlow(value: GameFlow)
+    fun updateTimeCount(value: (GameTimeCount))
+    fun updateScore(value: GameScore)
+    fun updateReloadingMotionDetectedCount(value: ReloadingMotionDetectedCount)
     fun reset()
 }

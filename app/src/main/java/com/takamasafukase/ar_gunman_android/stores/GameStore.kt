@@ -8,7 +8,6 @@ import com.ar_gunman_android.domain.storeInterfaces.GameStoreInterface
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
 
 object GameStore : GameStoreInterface {
     override val gameFlow: StateFlow<GameFlow> get() = _gameFlow.asStateFlow()
@@ -21,22 +20,20 @@ object GameStore : GameStoreInterface {
     private val _score = MutableStateFlow(value = GameScore())
     private val _reloadingMotionDetectedCount = MutableStateFlow(value = ReloadingMotionDetectedCount())
 
-    override fun updateGameFlow(transform: (GameFlow) -> GameFlow) {
-        _gameFlow.update(transform)
+    override fun updateGameFlow(value: GameFlow) {
+        _gameFlow.value = value
     }
 
-    override fun updateTimeCount(transform: (GameTimeCount) -> GameTimeCount) {
-        _timeCount.update(transform)
+    override fun updateTimeCount(value: GameTimeCount) {
+        _timeCount.value = value
     }
 
-    override fun updateScore(transform: (GameScore) -> GameScore) {
-        _score.update(transform)
+    override fun updateScore(value: GameScore) {
+        _score.value = value
     }
 
-    override fun <R> updateReloadingMotionDetectedCountWithResult(transform: (ReloadingMotionDetectedCount) -> Pair<ReloadingMotionDetectedCount, R>): R {
-        val (updatedCount, result) = transform(_reloadingMotionDetectedCount.value)
-        _reloadingMotionDetectedCount.value = updatedCount
-        return result
+    override fun updateReloadingMotionDetectedCount(value: ReloadingMotionDetectedCount) {
+        _reloadingMotionDetectedCount.value = value
     }
 
     override fun reset() {

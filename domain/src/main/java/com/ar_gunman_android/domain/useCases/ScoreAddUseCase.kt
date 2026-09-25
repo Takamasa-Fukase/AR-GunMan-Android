@@ -10,8 +10,7 @@ class ScoreAddUseCase(
     private val gameStore: GameStoreInterface
 ) : ScoreAddUseCaseInterface {
     override fun execute(targetHitPoint: Int) {
-        gameStore.updateScore { score ->
-            score.add(targetHitPoint = targetHitPoint)
-        }
+        val updatedScore = gameStore.score.value.add(targetHitPoint = targetHitPoint)
+        gameStore.updateScore(value = updatedScore)
     }
 }

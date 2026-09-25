@@ -5,6 +5,6 @@ import kotlinx.coroutines.flow.StateFlow
 
 interface RankingStoreInterface {
     val ranking: StateFlow<Ranking?>
-    fun updateRanking(transform: (Ranking?) -> Ranking?)
+    fun updateRanking(value: Ranking?)
     fun reset()
 }

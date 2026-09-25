@@ -20,9 +20,8 @@ class WeaponFireUseCase(
     private val _fireResultEvent = MutableSharedFlow<WeaponFireResult>()
 
     override suspend fun execute() {
-        val fireResult = weaponStore.updateWeaponWithResult { weapon ->
-            weapon.fire()
-        }
+        val (updatedWeapon, fireResult) = weaponStore.weapon.value.fire()
+        weaponStore.updateWeapon(value = updatedWeapon)
         _fireResultEvent.emit(fireResult)
 
         if (fireResult == WeaponFireResult.Success && weaponStore.weapon.value.currentType.reloadType == WeaponType.ReloadType.AUTO) {

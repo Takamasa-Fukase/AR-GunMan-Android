@@ -27,18 +27,16 @@ class WeaponReloadUseCase(
     private var reloadJob: Job? = null
 
     override suspend fun execute() {
-        val startResult = weaponStore.updateWeaponWithResult { weapon ->
-            weapon.startReload()
-        }
+        val (updatedWeapon, startResult) = weaponStore.weapon.value.startReload()
+        weaponStore.updateWeapon(value = updatedWeapon)
         _reloadStartResultEvent.emit(startResult)
 
         reloadJob = scope?.launch {
             // 現在の武器のリロードにかかる秒数分待機
             delay(timeMillis = weaponStore.weapon.value.currentType.reloadWaitingTimeMillisec.toLong())
 
-            weaponStore.updateWeapon { weapon ->
-                weapon.finishReload()
-            }
+            val updatedWeapon = weaponStore.weapon.value.finishReload()
+            weaponStore.updateWeapon(value = updatedWeapon)
         }
     }
 

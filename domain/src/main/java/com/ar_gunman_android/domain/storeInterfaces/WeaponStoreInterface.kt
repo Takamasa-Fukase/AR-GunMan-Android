@@ -5,7 +5,6 @@ import kotlinx.coroutines.flow.StateFlow
 
 interface WeaponStoreInterface {
     val weapon: StateFlow<Weapon>
-    fun updateWeapon(transform: (Weapon) -> Weapon)
-    fun <R> updateWeaponWithResult(transform: (Weapon) -> Pair<Weapon, R>): R
+    fun updateWeapon(value: Weapon)
     fun reset()
 }

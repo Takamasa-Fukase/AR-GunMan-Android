@@ -14,8 +14,6 @@ class RankingGetUseCase(
 ) : RankingGetUseCaseInterface {
     override suspend fun execute() {
         val items = rankingRepository.getItems()
-        rankingStore.updateRanking {
-            Ranking(items = items)
-        }
+        rankingStore.updateRanking(value = Ranking(items = items))
     }
 }

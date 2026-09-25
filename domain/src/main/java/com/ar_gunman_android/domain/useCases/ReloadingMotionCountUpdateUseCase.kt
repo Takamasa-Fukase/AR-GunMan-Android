@@ -11,8 +11,8 @@ class ReloadingMotionCountUpdateUseCase(
     private var gameStore: GameStoreInterface
 ) : ReloadingMotionCountUpdateUseCaseInterface {
     override fun execute(): ReloadingMotionDetectedCountUpdateResult {
-        return gameStore.updateReloadingMotionDetectedCountWithResult { count ->
-            count.update()
-        }
+        val (updatedCount, result) = gameStore.reloadingMotionDetectedCount.value.update()
+        gameStore.updateReloadingMotionDetectedCount(value = updatedCount)
+        return result
     }
 }
