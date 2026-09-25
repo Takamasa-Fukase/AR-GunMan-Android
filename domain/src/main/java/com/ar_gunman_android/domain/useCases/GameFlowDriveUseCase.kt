@@ -61,8 +61,9 @@ class GameFlowDriveUseCase(
     }
 
     private suspend fun updateAndHandleNextStatus(nextStatus: GameFlowStatus) {
-        val updatedGameFlow = gameStore.gameFlow.value.drive(nextStatus = nextStatus)
-        gameStore.updateGameFlow(value = updatedGameFlow)
+        gameStore.updateGameFlow(
+            value = gameStore.gameFlow.value.drive(nextStatus = nextStatus)
+        )
         handleUpdatedStatus(status = nextStatus)
         _statusStream.emit(nextStatus)
     }
@@ -98,8 +99,9 @@ class GameFlowDriveUseCase(
 
                         // タイマー更新間隔の秒数分待機
                         delay(timeMillis = GameTimeCount.updateIntervalMillisec.toLong())
-                        val updatedTimeCount = gameStore.timeCount.value.decrement()
-                        gameStore.updateTimeCount(value = updatedTimeCount)
+                        gameStore.updateTimeCount(
+                            value = gameStore.timeCount.value.decrement()
+                        )
                     }
                 }
             }

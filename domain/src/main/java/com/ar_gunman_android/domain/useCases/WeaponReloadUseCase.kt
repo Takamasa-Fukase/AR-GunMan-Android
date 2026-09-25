@@ -35,8 +35,9 @@ class WeaponReloadUseCase(
             // 現在の武器のリロードにかかる秒数分待機
             delay(timeMillis = weaponStore.weapon.value.currentType.reloadWaitingTimeMillisec.toLong())
 
-            val updatedWeapon = weaponStore.weapon.value.finishReload()
-            weaponStore.updateWeapon(value = updatedWeapon)
+            weaponStore.updateWeapon(
+                value = weaponStore.weapon.value.finishReload()
+            )
         }
     }
 

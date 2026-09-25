@@ -14,7 +14,8 @@ class RankingRegisterUseCase(
 ) : RankingRegisterUseCaseInterface {
     override suspend fun execute(item: RankingItem) {
         rankingRepository.registerItem(item = item)
-        val updatedRanking = rankingStore.ranking.value?.insertRegisteredRanking(item = item)
-        rankingStore.updateRanking(value = updatedRanking)
+        rankingStore.updateRanking(
+            value = rankingStore.ranking.value?.insertRegisteredRanking(item = item)
+        )
     }
 }

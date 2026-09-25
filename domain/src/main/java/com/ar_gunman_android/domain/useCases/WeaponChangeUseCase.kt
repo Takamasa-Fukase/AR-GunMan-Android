@@ -14,7 +14,8 @@ class WeaponChangeUseCase(
     override fun execute(newType: WeaponType) {
         // 既存のリロードをキャンセルする
         weaponReloadUseCase.stopCurrentReloadIfExists()
-        val updatedWeapon = weaponStore.weapon.value.change(newType = newType)
-        weaponStore.updateWeapon(value = updatedWeapon)
+        weaponStore.updateWeapon(
+            value = weaponStore.weapon.value.change(newType = newType)
+        )
     }
 }
