@@ -5,6 +5,7 @@ import com.ar_gunman_android.arshootingengine.models.WeaponType as ARShootingWea
 import com.ar_gunman_android.domain.entities.weapon.WeaponType as DomainWeaponType
 
 interface ARShootingEngineHandlerInterface {
+    var onEngineReady: (() -> Unit)?
     var targetHit: ((DomainWeaponType) -> Unit)?
     fun run()
     fun pause()
@@ -16,9 +17,14 @@ interface ARShootingEngineHandlerInterface {
 class ARShootingEngineHandler(
     private val arShootingController: ARShootingControllerInterface
 ) : ARShootingEngineHandlerInterface {
+    override var onEngineReady: (() -> Unit)? = null
     override var targetHit: ((DomainWeaponType) -> Unit)? = null
 
     init {
+        arShootingController.onEngineReady = {
+            onEngineReady?.invoke()
+        }
+
         arShootingController.targetHit = { weaponType ->
             targetHit?.invoke(weaponType.toDomainWeaponType)
         }

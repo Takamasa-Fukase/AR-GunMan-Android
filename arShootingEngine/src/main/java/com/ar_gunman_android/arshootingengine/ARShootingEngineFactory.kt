@@ -8,11 +8,11 @@ import com.ar_gunman_android.arshootingengine.mocks.ARShootingControllerMock
 object ARShootingEngineFactory {
     fun create(
         activity: ComponentActivity
-    ): Triple<ARShootingControllerInterface, View, (() -> Unit)?> {
+    ): Pair<ARShootingControllerInterface, View> {
         val controller = ARShootingController(
             activity = activity
         )
-        return Triple(controller, controller.rootView, controller.splashFinished)
+        return Pair(controller, controller.rootView)
     }
 
     fun createMock(

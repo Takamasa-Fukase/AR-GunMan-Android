@@ -33,7 +33,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class GameViewModel(
-    private var arShootingEngineSplashCompletion: (() -> Unit)?,
     private val arShootingEngineHandler: ARShootingEngineHandlerInterface,
     private val motionSensorHandler: MotionSensorHandlerInterface,
     private val soundPlayer: SoundPlayerInterface,
@@ -90,7 +89,7 @@ class GameViewModel(
         gameFlowDriveUseCase.setScope(scope = viewModelScope)
         weaponReloadUseCase.setScope(scope = viewModelScope)
 
-        arShootingEngineSplashCompletion = {
+        arShootingEngineHandler.onEngineReady = {
             println("ログAndroid GameVM arShootingEngineSplashCompletion")
             viewModelScope.launch {
                 gameFlowDriveUseCase.start()

@@ -15,7 +15,7 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.InternalSerializationApi
 
 interface ARShootingControllerInterface {
-    var splashFinished: (() -> Unit)?
+    var onEngineReady: (() -> Unit)?
     var targetHit: ((WeaponType) -> Unit)?
     fun run()
     fun stop()
@@ -27,7 +27,7 @@ interface ARShootingControllerInterface {
 internal class ARShootingController(
     private val activity: ComponentActivity
 ) : ARShootingControllerInterface, DefaultLifecycleObserver {
-    override var splashFinished: (() -> Unit)? = null
+    override var onEngineReady: (() -> Unit)? = null
     override var targetHit: ((WeaponType) -> Unit)? = null
     val rootView: View get() = unityPlayer!!.rootView
 
@@ -45,7 +45,7 @@ internal class ARShootingController(
         activity.lifecycleScope.launch {
             UnityMessageCenter.splashFinishedEvent
                 .collect {
-                    splashFinished?.invoke()
+                    onEngineReady?.invoke()
                 }
         }
 
