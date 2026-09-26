@@ -35,7 +35,7 @@ class ARShootingEngineHandler(
     }
 
     override fun pause() {
-        arShootingController.stop()
+        arShootingController.pause()
     }
 
     override fun showWeapon(type: DomainWeaponType) {

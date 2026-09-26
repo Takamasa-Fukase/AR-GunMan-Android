@@ -48,7 +48,7 @@ class Factory(
 ) {
     // MARK: Devices
     fun createARShootingEngineHandler(): Pair<ARShootingEngineHandlerInterface, View> {
-        val (arShootingController, arView) = ARShootingEngineFactory.create(activity = activity)
+        val (arShootingController, arView) = ARShootingEngineFactory.getInstance(activity = activity)
         val arShootingEngineHandler = ARShootingEngineHandler(
             arShootingController = arShootingController
         )

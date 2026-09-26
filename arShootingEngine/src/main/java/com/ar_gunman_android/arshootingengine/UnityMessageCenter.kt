@@ -35,6 +35,8 @@ object UnityMessageCenter : UnityMessageCenterInterface {
     override fun sendMessageToUnity(message: AndroidToUnityMessage) {
         // JSON文字列に変換
         val jsonString = Json.encodeToString(message)
+        println("ログAndroid UnityMessageCenter sendMessageToUnity: $jsonString")
+
         // Unityへ通知を送る
         UnityPlayer.UnitySendMessage(
             "AndroidMessageCenterObject",

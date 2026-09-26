@@ -7,7 +7,7 @@ class ARShootingControllerMock : ARShootingControllerInterface {
     override var onEngineReady: (() -> Unit)? = null
     override var targetHit: ((WeaponType) -> Unit)? = null
     override fun run() {}
-    override fun stop() {}
+    override fun pause() {}
     override fun showWeapon(type: WeaponType) {}
     override fun renderWeaponFiring() {}
     override fun changeTargetsAppearance() {}

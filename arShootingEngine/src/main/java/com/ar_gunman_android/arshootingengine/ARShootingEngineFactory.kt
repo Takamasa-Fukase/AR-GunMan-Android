@@ -6,13 +6,11 @@ import androidx.activity.ComponentActivity
 import com.ar_gunman_android.arshootingengine.mocks.ARShootingControllerMock
 
 object ARShootingEngineFactory {
-    fun create(
+    fun getInstance(
         activity: ComponentActivity
     ): Pair<ARShootingControllerInterface, View> {
-        val controller = ARShootingController(
-            activity = activity
-        )
-        return Pair(controller, controller.rootView)
+        ARShootingController.initialize(activity)
+        return Pair(ARShootingController, ARShootingController.rootView)
     }
 
     fun createMock(

@@ -13,4 +13,5 @@ data class AndroidToUnityMessage(
 enum class AndroidToUnityMessageEventType {
     SHOW_WEAPON,
     FIRE_WEAPON,
+    RESET_GAME_SCENE,
 }
