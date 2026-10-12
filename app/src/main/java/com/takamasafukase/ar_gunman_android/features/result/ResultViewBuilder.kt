@@ -25,7 +25,6 @@ fun ResultViewBuilder(
         initializer {
             ResultViewModel(
                 score = score,
-                soundPlayer = factory.createSoundPlayer(),
                 rankingGetUseCase = factory.createRankingGetUseCase(),
                 rankingStore = factory.createRankingStore(),
             )
